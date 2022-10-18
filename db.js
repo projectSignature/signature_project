@@ -1,8 +1,8 @@
 const Sequelize = require('sequelize');
-const sequelize = new Sequelize('crud', 'root', 'root', {
+const sequelize = new Sequelize('ACADEMIA_APP', 'doadmin', 'AVNS_HzTD1mdcLG5r73POOIr', {
     dialect: 'mysql',
-    host: 'localhost',
-    port: 3307
+    host: ' db-mysql-nyc1-46829-do-user-12541529-0.b.db.ondigitalocean.com',
+    port: 25060
 });
 
 module.exports = sequelize;
