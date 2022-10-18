@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#000000" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;1,300;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <title></title>
+    <link rel="stylesheet" href="../style/ficha.css" />
+  </head>
+
+  <body id="body">
+    <section id="principal" class="print_pages">
+      <div id="titlemain">
+        <div id="ficha-de-inscricao">Ficha de inscrição</div>
+        <div id="image-gym-name">
+          <div
+            id="image"
+            style="background-image: url('./image/ficha.png')"
+          ></div>
+          <div id="gym-name">
+            <b><i>Kussano dojo</i></b>
+          </div>
+        </div>
+      </div>
+
+      <div id="dircriton-main">
+        <div class="relative">
+          <div id="division-div">
+            <div class="double-div-left">
+              <div class="double-div-left-firt">
+                <span id="in-date-title" class="block">Data da inscrição:</span>
+              </div>
+              <div class="double-div-left-second">
+                <input id="in-date" class="double-div" /><!---->
+              </div>
+            </div>
+            <div class="double-div-right">
+              <span id="number-menber-title" class="block"
+                >Número do aluno:</span
+              >
+              <input
+                id="number-menber"
+                maxlength="180"
+                id="languagen"
+                class="double-div"
+              /><!---->
+            </div>
+          </div>
+        </div>
+
+        <div id="division-div">
+          <div id="left" class="left">
+            <span id="fullnametitle" class="single-div-left"
+              >Nome completo:</span
+            >
+          </div>
+          <div id="right" class="right">
+            <input id="name" class="single-div-right" /><!---->
+          </div>
+        </div>
+
+        <div class="relative">
+          <div id="division-div">
+            <div class="double-div-left">
+              <div class="double-div-left-firt">
+                <span id="birth-title" class="block">Data da nascimento:</span>
+              </div>
+              <div class="double-div-left-second">
+                <input id="birth" class="double-div" /><!---->
+              </div>
+            </div>
+            <div class="double-div-right">
+              <span id="gender-title" class="block">Sexo:</span>
+              <input
+                id="gender"
+                maxlength="180"
+                id="languagen"
+                class="double-div"
+              /><!---->
+            </div>
+          </div>
+        </div>
+
+        <div id="division-div">
+          <div id="left" class="left">
+            <span id="adress-title" class="single-div-left">Endereço:</span>
+          </div>
+          <div id="right" class="right">
+            <input id="adress" class="single-div-right" /><!---->
+          </div>
+        </div>
+
+        <div id="division-div">
+          <div id="left" class="left">
+            <span id="phone-title" class="single-div-left"
+              >Número de telefone:</span
+            >
+          </div>
+          <div id="right" class="right">
+            <input id="phone" class="single-div-right" /><!---->
+          </div>
+        </div>
+
+        <div id="division-div">
+          <div id="left" class="left">
+            <span id="email-title" class="single-div-left">Email:</span>
+          </div>
+          <div id="right" class="right">
+            <input id="email" class="single-div-right" /><!---->
+          </div>
+        </div>
+
+        <div class="relative">
+          <div id="division-div">
+            <div class="double-div-left">
+              <div class="double-div-left-firt">
+                <span id="language-title" class="block">Idioma:</span>
+              </div>
+              <div class="double-div-left-second">
+                <input id="language" class="double-div" /><!---->
+              </div>
+            </div>
+            <div class="double-div-right">
+              <span id="plantitle" class="block">Plano:</span>
+              <input
+                id="plan"
+                maxlength="180"
+                id="languagen"
+                class="double-div"
+              /><!---->
+            </div>
+          </div>
+        </div>
+
+        <div id="confirmation-politc">
+          <span class="block"
+            >✓Eu verifiquei as políticas da academia e estou de acordo com a
+            mesma</span
+          >
+        </div>
+        <div class="signature">
+          <div id="canvasDiv">
+            <canvas id="tela"></canvas>
+          </div>
+        </div>
+      </div>
+      <center>
+        <input
+          id="confirm-button"
+          class="confirmbutton"
+          type="button"
+          value="finalizar"
+          onClick="generatePDF()"
+        />
+      </center>
+    </section>
+
+    <script src="../plugin/package/dist/signature_pad.umd.min.js"></script>
+    <script src="../plugin/html2pdf.bundle.min.js"></script>
+    <script src="../script/ficha.js"></script>
+  </body>
+</html>

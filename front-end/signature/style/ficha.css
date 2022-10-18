@@ -1,0 +1,138 @@
+body{
+  height: 100%;
+}
+html{
+  height: 100%;
+  overflow-y: hidden;
+}
+
+#principal{
+  height: 100%;
+  width:100%;
+
+}
+#dircriton-main{
+border-radius: 1px;
+border: 5px solid lightgray;
+height: 80%;
+
+}
+.print_pages{
+  width: 172mm;
+  height: 251mm;
+  page-break-after: always;
+
+}
+.relative{
+  margin-top: 10px;
+}
+.block{
+  margin-left: 10%;
+ font-size: 3vh;
+}
+
+#titlemain{
+  background-color: 	#555555;
+  color: #333333;
+  height: 8%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1%;
+}
+#image{
+  height: 70px;
+  width:80px;
+  margin-right: 10px;
+}
+#image-gym-name{
+  display: flex;
+  align-items: center;
+}
+#ficha-de-inscricao{
+  color:white;
+  font-size: 4vh;
+}
+#gym-name{
+  color:white;
+  font-size: 4vh;
+}
+.double-div{
+  display: flex;
+  align-items:center;
+}
+.double-div-left{
+  display: flex;
+  align-items:center;
+  width: 45%;
+}
+.double-div-right{
+  display: flex;
+  justify-content: flex-start;
+    width: 50%;
+}
+
+.double-div-left-firt{
+  width: 56%;
+    display: flex;
+  justify-content: flex-end;
+}
+.signature {
+      display: block;
+      margin-top: -40px;
+  }
+  #canvasDiv{
+    width:90%;
+    margin-top: 3%;
+    background-color: white;
+    border: 1px solid lightgray;
+    margin-left: 5%;
+  }
+  #confirmation-politc{
+        margin-top: 3%;
+  }
+  .single-div{
+    width: 60%;
+  }
+  #division-div{
+    display: flex;
+    align-items: center;
+    margin-top: 1%;
+  }
+#left{
+width: 25%;
+}
+#right{
+  width: 75%;
+}
+.single-div-left{
+  display: flex;
+  justify-content:  flex-end;
+   font-size: 3vh;
+}
+.single-div-right{
+  width: 75%;
+   font-size: 3vh;
+
+}
+.double-div{
+   font-size: 3vh;
+}
+
+canvas {
+  height: 150px;
+  width: 100%;
+}
+
+.confirmbutton{
+  margin-top: 5px;
+  background-color: white;
+  border-radius: 20px;
+  border: 2px solid gray;
+  height:50px;
+  width: 200px;
+  font-size: 2vw;
+  color:gray;
+  margin-right: 50px;
+  cursor: pointer;
+}

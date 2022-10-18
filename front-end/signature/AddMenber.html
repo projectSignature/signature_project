@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#000000" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;1,300;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <title></title>
+    <link rel="stylesheet" href="./style/style.css" />
+  </head>
+
+  <body id="body">
+    <main id="principal">
+       <header id = "header">
+        <select id="selectlanguage">
+          <option value="Português">Português</option>
+          <option value="Inglês">Inglês</option>
+          <option value="日本語">日本語</option>
+        </select>
+       </header>
+
+      <div id = "titlemain">
+        <div  id = "image" style="background-image: url('./image/1_MAIN.png')"></div>
+        <div  id="welcomemessage">Seja bem-vindo<br>Insira seus dados pessoais abaixo.</div>
+      </div>
+
+      <span id ="fullnametitle"class="block">Nome completo</span>
+      <div class="relative">
+      <input id="name-input" type="text" maxlength="180" class="birthday" >
+      </div>
+       <h1 id="nameerror" class="error-message">Por favor, digite um nome</h1>
+
+      <span id ="birthdaytitle"class="block">Data de nascimento</span>
+      <div class="relative">
+      <input  maxlength="4" id="birthday_year" class="birthday" onclick="yearfunc()" value="YYYY">
+      <input  maxlength="2" id="birthday_month" class="birthday" onclick="monthfunc()" value="MM">
+      <input  maxlength="2" id="birthday_day" class="birthday" onclick="dayfunc()" value="DD">
+      <input type="number" maxlength="180" id="birthday_age" class="birthday">
+      </div>
+      <h1 id="birthday-error" class="error-message">Por favor, digite a data de nascimento</h1>
+
+
+     <span id ="gendertitle"class="block">Sexo</span>
+     <div id ="gendercheck" class="relative">
+       <label class="ECM_CheckboxInput" id="man-style">
+       <input id="man"class="ECM_CheckboxInput-Input" type="checkbox" >
+       <span class="ECM_CheckboxInput-DummyInput"></span>
+       <span id="gender-man" class="ECM_CheckboxInput-LabelText">Homem</span>
+       </label>
+       <label class="ECM_CheckboxInput">
+       <input id="women"class="ECM_CheckboxInput-Input" type="checkbox">
+       <span class="ECM_CheckboxInput-DummyInput"></span>
+       <span id="gender-women" class="ECM_CheckboxInput-LabelText">Mulher</span>
+       </label>
+     </div>
+     <h1 id="gender-error" class="error-message">Por favor, Escolha o sexo</h1>
+
+   <hr class="underbar">
+
+   <span id ="adress"class="block">Enderço</span>
+   <div class="relative">
+     <select id="kenselect" class="birthday" >
+       <option value="愛知県">Aichi</option>
+       <option value="岐阜県">Gifu</option>
+       <option value="静岡県">Shizuoka</option>
+       <option value="三重県">Mie</option>
+       <option value="北海道">Hokaido</option>
+       <option value="青森県">Aomori</option>
+       <option value="岩手県">Iwate</option>
+       <option value="宮城県">Miyagui</option>
+       <option value="秋田県">Akita</option>
+       <option value="山形県">Yamagata</option>
+       <option value="福島県">Fukushima</option>
+       <option value="茨城県">Ibaraki</option>
+       <option value="栃木県">Tojiki</option>
+       <option value="群馬県">Gunma</option>
+       <option value="埼玉県">Saitama</option>
+       <option value="千葉県">Chiba</option>
+       <option value="東京都">Tokyo</option>
+       <option value="神奈川県">Kanagawa</option>
+       <option value="新潟県">Nigata</option>
+       <option value="富山県">Toyama</option>
+       <option value="石川県">Ishikawa</option>
+       <option value="福井県">Fukui</option>
+       <option value="山梨県">Yamanashi</option>
+       <option value="長野県">Nagano</option>
+       <option value="滋賀県">Shiga</option>
+       <option value="京都府">Kyoto</option>
+       <option value="大阪府">Oosaka</option>
+       <option value="兵庫県">Hyogo</option>
+       <option value="奈良県">Nara</option>
+       <option value="和歌山県">Wakayama</option>
+       <option value="鳥取県">Totori</option>
+       <option value="島根県">Shimane</option>
+       <option value="岡山県">Okayama</option>
+       <option value="広島県">Hiroshima</option>
+       <option value="山口県">Yamaguchi</option>
+       <option value="徳島県">Tokushima</option>
+       <option value="香川県">Kagawa</option>
+       <option value="愛媛県">Ehime</option>
+       <option value="高知県">Kouchi</option>
+       <option value="福岡県">Fukuoka</option>
+       <option value="佐賀県">Saga</option>
+       <option value="長崎県">Nagazaki</option>
+       <option value="熊本県">Kumamoto</option>
+       <option value="大分県">Ooita</option>
+       <option value="宮崎県">Miyazaki</option>
+       <option value="鹿児島県">Kagoshima</option>
+       <option value="沖縄県">Okinawa</option>
+   </select>
+   <input  id="adress-input" class="birthday">
+   </div>
+    <h1 id="adress-error" class="error-message">Por favor, digite o seu endereço </h1>
+
+   <span id ="phonenumber"class="block">Número de telefone</span>
+   <div class="relative">
+     <input type="number" maxlength="4" id="phone1" class="phone" >
+     <input type="number" maxlength="4" id="phone2" class="phone" >
+       <span  class="phonebar">   -</span>
+     <input type="number" maxlength="4" id="phone3" class="phone" >
+   </div>
+    <h1 id="phone-error" class="error-message">Por favor, digite o seu número de telefone </h1>
+
+   <span id ="email"class="block">E-mail</span>
+   <div class="relative">
+     <input  maxlength="180" id="email1" class="email" >
+       <span id="email3">@</span>
+     <input  maxlength="180" id="email2" class="phone" >
+   </div>
+   <h1 id="email-error" class="error-message">Por favor, digite o seu email </h1>
+
+   <span id ="language"class="block">Idioma</span>
+   <div id = "languagediv" class="relative">
+     <input  type="button" maxlength="180" id="language1" class="phone" value="Português" >
+     <input  type="button" maxlength="180" id="language2" class="phone" value="日本語">
+     <input  type="button" maxlength="180" id="language3" class="phone" value="Inglês" >
+   </div>
+   <h1 id="languagen-error" class="error-message">Por favor, selecione o idioma </h1>
+
+ <hr class="underbar">
+
+<span id ="planselect">Escolha um plano</span>
+<div id="planscontainer">
+   <div class="container">
+     <div class="contentes">
+       <div id="plan-a" class="plan">Plano A</div>
+       <div class="price">
+         <h2 id="plan-a-price">¥11,000</h2>
+       </div>
+       <hr id="plan-under-bar" >
+       <div class="detals">
+         <h4 id="plan-a-detail1">BJJ</h4>
+         <h4 id="plan-a-detail2"></h4>
+         <h4 id="plan-a-detail3"></h4>
+         <h4 id="plan-a-detail4"></h4>
+         <h4 id="plan-a-detail5"></h4>
+       </div>
+       <input type="button" id="select-plan-a" class="select-plan" value="Escolher" />
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="contentes">
+      <div id="plan-b" class="plan">Plano B</div>
+      <div class="price">
+        <h2 id="plan-b-price">¥11,000</h2>
+      </div>
+      <hr id="plan-under-bar" >
+      <div class="detals">
+        <h4 id="plan-b-detail1">Kickboxing</h4>
+        <h4 id="plan-b-detail2"></h4>
+        <h4 id="plan-b-detail3"></h4>
+        <h4 id="plan-b-detail4"></h4>
+        <h4 id="plan-b-detail5"></h4>
+      </div>
+      <input type="button" id="select-plan-b" class="select-plan" value="Escolher" />
+   </div>
+ </div>
+
+ <div class="container">
+   <div class="contentes">
+     <div id="plan-c" class="plan">Plano C</div>
+     <div class="price">
+       <h2 id="plan-c-price">¥11,000</h2>
+     </div>
+     <hr id="plan-under-bar" >
+     <div class="detals">
+       <h4 id="plan-c-detail1">MMA</h4>
+       <h4 id="plan-c-detail2"></h4>
+       <h4 id="plan-c-detail3"></h4>
+       <h4 id="plan-c-detail4"></h4>
+       <h4 id="plan-c-detail5"></h4>
+     </div>
+     <input type="button" id="select-plan-c" class="select-plan" value="Escolher" />
+  </div>
+</div>
+
+<div class="container">
+  <div class="contentes">
+    <div id="plan-d" class="plan">Plano D</div>
+    <div class="price">
+      <h2 id="plan-d-price">¥13,200</h2>
+    </div>
+    <hr id="plan-under-bar" >
+    <div class="detals">
+      <h4 id="plan-d-detail1">BJJ</h4>
+      <h4 id="plan-d-detail2">Kickboxing</h4>
+      <h4 id="plan-d-detail3"></h4>
+      <h4 id="plan-d-detail4"></h4>
+      <h4 id="plan-d-detail5"></h4>
+    </div>
+    <input type="button" id="select-plan-d" class="select-plan" value="Escolher" />
+ </div>
+</div>
+
+<div class="container">
+  <div class="contentes">
+    <div id="plan-e" class="plan">Plano E</div>
+    <div class="price">
+      <h2 id="plan-e-price">¥13,200</h2>
+    </div>
+    <hr id="plan-under-bar" >
+    <div class="detals">
+      <h4 id="plan-e-detail1">BJJ</h4>
+      <h4 id="plan-e-detail2">MMA</h4>
+      <h4 id="plan-e-detail3"></h4>
+      <h4 id="plan-e-detail4"></h4>
+      <h4 id="plan-e-detail5"></h4>
+    </div>
+    <input type="button" id="select-plan-e" class="select-plan" value="Escolher" />
+ </div>
+</div>
+
+<div class="container">
+  <div class="contentes">
+    <div id="plan-f" class="plan">Plano F</div>
+    <div class="price">
+      <h2 id="plan-f-price">¥15,400</h2>
+    </div>
+    <hr id="plan-under-bar" >
+    <div class="detals">
+      <h4 id="plan-f-detail1">BBJ</h4>
+      <h4 id="plan-f-detail2">Kickboxing</h4>
+      <h4 id="plan-f-detail3">MMA</h4>
+      <h4 id="plan-f-detail4"></h4>
+      <h4 id="plan-f-detail5"></h4>
+    </div>
+    <input type="button" id="select-plan-f" class="select-plan" value="Escolher" />
+ </div>
+</div>
+
+</div>
+
+
+ <hr class="underbar">
+
+<div id="politic-div">
+<span id ="politic-title">Verifique as politicas da academia e assine no campo a baixo</span>
+</div>
+ <div id ="politiccheck" class="relative">
+
+   <label class="ECM_CheckboxInput">
+   <input class="ECM_CheckboxInput-Input" type="checkbox">
+   <span class="ECM_CheckboxInput-DummyInput"></span>
+   <span class="ECM_CheckboxInput-LabelText"><a id="politiclink"href="#">politicas da academia </a></span>
+
+   </label>
+
+ </div>
+
+      </div>
+
+      <div class="signature">
+        <div id="canvasDiv">
+          <canvas id="tela"></canvas>
+        </div>
+      </div>
+      <div id="confirm">
+        <input
+          id="cancel-button"
+          class="confirmbutton"
+          type="button"
+          value="Apagar"
+        />
+        <input
+          id="confirm-button"
+          class="confirmbutton"
+          type="button"
+          value="confirmar"
+        />
+      </div>
+    </main>
+
+    <script src="./plugin/package/dist/signature_pad.umd.min.js"></script>
+    <script src="./plugin/html2pdf.bundle.min.js"></script>
+
+    <script src="./script/index1.js"></script>
+  </body>
+</html>

@@ -1,0 +1,510 @@
+:root {
+    --btn-bg-color: #dadedcdd;
+    --btn-bg-secondColor: yellow;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: #eee;
+    box-sizing: border-box;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    
+}
+
+#header{
+  Width: 100%;
+  justify-content: flex-end;
+}
+#selectlanguage{
+font-size:2vw;
+color:gray;
+margin-top: 20px;
+margin-left: 80%;
+border-radius: 30px;
+padding-right: 20px;
+padding-left: 20px;
+cursor: pointer;
+}
+
+.error-message{
+  color:#EE0000;
+  margin-left: 370px;
+  font-size: 4vh;
+  display: none;
+}
+
+#image{
+  height: 16vh;
+      background-color: green;
+      width:142px;
+      margin-left: 200px;
+}
+#principal {
+    flex-direction: column;
+    justify-content: space-around;
+    height: 100%;
+    width: 100%;
+    padding: 0px 10px 0px 10px;
+}
+/*メインタイトル*/
+#titlemain {
+margin-top: 30px;
+height: 10vh;
+display: flex;
+align-items: center;
+font-size: 3vw;/*asadasdasasdsa*/
+}
+#welcomemessage{
+  margin-left: 40px;
+}
+
+.block{
+  margin-top: 8vh;
+  font-size: 2vw;
+  margin-left: 350px;
+  color:gray;
+  display: flex;
+}
+.relative{
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+}
+.birthday{
+  box-sizing: border-box;
+    border-style: solid;
+    border-color: lightgray;
+    font-size: 2vw;
+    border-radius: 30px;
+    color: gray;
+    height: 10vh;
+    padding-left: 10px;
+    width: 300px;
+    margin-left: 10px;
+    margin-top: 0px;
+    text-align: center;
+  
+}
+#birthday_year{
+  margin-left: 350px;
+}
+#birthday_age{
+  width: 150px;
+}
+#name-input{
+    width: 500px;
+    margin-left: 350px;
+}
+#birthdaytitle{
+  margin-top: 30px;
+}
+#gendertitle{
+  margin-top: 30px;
+}
+#adress-input{
+  width: 700px;
+}
+
+#gendercheck{
+/*margin-left: 350px;*/
+}
+#kenselect{
+  margin-left: 350px;
+}
+#phone1{
+    margin-left: 350px;
+}
+.ECM_CheckboxInput {
+  padding: 12px 8px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+#man-style {
+  margin-left: 350px;
+}
+.ECM_CheckboxInput-Input {
+  margin: 0;
+  width: 0;
+  opacity: 0;
+}
+.ECM_CheckboxInput:hover{
+  background: rgba(0,0,0,.05) !important;
+}
+.ECM_CheckboxInput:hover > .ECM_CheckboxInput-DummyInput{
+  transform: scale(1.1);
+}
+.ECM_CheckboxInput-Input:focus + .ECM_CheckboxInput-DummyInput{
+  transform: scale(1.1);
+}
+.ECM_CheckboxInput-Input:checked + .ECM_CheckboxInput-DummyInput {
+  background: rgba(107, 26, 250, 1);
+}
+.ECM_CheckboxInput-Input:checked + .ECM_CheckboxInput-DummyInput::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 35%;
+  height: 4px;
+  border-radius: 2px;
+  transform: translate(-6px, 5px) rotateZ(-135deg);
+  transform-origin: 2px 2px;
+  background: #FFFFFF;
+}
+.ECM_CheckboxInput-Input:checked + .ECM_CheckboxInput-DummyInput::after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 70%;
+  height: 4px;
+  border-radius: 2px;
+  transform: translate(-6px, 5px) rotateZ(-45deg);
+  transform-origin: 2px 2px;
+  background: #FFFFFF;
+}
+.ECM_CheckboxInput-DummyInput {
+  position: relative;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 32px;
+  height: 32px;
+  border: solid 2px transparent;
+  background: rgba(0, 0, 0, .15);
+  border-radius: 50%;
+  transition: all .15s linear;
+}
+.ECM_CheckboxInput-LabelText {
+  margin-left: 12px;
+  display: block;
+  font-size: 3vw;
+  font-weight: bold;
+  color:gray;
+}
+
+.block{
+  font-size: 3vw;
+}
+.terms {
+    height: 400px;
+    background-color: var(--btn-bg-color);
+    font-size: 0.8rem;
+}
+
+.checkInformation {
+
+    flex-direction: column;
+    justify-content: space-between;
+
+    height: 70px;
+}
+
+#btn-check {
+
+    align-items: center;
+    gap: 10px;
+}
+
+#termo {
+    width: 25px;
+    height: 25px;
+    font-weight: bold;
+}
+
+.btn-clear {
+
+    justify-content: flex-end;
+    width: 100%;
+}
+
+#btn-clear {
+    background-color: var(--btn-bg-secondColor);
+    height: 30px;
+    width: 50px;
+}
+
+.underbar{
+  margin-left:180px;
+  width:80%;
+  border-top-style:dashed;
+  border-top-color: gray;
+}
+.phonebar{
+  width: 25px;
+  font-size:6vh;
+  display: flex;
+  text-align:center;
+  padding-left: 10px;
+    color: gray;
+}
+.phone{
+  box-sizing: border-box;
+    border-style: solid;
+    border-color: lightgray;
+    font-size: 2vw;
+    border-radius: 30px;
+    color: gray;
+    height: 10vh;
+    width: 250px;
+    margin-top: 0px;
+    text-align: center;
+}
+#email1{
+  box-sizing: border-box;
+    border-style: solid;
+    border-color: lightgray;
+    font-size: 2vw;
+    border-radius: 30px;
+    color: gray;
+    height: 10vh;
+    width: 650px;
+    margin-top: 0px;
+    text-align: center;
+    margin-left: 350px;
+}
+#email3{
+  width: 80px;
+  font-size:6vh;
+  display: flex;
+  text-align:center;
+  padding-left: 10px;
+    color: gray;
+}
+
+canvas {
+    border: 1px solid;
+    height: 150px;
+    width: 100%;
+    background: #fff;
+}
+
+.btns {
+    justify-content: space-around;
+}
+#adress{
+  margin-top:20px;
+}
+#phonenumber{
+  margin-top:20px;
+}
+#email{
+  margin-top:20px;
+}
+#language{
+  margin-top:20px;
+}
+#language1{
+  margin-left: 350px;
+  margin-right: 50px;
+  cursor: pointer;
+}
+#language2{
+  margin-right: 50px;
+  cursor: pointer;
+}
+#language3{
+  cursor: pointer;
+}
+#email3{
+  margin-left: 30px;
+}
+#languagediv{
+  margin-bottom: 80px;
+}
+.btns input {
+    height: 35px;
+    width: 100px;
+    background-color: var(--btn-bg-color);
+    font-weight: 400;
+    border: none;
+}
+.container{
+  margin-top: 50px;
+  height:400px;
+  margin-left: 25px;
+  align-items: center;
+  display: flex;
+  background-color: darkgray;
+  border-radius: 10px;
+  width: 15%;
+  margin-bottom: 100px;
+}
+#planscontainer{
+  width: 100%;
+  display: flex;
+
+}
+#planselect{
+  margin-top: 8vh;
+  font-size: 4vw;
+  margin-left: 100px;
+  color:gray;
+  display: flex;
+}
+.contentes{
+  width:100%;
+  background: lightgrey;
+  border-radius: 10px;
+  margin:5px;
+  float: left;
+  margin-top: 8%;
+  margin-bottom: 8%;
+  text-align: center;
+  height:98%;
+}
+
+.detals{
+  margin-top: 30px;
+  height:30%;
+  color: gray;
+  line-height: 1;
+  font-size:25px;
+}
+
+.plan{
+  height: 20%;
+  font-size:40px;
+  margin-top: 10px;
+  color: gray;
+  line-height: 1;
+}
+
+.price h2{
+  font-size: 40px;
+  color: #4169e1;
+  padding-bottom: 15px;
+  font-style: italic;
+}
+#politic-title{
+  font-size: 2vw;
+  margin-left: 30px;
+  color:gray;
+  margin-bottom: 80px;
+  margin-top: 300px;
+}
+#politiclink{
+  margin-top: 80px;
+  font-size:40px;
+}
+#politiccheck{
+  margin-top: 80px;
+}
+
+.contentes a, .select-plan {
+  text-decoration: none;
+  border-radius: 5px;
+  border: 2px solid white;
+  color: white;
+  padding: 10px 60px;
+  display: inline-block;
+  text-transform: uppercase;
+  font-weight: bold;
+ margin-top: 20px;
+ background-color: #00bfff;
+ cursor: pointer
+}
+.contentes a:hover{
+  text-decoration: none;
+  border-radius: 5px;
+  border: 2px solid white;
+  color: white;
+  padding: 10px 60px;
+  display: inline-block;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+#confirm{
+  background-color: gray;
+  height:15%;
+  margin-top: 50px;
+  margin-bottom: 100px;
+  display: flex;
+  justify-content: flex-end;
+
+
+}
+#politic-div{
+  margin-top: 30px;
+}
+#politctitle{
+  margin-top: 30px;
+}
+
+.confirmbutton{
+  margin-top: 20px;
+  background-color: white;
+  border-radius: 20px;
+  border: 2px solid gray;
+  height:75px;
+  width: 200px;
+  font-size: 2vw;
+  color:gray;
+  margin-right: 50px;
+  cursor: pointer;
+}
+/*Tablet*/
+
+@media screen and (min-width: 500px) and (max-width: 1023px) {
+
+   #principal {
+        justify-content: flex-start;
+        gap: 40px;
+        position: relative;
+    }
+
+    #btn-clear {
+        height: 19px;
+        width: 50px;
+    }
+
+  .signature {
+        display: block;
+        margin-top: -40px;
+    }
+
+    canvas {
+        height: 200px;
+        width: 100%;
+    }
+
+}
+
+
+/*Smartphone*/
+
+@media screen and (max-width: 499px) {
+
+ #principal {
+    justify-content: flex-start;
+    gap: 20px;
+ }
+
+ .terms {
+    height: 300px;
+    font-size: 0.6rem;
+ }
+
+ #btn-clear {
+    height: 20px;
+    width: 50px;
+  }
+
+ .signature {
+    display: block;
+ }
+
+ canvas {
+    height: 150px;
+    width: 100%;
+ }
+
+}

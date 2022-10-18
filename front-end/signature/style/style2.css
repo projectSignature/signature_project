@@ -1,0 +1,114 @@
+html{
+overflow-y: hidden;
+      height: 100%;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+}
+#sotowaku {
+  height: 100%;
+}
+#titlediv{
+   height:5%;
+   background-color: #222222;
+   display: flex;
+   align-items: center;
+}
+#gym-name{
+  color:white;
+  position: absolute;
+  right: 0;
+  font-size: 3vh;
+}
+#titlemain{
+  text-align: left;
+  margin-left: 0;
+  font-size: 2Vh;
+  color:lightgray;
+}
+#maindiv{
+  display: flex;
+  height:98%;
+}
+
+#right-board{
+  background-color:#EEEEEE;
+  width: 88%;
+  height: 100%;
+  display: flex;
+}
+#menubar{
+  background-color: #555555;
+  width:12%;
+  padding-top: 20px;
+  color:white;
+}
+#menubar-title{
+  font-weight: bold;
+  font-size: 4vh;
+}
+
+.servertitle{
+    font-size: 4vh;
+}
+.master{
+padding-top: 30px;
+  font-size: 2vh;
+}
+
+#inscricao{
+  padding-top: 5px;
+  padding-left: 6px;
+}
+.menu-div{
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+ cursor: pointer;
+ font-size: 3vh;
+}
+#add_member_div{
+margin-left: 13px;
+}
+#right-first{
+  height:15%;
+  width:100%;
+  display: flex;
+  align-items: center;
+
+}
+.right-first-div{
+  width: 32%;
+  height:90%;
+  background-color: #00BFFF;
+  margin-left:15px;
+  border-radius: 20px;
+  display: flex;
+  color:white;
+  cursor: pointer;
+}
+#try{
+  width: 100%;
+  height: 100%;
+
+}
+.result-input{
+  font-size: 10vh;
+}
+.atention-discrtion{
+  padding-left: 15px;
+  padding-top: 7px;
+    font-size: 4vh;
+}
+.boarde{
+  margin-left: 15px;
+margin-top: 20px;
+  height:37%;
+  width:98%;
+  align-items: center;
+  background-color: white;
+border-radius: 5px;
+border: 1px solid lightgray;
+}
