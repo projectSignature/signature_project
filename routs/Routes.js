@@ -15,8 +15,8 @@ router.use(function timelog(req, res, next) {
 
 //rota principal
 router.get('/', (req, res) => {
-    //res.json({message: 'funcionando', status: 200});
-    res.render('email');
+    res.json({message: 'funcionando', status: 200});
+  
 });
 
 //envio de e-mail
