@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const database = require('../db');
 const Member = require('../schema/members');
+const Client = require('../schema/clients');
 const mailer = require('./sendMailer');
 const pdf = require('html-pdf');
 const ejs = require('ejs');
@@ -15,8 +16,8 @@ router.use(function timelog(req, res, next) {
 
 //rota principal
 router.get('/', (req, res) => {
-    res.json({message: 'funcionando', status: 200});
-  
+    
+  res.json({message: 'funcionando', status: 200});
 });
 
 //envio de e-mail
@@ -28,6 +29,76 @@ try {
 catch (err) {
   return res.status(400).json(err)
 }
+
+});
+
+router.get('/client', async(req, res) => {
+   try{
+     await database.sync();
+
+    const newClient = await Client.create({
+      GYM_NAME: 'marrone doe',
+      REPRESENTATIVE: 'marrone doe',
+      UNIQUE_CODE: 2,
+      PASSWORD: '1234',
+      ADRESS: 'marrone doe',
+      TEL: 999999999,
+      EMAIL: 'john.doe@gmail.com',
+      SAVE_DAY: '12-85-22',
+      STATUS: 'ativo'
+    }); 
+
+    //console.log(req.body) 
+ 
+    res.json(newClient);
+
+  } catch (err) {
+    return res.status(400).json(err)
+  }   
+  
+});
+
+//autenticação de usuario
+router.post('/auth', async(req, res) => {
+  const [numbers, password] = [req.body.numbers, req.body.password];
+  const [primaryKey, secondKey] = [1234, 567]
+
+  const clients = await Client.findAll({
+    where: {
+      GYM_NAME: numbers,
+      PASSWORD: password
+    }
+  });
+console.log(clients)
+  try {
+    let name = clients[0].REPRESENTATIVE;
+    let code = clients[0].UNIQUE_CODE;
+
+    switch(code) {
+      case '1':
+      validationRes(primaryKey, name, code)
+        break;
+      case '2':
+        validationRes(secondKey, name, code)
+        break;
+      default:
+        console.log("eroor")
+    };
+ 
+    function validationRes(key, name, code) {
+      if(key > 0) {
+        res.json({
+          status: 200,
+          token: key,
+          number: {NAME: name, AUTHORITY: code}
+        });
+      } else {
+        res.json({message: 'internal error1'})
+      } 
+    };
+  } catch(err) {
+    res.json({message: 'internal error'})
+  }
 
 });
 
@@ -65,13 +136,9 @@ router.post('/member', async(req, res) =>{
 //read de dados
 router.get('/img', async(req, res) => {
   const count = await Member.count();
-  const members = await Member.findAll({
-    where: {
-      id: count,
-    }
-  }); //findAll findByPk
+  const members = await Member.findAll(); //findAll findByPk
 
-  res.json(members[0].nm_member)
+  res.json(members)
 });
 
 //gerar PDF
