@@ -38,12 +38,12 @@ router.get('/client', async(req, res) => {
 
     const newClient = await Client.create({
       GYM_NAME: 'jane doe',
-      REPRESENTATIVE: 'marrone doe',
+      REPRESENTATIVE: 'jane doe',
       UNIQUE_CODE: 1,
       PASSWORD: '1234',
-      ADRESS: 'marrone doe',
+      ADRESS: 'jane doe',
       TEL: 999999999,
-      EMAIL: 'john.doe@gmail.com',
+      EMAIL: 'jane.doe@gmail.com',
       SAVE_DAY: '12-85-22',
       STATUS: 'ativo'
     }); 
