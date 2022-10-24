@@ -65,6 +65,11 @@ const Members = database.define('member', {
         allowNull: false
     },
 
+    status: {
+        type:Sequelize.STRING(150),
+        allowNull: false
+    },
+
     signature: {
         type:Sequelize.TEXT,
         allowNull: false
