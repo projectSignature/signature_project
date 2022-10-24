@@ -39,7 +39,7 @@ router.get('/client', async(req, res) => {
     const newClient = await Client.create({
       GYM_NAME: 'marrone doe',
       REPRESENTATIVE: 'marrone doe',
-      UNIQUE_CODE: 2,
+      UNIQUE_CODE: 1,
       PASSWORD: '1234',
       ADRESS: 'marrone doe',
       TEL: 999999999,
