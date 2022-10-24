@@ -10,56 +10,56 @@ const ejs = require('ejs');
 
 //middleware
 router.use(function timelog(req, res, next) {
-    console.log('Time: ', Date.now());
-    next();
+  console.log('Time: ', Date.now());
+  next();
 });
 
 //rota principal
 router.get('/', (req, res) => {
-    
-  res.json({message: 'funcionando', status: 200});
+
+  res.json({ message: 'funcionando', status: 200 });
 });
 
 //envio de e-mail
 router.get('/mailer', async (req, res) => {
-try {
-  let a = await mailer('./routs/hello.txt');
-  res.send(a);
-}  
-catch (err) {
-  return res.status(400).json(err)
-}
+  try {
+    let a = await mailer('./routs/hello.txt');
+    res.send(a);
+  }
+  catch (err) {
+    return res.status(400).json(err)
+  }
 
 });
 
-router.get('/client', async(req, res) => {
-   try{
-     await database.sync();
+router.get('/client', async (req, res) => {
+  try {
+    await database.sync();
 
     const newClient = await Client.create({
       GYM_NAME: 'marrone doe',
       REPRESENTATIVE: 'marrone doe',
-      UNIQUE_CODE: 1,
+      UNIQUE_CODE: 2,
       PASSWORD: '1234',
       ADRESS: 'marrone doe',
       TEL: 999999999,
       EMAIL: 'john.doe@gmail.com',
       SAVE_DAY: '12-85-22',
       STATUS: 'ativo'
-    }); 
+    });
 
     //console.log(req.body) 
- 
+
     res.json(newClient);
 
   } catch (err) {
     return res.status(400).json(err)
-  }   
-  
+  }
+
 });
 
 //autenticação de usuario
-router.post('/auth', async(req, res) => {
+router.post('/auth', async (req, res) => {
   const [numbers, password] = [req.body.numbers, req.body.password];
   const [primaryKey, secondKey] = [1234, 567]
 
@@ -69,80 +69,91 @@ router.post('/auth', async(req, res) => {
       PASSWORD: password
     }
   });
-console.log(clients)
+  console.log(clients)
   try {
     let name = clients[0].REPRESENTATIVE;
     let code = clients[0].UNIQUE_CODE;
+    var gymname = clients[0].GYM_NAME;
 
-    switch(code) {
+    switch (code) {
       case '1':
-      validationRes(primaryKey, name, code)
+        validationRes(primaryKey, name, code, gymname)
         break;
       case '2':
-        validationRes(secondKey, name, code)
+        validationRes(secondKey, name, code, gymname)
         break;
       default:
         console.log("eroor")
     };
- 
-    function validationRes(key, name, code) {
-      if(key > 0) {
+
+    function validationRes(key, name, code, gymname) {
+      if (key > 0) {
         res.json({
           status: 200,
           token: key,
-          number: {NAME: name, AUTHORITY: code}
+          gym: 'gymname',
+          number: { NAME: name, AUTHORITY: code },
         });
       } else {
-        res.json({message: 'internal error1'})
-      } 
+        res.json({ message: 'internal error1' })
+      }
     };
-  } catch(err) {
-    res.json({message: 'internal error'})
+  } catch (err) {
+    res.json({ message: 'internal error' })
   }
 
 });
 
 //insert de dados
-router.post('/member', async(req, res) =>{
-  try{
+router.post('/member', async (req, res) => {
+  try {
     await database.sync();
-   
+
     const newMember = await Member.create({
-         nm_member: req.body.nm_member,
-         birthday_year: req.body.birthday_year,
-         birthday_month: req.body.birthday_month,
-         birthday_day: req.body.birthday_day,
-         birthday_age: req.body.birthday_age,
-         genero: req.body.genero,
-         adress_input: req.body.adress_input,
-         phone01: req.body.phone01,
-         phone02: req.body.phone02,
-         phone03: req.body.phone03,
-         email: req.body.email,
-         lang01: req.body.lang01,
-         plans: req.body.plans,
-         signature: req.body.signature
+      nm_member: req.body.nm_member,
+      birthday_year: req.body.birthday_year,
+      birthday_month: req.body.birthday_month,
+      birthday_day: req.body.birthday_day,
+      birthday_age: req.body.birthday_age,
+      genero: req.body.genero,
+      adress_input: req.body.adress_input,
+      phone01: req.body.phone01,
+      phone02: req.body.phone02,
+      phone03: req.body.phone03,
+      email: req.body.email,
+      lang01: req.body.lang01,
+      plans: req.body.plans,
+      status: "inativo",
+      signature: req.body.signature
     });
-  console.log(req.body) 
- 
-  res.json(newMember);
+    console.log(req.body)
+
+    res.json(newMember);
   }
-  catch(err) {
+  catch (err) {
     return res.status(400).json(err)
   }
 
 });
 
 //read de dados
-router.get('/img', async(req, res) => {
-  const count = await Member.count();
-  const members = await Member.findAll(); //findAll findByPk
+router.get('/info', async (req, res) => {
+  const members = await Member.findAll({
+    where: {
+      status: "ativo"
+    }
+  }); //findAll findByPk
 
-  res.json(members)
+  let createdAt = members[0].createdAt;
+  let enrollmentDate = createdAt.toString().split(" ");
+  let atualDate = new Date().getDate();
+
+  res.json(members.length)
+  /* res.send(enrollmentDate[2]); */
 });
 
 //gerar PDF
-router.get('/pdf', async(req, response)=> {
+router.get('/pdf', async (req, response) => {
 
   const count = await Member.count();
   const members = await Member.findAll({
@@ -163,19 +174,19 @@ router.get('/pdf', async(req, response)=> {
     'signature': members[0].signature
   };
 
-  ejs.renderFile('./email.ejs',obj,(err, html) => {
-    if(err) {
+  ejs.renderFile('./email.ejs', obj, (err, html) => {
+    if (err) {
       console.log("erro!!!!!")
     } else {
-      pdf.create(html,{"orientation": "portrait"}).toFile(`./historico/${obj.nm_member}.pdf`, async(err, res) => {
-        if(err) {
+      pdf.create(html, { "orientation": "portrait" }).toFile(`./historico/${obj.nm_member}.pdf`, async (err, res) => {
+        if (err) {
           console.log('erro')
         } else {
           console.log(res)
-           try{
+          try {
             let a = await mailer(`./historico/${obj.nm_member}.pdf`);
             response.send(a);
-          } catch(err) {console.log(err)}   
+          } catch (err) { console.log(err) }
         }
       });
     }
@@ -186,5 +197,7 @@ router.get('/pdf', async(req, response)=> {
 });
 
 module.exports = router;
+
+
 
 
