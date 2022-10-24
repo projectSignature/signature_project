@@ -37,7 +37,7 @@ router.get('/client', async(req, res) => {
      await database.sync();
 
     const newClient = await Client.create({
-      GYM_NAME: 'marrone doe',
+      GYM_NAME: 'jane doe',
       REPRESENTATIVE: 'marrone doe',
       UNIQUE_CODE: 1,
       PASSWORD: '1234',
