@@ -37,13 +37,13 @@ router.get('/client', async(req, res) => {
      await database.sync();
 
     const newClient = await Client.create({
-      GYM_NAME: 'jane doe',
-      REPRESENTATIVE: 'jane doe',
+      GYM_NAME: 'marrone doe',
+      REPRESENTATIVE: 'marrone doe',
       UNIQUE_CODE: 1,
       PASSWORD: '1234',
-      ADRESS: 'jane doe',
+      ADRESS: 'marrone doe',
       TEL: 999999999,
-      EMAIL: 'jane.doe@gmail.com',
+      EMAIL: 'john.doe@gmail.com',
       SAVE_DAY: '12-85-22',
       STATUS: 'ativo'
     }); 
