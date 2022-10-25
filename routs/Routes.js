@@ -123,7 +123,7 @@ router.post('/member', async (req, res) => {
       email: req.body.email,
       lang01: req.body.lang01,
       plans: req.body.plans,
-      status: "inativo",
+      status: "ativo",
       signature: req.body.signature
     });
     console.log(req.body)
