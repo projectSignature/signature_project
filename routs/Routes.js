@@ -91,7 +91,7 @@ router.post('/auth', async (req, res) => {
         res.json({
           status: 200,
           token: key,
-          gym: 'gymname',
+          gym: gymname,
           number: { NAME: name, AUTHORITY: code },
         });
       } else {
