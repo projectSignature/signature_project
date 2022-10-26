@@ -21,6 +21,7 @@ app.use(cors());
  app.use('/mailer', rout);
  app.use('/img', rout);
  app.use('/pdf', rout);
+app.use('/list', rout);
 
 
 
