@@ -6,7 +6,7 @@ const Client = require('../schema/clients');
 const mailer = require('./sendMailer');
 const pdf = require('html-pdf');
 const ejs = require('ejs');
-
+const { Op } = require('sequelize');
 
 //middleware
 router.use(function timelog(req, res, next) {
@@ -14,13 +14,13 @@ router.use(function timelog(req, res, next) {
   next();
 });
 
-//rota principal
+//rota principal-------------------------->
 router.get('/', (req, res) => {
 
   res.json({ message: 'funcionando', status: 200 });
 });
 
-//envio de e-mail
+//envio de e-mail----------------------------->
 router.get('/mailer', async (req, res) => {
   try {
     let a = await mailer('./routs/hello.txt');
@@ -32,6 +32,7 @@ router.get('/mailer', async (req, res) => {
 
 });
 
+//rotas de testes------------------------------>
 router.get('/client', async (req, res) => {
   try {
     await database.sync();
@@ -58,7 +59,7 @@ router.get('/client', async (req, res) => {
 
 });
 
-//autenticação de usuario
+//autenticação de usuario------------------------>
 router.post('/auth', async (req, res) => {
   const [numbers, password] = [req.body.numbers, req.body.password];
   const [primaryKey, secondKey] = [1234, 567]
@@ -104,7 +105,7 @@ router.post('/auth', async (req, res) => {
 
 });
 
-//insert de dados
+//insert de dados-------------------------------->
 router.post('/member', async (req, res) => {
   try {
     await database.sync();
@@ -136,7 +137,7 @@ router.post('/member', async (req, res) => {
 
 });
 
-//read de dados
+//read de dados------------------------------->
 router.get('/info', async (req, res) => {
   const members = await Member.findAll({
     where: {
@@ -152,7 +153,75 @@ router.get('/info', async (req, res) => {
   /* res.send(enrollmentDate[2]); */
 });
 
-//gerar PDF
+//List Alunos---------------------------------->
+router.post('/list', async (req, res) => {
+  var filter1 = req.body.opt1;
+  var filter2 = req.body.opt2;
+
+  if (filter1 == 'All') { //executar filtro em todos os registros
+    let members = await Member.findAll();
+    res.json(members)
+  }
+
+  else if (filter1 != 'teenagers' && filter1 != '' && filter2 != '') { //executar com dois filtros
+    let members = await Member.findAll({
+      where: {
+        genero: filter1,
+        plans: filter2
+      }
+    });
+    res.json(members)
+  }
+
+  else if (filter1 == 'teenagers' && filter2 != '') { //executar com filtro para menores de 18 com o filtro do plano
+    let members = await Member.findAll({
+      where: {
+        birthday_age: {
+          [Op.lte]: 18,
+        },
+        plans: filter2
+      }
+    });
+    res.json(members)
+  }
+
+  else if (filter1 == 'teenagers' && filter2 == '') { //executar com filtro para menores de 18 sem filtro do plano
+    let members = await Member.findAll({
+      where: {
+        birthday_age: {
+          [Op.lte]: 18,
+        },
+      }
+    });
+    res.json(members)
+  }
+
+  else if (filter1 != '') {
+    let members = await Member.findAll({ //executar apenas com o primeiro filtro
+      where: {
+        genero: filter1,
+      }
+    });
+    res.json(members)
+  }
+
+  else if (filter2 != '') {
+    let members = await Member.findAll({ //executar apenas com o segundo filtro
+      where: {
+        plans: filter2,
+      }
+    });
+    res.json(members)
+  }
+
+  else if (filter1 == '' && filter2 == '') {
+    let members = await Member.findAll(); //executar sem os filtros, busca todos regitros do banco
+    res.json(members);
+  }
+
+});
+
+//gerar PDF------------------------------------->
 router.get('/pdf', async (req, response) => {
 
   const count = await Member.count();
