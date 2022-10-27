@@ -223,8 +223,8 @@ router.post('/list', async (req, res) => {
 
 //List Alunos Update---------------------------------->
 router.post('/listUpdate', async (req, res) => {
-
-  var separateDate = req.body.birth;
+ try{
+   var separateDate = req.body.birth;
   var separateTel = req.body.tel;
 
   const members = await Member.update({
@@ -250,6 +250,10 @@ router.post('/listUpdate', async (req, res) => {
   console.log(`${separateTel[5]}${separateTel[6]}${separateTel[7]}${separateTel[8]}`) //5-6 mês
 
   res.json(members)
+ } catch(err) {
+  console.log(err)
+ }
+ 
 
 });
 
