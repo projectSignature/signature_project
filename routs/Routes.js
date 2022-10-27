@@ -240,7 +240,7 @@ router.post('/listUpdate', async (req, res) => {
     phone03: `${separateTel[10]}${separateTel[11]}${separateTel[12]}${separateTel[13]}`,
     email: req.body.email,
     lang01: req.body.language,
-    plan: req.body.plan,
+    plans: req.body.plan,
     status: req.body.status,
   }, {
     where: {
