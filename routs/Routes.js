@@ -141,7 +141,7 @@ router.post('/member', async (req, res) => {
 router.get('/info', async (req, res) => {
   const members = await Member.findAll({
     where: {
-      status: "ativo"
+      status: "active"
     }
   }); //findAll findByPk
 
