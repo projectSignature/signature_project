@@ -1,9 +1,15 @@
+//CONFIGS
 const express = require('express');
 const router = express.Router();
 const database = require('../db');
+
+//SCHEMAS
 const Member = require('../schema/members');
 const Client = require('../schema/clients');
+const Calender = require('../schema/calender');
 const mailer = require('./sendMailer');
+
+//LIBS
 const pdf = require('html-pdf');
 const ejs = require('ejs');
 const { Op } = require('sequelize');
