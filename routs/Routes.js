@@ -307,6 +307,38 @@ router.get('/pdf', async (req, response) => {
 
 });
 
+//Rota para atualizar DADOS do calendario
+router.post('/calender', async (req, res) => {
+    try {
+      const newCalender = await Calender.update({
+        GYM_ID: req.body.GYM,
+        DAY: req.body.DAY,
+        START_TIME: req.body.START,
+        FINISH_TIME: req.body.FINISH,
+        LINE_NO: req.body.LINE,
+        DESCRITION_1: req.body.DESC1,
+        DESCRITION_2: req.body.DESC2,
+        IMAGE: req.body.IMAGE,
+        COLOR: req.body.COLOR
+      }, {
+        where: {
+          DAY: req.body.DAY,
+          LINE_NO: req.body.LINE
+        }
+      });
+      console.log(req.body)
+      res.json(newCalender)
+    }
+    catch (err) { console.log(err) }
+});
+
+//Rota para recuperar DADOS do calendario
+router.get('/calenderteste', async (req, res) => {
+  const newCalender = await Calender.findAll();
+  res.json(newCalender)
+
+});
+
 module.exports = router;
 
 
