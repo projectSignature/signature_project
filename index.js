@@ -22,6 +22,10 @@ app.use(cors());
  app.use('/img', rout);
  app.use('/pdf', rout);
 app.use('/list', rout);
+app.use('/listUpdate', rout);
+app.use('/listDelete', rout);
+app.use('/calender', rout);
+app.use('/calenderteste', rout);
 
 
 
