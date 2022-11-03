@@ -314,7 +314,7 @@ router.get('/pdf', async (req, response) => {
 });
 
 //Rota para atualizar DADOS do calendario
-router.post('/calender', async (req, res) => {
+router.put('/calender', async (req, res) => {
     try {
       const newCalender = await Calender.update({
         GYM_ID: req.body.GYM,
