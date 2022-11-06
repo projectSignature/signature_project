@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <!--   <link rel="stylesheet" href="/style.css" /> -->
+    <style>
+      html {
+        overflow-y: hidden;
+        height: 100%;
+      }
+
+      body {
+        height: 100%;
+        margin: 0;
+      }
+      #sotowaku {
+        height: 100%;
+      }
+      #titlediv {
+        height: 5%;
+        background-color: #222222;
+        display: -webkit-flex;
+        -webkit-align-items: center;
+        align-items: center;
+        padding-right: 300px;
+      }
+      #gym-name {
+        color: white;
+        position: absolute;
+        font-size: 3vh;
+        right: 0;
+      }
+      #titlemain {
+        text-align: left;
+        margin-left: 0;
+        font-size: 2vh;
+        color: lightgray;
+      }
+
+      #maindiv {
+        height: 90%;
+        background-color: darkgray;
+      }
+      #settings-row {
+        width: 100%;
+        height: 7%;
+      }
+      #first-row {
+        width: 100%;
+        height: 5%;
+        display: -webkit-flex;
+        margin-top: 5px;
+      }
+      .sechedule-day {
+        width: 14%;
+        height: 90%;
+        background-color: #666666;
+        margin-left: 10px;
+        margin-right: 10px;
+        text-align: center;
+        color: white;
+        font-size: 3vh;
+        vertical-align: middle;
+      }
+      .sechedule {
+        width: 14%;
+        height: 80%;
+        background-color: #666666;
+        margin-left: 10px;
+        margin-right: 10px;
+        text-align: center;
+        color: white;
+        font-size: 3vh;
+        vertical-align: middle;
+      }
+      #second-row {
+        height: 14%;
+        display: -webkit-flex;
+      }
+      #third-row {
+        height: 14%;
+        display: -webkit-flex;
+      }
+      #fourth-row {
+        height: 14%;
+        display: -webkit-flex;
+      }
+      #fifth-row {
+        height: 14%;
+        display: -webkit-flex;
+      }
+      #sixth-row {
+        height: 14%;
+        display: -webkit-flex;
+      }
+      #settings-row {
+        display: -webkit-flex;
+
+        -webkit-justify-content: flex-end;
+        justify-content: flex-end;
+        margin-right: 10px;
+      }
+      #calendar-title {
+        padding-right: 68%;
+        font-size: 5vh;
+      }
+      #settings-button {
+        height: 100%;
+        padding-right: 30px;
+      }
+      .setting-right-button:hover {
+        box-shadow: 0 5px 10px white;
+      }
+
+      #img {
+        margin-right: 20px;
+        cursor: pointer;
+      }
+
+      .sweet-alert-acess {
+        height: 300px;
+      }
+
+      #update-time {
+        background-color: orange;
+      }
+
+      #img2 {
+        cursor: pointer;
+        margin-top: 3px;
+      }
+      .sechedule-time {
+        margin-top: 0;
+        margin-bottom: 0;
+        background-color: orange;
+        height: 30%;
+        color: #444444;
+      }
+      .sechedule-div {
+        width: 100%;
+        height: 70%;
+        margin-top: 0;
+        display: -webkit-flex;
+        background-color: white;
+        color: black;
+      }
+      .sechedulename {
+        font-size: 3vh;
+        margin-top: 0px;
+        margin-bottom: 0px;
+        height: 50%;
+      }
+
+      .title-image-div {
+        width: 80%;
+      }
+
+      @media screen and (max-width: 500px) {
+        #settings-row {
+          background-color: blue;
+          width: 100%;
+          display: -webkit-flex;
+          -webkit-justify-content: flex-start;
+          justify-content: flex-start;
+        }
+        #calendar-title {
+          font-size: 4vh;
+          padding-right: 15%;
+        }
+        .sechedule-day {
+          width: 14%;
+          height: 50%;
+          margin-left: 2px;
+          margin-right: 2px;
+          margin-top: 0px;
+          font-size: 1.5vh;
+        }
+        .sechedule-time {
+          height: 20%;
+          font-size: 1vh;
+        }
+        .sechedule {
+          width: 13.5%;
+          height: 70%;
+          margin-left: 2px;
+          margin-right: 2px;
+          font-size: 2vh;
+          background-color: pink;
+        }
+        .sechedulename {
+          font-size: 1.5vh;
+          margin-top: 0px;
+          margin-bottom: 0px;
+          height: 50%;
+        }
+
+      }
+
+    </style>
+  </head>
+  <body class="bg-dark">
+    <div id="sotowaku">
+      <div id="titlediv">
+        <div id="titlemain">Gym Control System</div>
+        <div id="gym-name">Kussano gym</div>
+      </div>
+
+      <div id="maindiv">
+        <div id="settings-row">
+          <div id="calendar-title">Calendário atual</div>
+          <div id="settings-button">
+            <img
+              id="img"
+              src="../image/email.png"
+              width="50"
+              class="setting-right-button"
+            />
+            <img
+              id="img2"
+              src="../image/setting_image.jpg"
+              width="50"
+              class="setting-right-button"
+            />
+          </div>
+        </div>
+        <div id="first-row" class="sechedule-rows">
+          <div id="monday" class="sechedule-day">Monday</div>
+          <div id="tuesday" class="sechedule-day">Tuesday</div>
+          <div id="wednesday" class="sechedule-day">Wednesday</div>
+          <div id="thursdauy" class="sechedule-day">Thurday</div>
+          <div id="friday" class="sechedule-day">Friday</div>
+          <div id="suturday" class="sechedule-day">Suturday</div>
+          <div id="sunday" class="sechedule-day">Sunday</div>
+        </div>
+
+        <div id="second-row" class="schedule-rows">
+            <% for(let i = 0; i < 7; i++) { %>
+            <div id="sechedule1-monday" class="sechedule">
+           
+                <% if(days[i].COLOR == 'blue'){ %>
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: blue; color: white'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'green'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: green; color: white'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'red'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: red; color: black'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'yellow'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: yellow; color: black'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'gray'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: gray; color: black'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'pink'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: pink; color: white' >
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'black'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: black; color: white'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'white'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: white; color: black'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'purple'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: purple; color: white'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                 <% } %>
+
+              <div id="sechedule1-monday-div" class="sechedule-div">
+                    <div class="title-image-div">
+                    <h1 id="sechedule1-monday-title1" class="sechedulename"><%= days[i].DESCRITION_1%></h1>
+                    <h1 id="sechedule1-monday-title2" class="sechedulename"><%= days[i].DESCRITION_2%></h1>
+                    </div>
+
+                    <% if(days[i].IMAGE == 'monday1'){ %>
+                        <%- include('./partials/kimonoTag1')%>
+                    <% } else if(days[i].IMAGE == 'monday2'){ %>  
+                        <%- include('./partials/kimonoTag2')%>
+                    <% }%>
+              </div>
+            </div>
+          <%}%>
+       
+      </div>      
+
+      <div id="second-row"> <!--second line-->
+        <% for(let i = 7; i < 14; i++) { %>
+            <div id="sechedule1-monday" class="sechedule">
+           
+                <% if(days[i].COLOR == 'blue'){ %>
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: blue'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'green'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: green'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'red'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: red'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'yellow'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: yellow'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'gray'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: gray'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'pink'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: pink'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'black'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: black'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'white'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: white'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'purple'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: purple'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                 <% } %>
+
+              <div id="sechedule1-monday-div" class="sechedule-div">
+                <div class="title-image-div">
+                <h1 id="sechedule1-monday-title1" class="sechedulename"><%= days[i].DESCRITION_1%></h1>
+                <h1 id="sechedule1-monday-title2" class="sechedulename"><%= days[i].DESCRITION_2%></h1>
+                </div>
+                <% if(days[i].IMAGE == 'monday1'){ %>
+                    <%- include('./partials/kimonoTag1')%>
+                <% } else if(days[i].IMAGE == 'monday2'){ %>  
+                    <%- include('./partials/kimonoTag2')%>
+                <% }%>
+              </div>
+            </div>
+          <%}%>
+      </div>
+
+      <div id="third-row"> <!--third line-->
+        <% for(let i = 14; i < 21; i++) { %>
+            <div id="sechedule1-monday" class="sechedule">
+           
+                <% if(days[i].COLOR == 'blue'){ %>
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: blue'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'green'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: green'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'red'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: red'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'yellow'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: yellow'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'gray'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: gray'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'pink'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: pink'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'black'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: black'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'white'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: white'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'purple'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: purple'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                 <% } %>
+
+              <div id="sechedule1-monday-div" class="sechedule-div">
+                <div class="title-image-div">
+                <h1 id="sechedule1-monday-title1" class="sechedulename"><%= days[i].DESCRITION_1%></h1>
+                <h1 id="sechedule1-monday-title2" class="sechedulename"><%= days[i].DESCRITION_2%></h1>
+                </div>
+                <% if(days[i].IMAGE == 'monday1'){ %>
+                    <%- include('./partials/kimonoTag1')%>
+                <% } else if(days[i].IMAGE == 'monday2'){ %>  
+                    <%- include('./partials/kimonoTag2')%>
+                <% }%>
+              </div>
+            </div>
+          <%}%>
+      </div>
+
+      <div id="fourth-row"> <!--fourth line-->
+        <% for(let i = 21; i < 28; i++) { %>
+            <div id="sechedule1-monday" class="sechedule">
+           
+                <% if(days[i].COLOR == 'blue'){ %>
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: blue'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'green'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: green'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'red'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: red'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'yellow'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: yellow'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'gray'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: gray'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'pink'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: pink'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'black'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: black'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'white'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: white'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'purple'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: purple'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                 <% } %>
+
+              <div id="sechedule1-monday-div" class="sechedule-div">
+                <div class="title-image-div">
+                <h1 id="sechedule1-monday-title1" class="sechedulename"><%= days[i].DESCRITION_1%></h1>
+                <h1 id="sechedule1-monday-title2" class="sechedulename"><%= days[i].DESCRITION_2%></h1>
+                </div>
+                <% if(days[i].IMAGE == 'monday1'){ %>
+                    <%- include('./partials/kimonoTag1')%>
+                <% } else if(days[i].IMAGE == 'monday2'){ %>  
+                    <%- include('./partials/kimonoTag2')%>
+                <% }%>
+              </div>
+            </div>
+          <%}%>
+      </div>
+
+      <div id="fifth-row"> <!--fifth line-->
+        <% for(let i = 28; i < 35; i++) { %>
+            <div id="sechedule1-monday" class="sechedule">
+           
+                <% if(days[i].COLOR == 'blue'){ %>
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: blue'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'green'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: green'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'red'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: red'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'yellow'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: yellow'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'gray'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: gray'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'pink'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: pink'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'black'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: black'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'white'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: white'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'purple'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: purple'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                 <% } %>
+
+              <div id="sechedule1-monday-div" class="sechedule-div">
+                <div class="title-image-div">
+                <h1 id="sechedule1-monday-title1" class="sechedulename"><%= days[i].DESCRITION_1%></h1>
+                <h1 id="sechedule1-monday-title2" class="sechedulename"><%= days[i].DESCRITION_2%></h1>
+                </div>
+                <% if(days[i].IMAGE == 'monday1'){ %>
+                    <%- include('./partials/kimonoTag1')%>
+                <% } else if(days[i].IMAGE == 'monday2'){ %>  
+                    <%- include('./partials/kimonoTag2')%>
+                <% }%>
+              </div>
+            </div>
+          <%}%>
+      </div>
+
+      <div id="sixth-row">  <!--sixth line-->
+        <% for(let i = 35; i < 42; i++) { %>
+            <div id="sechedule1-monday" class="sechedule">
+           
+                <% if(days[i].COLOR == 'blue'){ %>
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: blue'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'green'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: green'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'red'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: red'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'yellow'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: yellow'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'gray'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: gray'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'pink'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: pink'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'black'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: black'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'white'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: white'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                  <% } else if(days[i].COLOR == 'purple'){ %>  
+                    <h4 id="sechedule1-monday-time" class="sechedule-time" style='background-color: purple'>
+                        <%= days[i].START_TIME%>~<%= days[i].FINISH_TIME%>
+                    </h4>
+                 <% } %>
+
+              <div id="sechedule1-monday-div" class="sechedule-div">
+                <div class="title-image-div">
+                <h1 id="sechedule1-monday-title1" class="sechedulename"><%= days[i].DESCRITION_1%></h1>
+                <h1 id="sechedule1-monday-title2" class="sechedulename"><%= days[i].DESCRITION_2%></h1>
+                </div>
+                <% if(days[i].IMAGE == 'monday1'){ %>
+                    <%- include('./partials/kimonoTag1')%>
+                <% } else if(days[i].IMAGE == 'monday2'){ %>  
+                    <%- include('./partials/kimonoTag2')%>
+                <% }%>
+              </div>
+            </div>
+          <%}%>
+      </div>
+    </div>
+  </body>
+</html>
