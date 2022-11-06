@@ -269,48 +269,58 @@ router.post('/listDelete', async (req, res) => {
   res.json('deletado');
 });
 
-//gerar PDF------------------------------------->
-router.get('/pdf', async (req, response) => {
+//gerar PDF do calendario
+router.get('/pdf/calender', async (req, response) => {
+  try {
+    const newCalender = await Calender.findAll();
+    await ejs.renderFile('./views/calender.ejs', {
+      days: newCalender,
+    }, async (err, html) => {
+      if (err) {
+        console.log("erro!!!!!", err)
+      } else {
+        pdf.create(html, { "orientation": "landscape" })
+          .toFile(`./historico/teste.pdf`, async (err, res) => {
+            if (err) {
+              console.log('erro')
+            } else {
+              try {
+                let a = await mailer(`./historico/teste.pdf`);
+                response.send(a);
+              } catch (err) { console.log(err) }
+            }
+          });
+      }
+    });
+  }
+  catch (err) { console.log(err) }
+});
 
-  const count = await Member.count();
-  const members = await Member.findAll({
-    where: {
-      id: count,
-    }
-  });
-
-  var obj = {
-    'nm_member': members[0].nm_member,
-    'birthday': members[0].birthday_year + members[0].birthday_month + members[0].birthday_day,
-    'genero': members[0].genero,
-    'adress': members[0].adress_input,
-    'phone': members[0].phone01 + members[0].phone02 + members[0].phone03,
-    'email': members[0].email,
-    'language': members[0].lang01,
-    'plan': members[0].plans,
-    'signature': members[0].signature
-  };
-
-  ejs.renderFile('./email.ejs', obj, (err, html) => {
-    if (err) {
-      console.log("erro!!!!!")
-    } else {
-      pdf.create(html, { "orientation": "portrait" }).toFile(`./historico/${obj.nm_member}.pdf`, async (err, res) => {
-        if (err) {
-          console.log('erro')
-        } else {
-          console.log(res)
-          try {
-            let a = await mailer(`./historico/${obj.nm_member}.pdf`);
-            response.send(a);
-          } catch (err) { console.log(err) }
-        }
-      });
-    }
-  });
-
-  response.send('salvo')
-
+//Rota para gerar pdf do calender
+router.get('/pdf/calender', async (req, response) => {
+  try {
+    const newCalender = await Calender.findAll();
+    await ejs.renderFile('./views/calender.ejs', {
+      days: newCalender,
+    }, async (err, html) => {
+      if (err) {
+        console.log("erro!!!!!", err)
+      } else {
+        pdf.create(html, { "orientation": "landscape" })
+          .toFile(`./historico/teste.pdf`, async (err, res) => {
+            if (err) {
+              console.log('erro')
+            } else {
+              try {
+                let a = await mailer(`./historico/teste.pdf`);
+                response.send(a);
+              } catch (err) { console.log(err) }
+            }
+          });
+      }
+    });
+  }
+  catch (err) { console.log(err) }
 });
 
 //Rota para atualizar DADOS do calendario
@@ -336,32 +346,6 @@ router.put('/calender', async (req, res) => {
       res.json(newCalender)
     }
     catch (err) { console.log(err) }
-});
-
-router.get('/pdf/calender', async (req, response) => {
-  try {
-    const newCalender = await Calender.findAll();
-    await ejs.renderFile('./views/calender.ejs', {
-      days: newCalender,
-    }, async (err, html) => {
-      if (err) {
-        console.log("erro!!!!!", err)
-      } else {
-        pdf.create(html, { "orientation": "landscape" })
-          .toFile(`./historico/teste.pdf`, async (err, res) => {
-            if (err) {
-              console.log('erro')
-            } else {
-              try {
-                let a = await mailer(`./historico/teste.pdf`);
-                response.send(a);
-              } catch (err) { console.log(err) }
-            }
-          });
-      }
-    });
-  }
-  catch (err) { console.log(err) }
 });
 
 //Rota para recuperar DADOS do calendario
