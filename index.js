@@ -5,8 +5,9 @@ const cors = require('cors');
 const port = process.env.PORT || 3000;;
 var rout = require('./routs/Routes');
 app.set('view engine', 'ejs');
-app.set('viewa', './views');
-
+app.set('views', './views');
+app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static('public'));
 
 app.use(cors()); 
 
@@ -17,6 +18,7 @@ app.use(cors());
  // Express modules / packages 
 
  app.use('/', rout);
+app.use('/ejs', rout);
  app.use('/member', rout);
  app.use('/mailer', rout);
  app.use('/img', rout);
