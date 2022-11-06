@@ -151,12 +151,8 @@ router.get('/info', async (req, res) => {
     }
   }); //findAll findByPk
 
-  let createdAt = members[0].createdAt;
-  let enrollmentDate = createdAt.toString().split(" ");
-  let atualDate = new Date().getDate();
-
   res.json(members.length)
-  /* res.send(enrollmentDate[2]); */
+  
 });
 
 //List Alunos---------------------------------->
