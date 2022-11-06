@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');  
 const cors = require('cors'); 
+const path = require('path');
 const port = process.env.PORT || 3000;;
 var rout = require('./routs/Routes');
 app.set('view engine', 'ejs');
