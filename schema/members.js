@@ -73,6 +73,11 @@ const Members = database.define('member', {
     signature: {
         type:Sequelize.TEXT,
         allowNull: false
+    },
+    
+   pass: {
+        type:Sequelize.DECIMAL,
+        allowNull: false
     }
 
 });
