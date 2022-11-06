@@ -269,31 +269,47 @@ router.post('/listDelete', async (req, res) => {
   res.json('deletado');
 });
 
-//gerar PDF do calendario
-router.get('/pdf/calender', async (req, response) => {
-  try {
-    const newCalender = await Calender.findAll();
-    await ejs.renderFile('./views/calender.ejs', {
-      days: newCalender,
-    }, async (err, html) => {
-      if (err) {
-        console.log("erro!!!!!", err)
-      } else {
-        pdf.create(html, { "orientation": "landscape" })
-          .toFile(`./historico/teste.pdf`, async (err, res) => {
-            if (err) {
-              console.log('erro')
-            } else {
-              try {
-                let a = await mailer(`./historico/teste.pdf`);
-                response.send(a);
-              } catch (err) { console.log(err) }
-            }
-          });
-      }
-    });
-  }
-  catch (err) { console.log(err) }
+//gerar PDF inscrição
+router.get('/pdf', async (req, response) => {
+
+  const count = await Member.count();
+  const members = await Member.findAll({
+    where: {
+      id: count,
+    }
+  });
+
+  var obj = {
+    'nm_member': members[0].nm_member,
+    'birthday': members[0].birthday_year + members[0].birthday_month + members[0].birthday_day,
+    'genero': members[0].genero,
+    'adress': members[0].adress_input,
+    'phone': members[0].phone01 + members[0].phone02 + members[0].phone03,
+    'email': members[0].email,
+    'language': members[0].lang01,
+    'plan': members[0].plans,
+    'signature': members[0].signature
+  };
+
+  ejs.renderFile('./views/email.ejs', obj, async (err, html) => {
+    if (err) {
+      console.log("erro!!!!!")
+    } else {
+      pdf.create(html, { "orientation": "portrait" })
+        .toFile(`./historico/teste.pdf`, async (err, res) => {
+          if (err) {
+            console.log('erro')
+          } else {
+            //response.send(res)
+            try {
+              let a = await mailer(`./historico/teste.pdf`);
+              response.send(a);
+            } catch (err) { console.log(err) }
+          }
+        });
+    }
+  });
+
 });
 
 //Rota para gerar pdf do calender
