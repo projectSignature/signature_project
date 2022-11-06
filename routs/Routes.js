@@ -131,7 +131,8 @@ router.post('/member', async (req, res) => {
       lang01: req.body.lang01,
       plans: req.body.plans,
       status: "ativo",
-      signature: req.body.signature
+      signature: req.body.signature,
+      pass: req.body.phone03
     });
     console.log(req.body)
 
