@@ -1,0 +1,195 @@
+html{
+    overflow-y: hidden;
+          height: 100%;
+    }
+    
+    body {
+      height: 100%;
+      margin: 0;
+    }
+    #sotowaku {
+      height: 100%;
+    }
+    #titlediv{
+       height:5%;
+       background-color: #222222;
+       display: flex;
+       align-items: center;
+       padding-right: 300px;
+    }
+    #gym-name{
+      color:white;
+      position: absolute;
+      font-size: 3vh;
+      right:0;
+    }
+    #titlemain{
+      text-align: left;
+      margin-left: 0;
+      font-size: 2Vh;
+      color:lightgray;
+    }
+    
+    #maindiv{
+      height:98%;
+      background-color: darkgray;
+    }
+    #settings-row{
+      width: 100%;
+      height:7%;
+    }
+    #first-row{
+      width: 100%;
+      height:5%;
+      display:flex;
+      margin-top: 5px;
+    }
+    .sechedule-day{
+      width: 14%;
+      height:90%;
+      background-color: 	#666666;
+      margin-left: 10px;
+      margin-right: 10px;
+      text-align: center;
+      color: white;
+      font-size: 3vh;
+      vertical-align: middle;
+    }
+    .sechedule{
+      width: 14%;
+      height:80%;
+      background-color: 	#666666;
+      margin-left: 10px;
+      margin-right: 10px;
+      text-align: center;
+      color: white;
+      font-size: 3vh;
+      vertical-align: middle;
+    }
+    #second-row{
+      height: 14%;
+      display: flex;
+    }
+    #third-row{
+      height: 14%;
+      display: flex;
+    }
+    #fourth-row{
+      height: 14%;
+      display: flex;
+    }
+    #fifth-row{
+      height: 14%;
+      display: flex;
+    }
+    #sixth-row{
+      height: 14%;
+        display: flex;
+    }
+    #settings-row{
+      display: flex;
+    
+      justify-content: flex-end;
+      margin-right: 10px;
+    }
+    #calendar-title{
+      padding-right: 68%;
+      font-size: 5vh;
+    }
+    #settings-button{
+    height: 100%;
+    padding-right: 30px;
+    }
+    .setting-right-button:hover{
+      box-shadow: 0 5px 10px white;
+    }
+    
+    #img{
+      margin-right: 20px;
+       cursor: pointer;
+    }
+    
+    .sweet-alert-acess{
+      height: 300px;
+    }
+    
+    
+    
+    
+    #update-time{
+      background-color: orange;
+    }
+    
+    #img2{
+     cursor: pointer;
+     margin-top: 3px;
+    }
+    .sechedule-time{
+      margin-top: 0;
+      margin-bottom: 0;
+      background-color: orange;
+      height: 30%;
+      color:#444444;
+    }
+    .sechedule-div{
+      width: 100%;
+      height: 70%;
+        margin-top: 0;
+      display: flex;
+      background-color: white;
+      color:black;
+    }
+    .sechedulename{
+      font-size: 3vh;
+      margin-top: 0px;
+      margin-bottom: 0px;
+      height: 50%;
+    }
+    
+    .title-image-div{
+      width: 80%;
+    }
+    @media screen and (max-width: 500px) {
+    
+      #settings-row{
+        background-color: blue;
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+      }
+      #calendar-title{
+        font-size: 4vh;
+        padding-right: 15%;
+      }
+      .sechedule-day{
+          width: 14%;
+          height:50%;
+          margin-left: 2px;
+          margin-right: 2px;
+          margin-top:0px;
+          font-size: 1.5vh;
+      }
+      .sechedule-time{
+        height: 20%;
+        font-size: 1vh;
+      }
+      .sechedule{
+        width: 13.5%;
+        height:70%;
+        margin-left: 2px;
+        margin-right: 2px;
+        font-size: 2vh;
+        background-color: pink;
+      }
+      .sechedulename{
+        font-size: 1.5vh;
+        margin-top: 0px;
+        margin-bottom: 0px;
+        height: 50%;
+      }
+    .master-image{
+      display:none;
+    }
+    
+    }
+    
