@@ -338,6 +338,32 @@ router.put('/calender', async (req, res) => {
     catch (err) { console.log(err) }
 });
 
+router.get('/pdf/calender', async (req, response) => {
+  try {
+    const newCalender = await Calender.findAll();
+    await ejs.renderFile('./views/calender.ejs', {
+      days: newCalender,
+    }, async (err, html) => {
+      if (err) {
+        console.log("erro!!!!!", err)
+      } else {
+        pdf.create(html, { "orientation": "landscape" })
+          .toFile(`./historico/teste.pdf`, async (err, res) => {
+            if (err) {
+              console.log('erro')
+            } else {
+              try {
+                let a = await mailer(`./historico/teste.pdf`);
+                response.send(a);
+              } catch (err) { console.log(err) }
+            }
+          });
+      }
+    });
+  }
+  catch (err) { console.log(err) }
+});
+
 //Rota para recuperar DADOS do calendario
 router.get('/calenderteste', async (req, res) => {
   const newCalender = await Calender.findAll();
