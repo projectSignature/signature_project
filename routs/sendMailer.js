@@ -17,13 +17,13 @@ const transporter = nodemailer.createTransport({
     } 
  });
 
-module.exports = async function (path) {
+module.exports = async function (path, email) {
    
 
 
     const mailSent = await transporter.sendMail({
         from: '"kledisom" <signatureprojectjp@gmail.com>',
-        to: ['kedinhofavorito@gmail.com', 'kledison2009@hotmail.com'],
+        to: ['kedinhofavorito@gmail.com', 'kledison2009@hotmail.com', email],
         subject: 'assunto do e-mail',
         text: 'testando anexos',
         attachments: [
