@@ -7,6 +7,7 @@ const database = require('../db');
 const Member = require('../schema/members');
 const Client = require('../schema/clients');
 const Calender = require('../schema/calender');
+const Entrance = require('../schema/registerEntrance');
 const mailer = require('./sendMailer');
 
 //LIBS
@@ -365,6 +366,65 @@ router.put('/calender', async (req, res) => {
 router.get('/calenderteste', async (req, res) => {
   const newCalender = await Calender.findAll();
   res.json(newCalender)
+});
+
+//Rota para recuperar DADOS do calendario para o front do entrance
+router.get('/calender/entrance', async (req, res) => {
+  const newCalender = await Calender.findAll({
+    where: { DAY: atualDay() }
+  });
+  res.json(newCalender)
+
+  function atualDay() {
+    let day = new Date().getDay();
+    switch (day) {
+      case 0:
+        return 'sunday';
+      case 1:
+        return 'monday';
+      case 2:
+        return 'tuesday';
+      case 3:
+        return 'wednesday';
+      case 4:
+        return 'thursday';
+      case 5:
+        return 'friday';
+      case 6:
+        return 'saturday';
+      default:
+        console.log('error..')
+    };
+  };
+
+});
+
+//Rota para registrar entradas da entrance
+router.post('/registerEntrance', async (req, res) => {
+  try {
+    await database.sync();
+
+    const newEntrance = await Entrance.create({
+      LESSON_NAME: req.body.LESSON_NAME,
+      LESSON_HOUR: req.body.LESSON_HOUR,
+      MEMBER_ID: req.body.MEMBER_ID
+    });
+
+    res.json(newEntrance)
+  } catch (err) {
+    return res.status(400).json(err)
+  };
+
+});
+
+//rota para verificar passe do aluno
+router.post('/pass', async (req, res) => {
+  const members = await Member.findAll({
+    where: {
+      pass: req.body.pass
+    }
+  });
+  res.json(members)
 
 });
 
