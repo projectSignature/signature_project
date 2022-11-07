@@ -29,6 +29,9 @@ app.use('/listUpdate', rout);
 app.use('/listDelete', rout);
 app.use('/calender', rout);
 app.use('/calenderteste', rout);
+app.use('/calender/entrance', rout);
+app.use('/registerEntrance', rout);
+app.use('/pass', rout);
 
 
 
