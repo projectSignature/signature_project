@@ -300,7 +300,7 @@ router.get('/pdf', async (req, response) => {
           } else {
             //response.send(res)
             try {
-              let a = await mailer(`./historico/teste.pdf`);
+              let a = await mailer(`./historico/teste.pdf`, obj.email);
               response.send(a);
             } catch (err) { console.log(err) }
           }
