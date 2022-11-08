@@ -13,7 +13,7 @@ const mailer = require('./sendMailer');
 //LIBS
 const pdf = require('html-pdf');
 const ejs = require('ejs');
-const { Op } = require('sequelize');
+const { Op, Sequelize } = require('sequelize');
 
 //middleware
 router.use(function timelog(req, res, next) {
@@ -270,10 +270,13 @@ router.post('/listDelete', async (req, res) => {
 //gerar PDF inscrição
 router.get('/pdf', async (req, response) => {
 
-  const count = await Member.count();
+  const countMax = await Member.findAll({
+    attributes: [[Sequelize.fn('max', Sequelize.col('id')), 'id']],
+    raw: true,
+  });
   const members = await Member.findAll({
     where: {
-      id: count,
+      id: countMax[0].id
     }
   });
 
