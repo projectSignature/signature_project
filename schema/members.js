@@ -78,7 +78,13 @@ const Members = database.define('member', {
    pass: {
         type:Sequelize.DECIMAL,
         allowNull: false
+    },
+    
+    gym: {
+        type: Sequelize.STRING(150),
+        allowNull: false
     }
+
 
 });
 
