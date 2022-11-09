@@ -133,7 +133,8 @@ router.post('/member', async (req, res) => {
       plans: req.body.plans,
       status: "active",
       signature: req.body.signature,
-      pass: req.body.phone03
+      pass: req.body.phone03,
+      gym: req.body.gymname
     });
     console.log(req.body)
 
@@ -281,15 +282,18 @@ router.get('/pdf', async (req, response) => {
   });
 
   var obj = {
+    'uuid': members[0].id.toString(),
     'nm_member': members[0].nm_member,
-    'birthday': members[0].birthday_year + members[0].birthday_month + members[0].birthday_day,
+    'birthday': `${members[0].birthday_year}/${members[0].birthday_month}/${members[0].birthday_day}`,
     'genero': members[0].genero,
     'adress': members[0].adress_input,
-    'phone': members[0].phone01 + members[0].phone02 + members[0].phone03,
+    'phone': `(${members[0].phone01}) ${members[0].phone02}-${members[0].phone03}`,
     'email': members[0].email,
     'language': members[0].lang01,
     'plan': members[0].plans,
-    'signature': members[0].signature
+    'signature': members[0].signature,
+    'entryDate': new Intl.DateTimeFormat('ja-JP').format(members[0].createdAt),
+    'gymname': members[0].gym
   };
 
   ejs.renderFile('./views/email.ejs', obj, async (err, html) => {
@@ -297,13 +301,13 @@ router.get('/pdf', async (req, response) => {
       console.log("erro!!!!!")
     } else {
       pdf.create(html, { "orientation": "landscape", format: 'a10' })
-        .toFile(`./historico/teste.pdf`, async (err, res) => {
+        .toFile(`./historico/Ficha de Inscrição.pdf`, async (err, res) => {
           if (err) {
             console.log('erro')
           } else {
             //response.send(res)
             try {
-              let a = await mailer(`./historico/teste.pdf`, obj.email);
+              let a = await mailer(`./historico/Ficha de Inscrição.pdf`, obj.email);
               response.send(a);
             } catch (err) { console.log(err) }
           }
