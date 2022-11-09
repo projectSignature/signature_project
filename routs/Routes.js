@@ -296,7 +296,7 @@ router.get('/pdf', async (req, response) => {
     if (err) {
       console.log("erro!!!!!")
     } else {
-      pdf.create(html, { "orientation": "landscape", format: 'a4' })
+      pdf.create(html, { "orientation": "landscape", format: 'a10' })
         .toFile(`./historico/teste.pdf`, async (err, res) => {
           if (err) {
             console.log('erro')
