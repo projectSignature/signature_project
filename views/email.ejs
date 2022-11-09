@@ -10,9 +10,12 @@
       href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;1,300;1,400&display=swap"
       rel="stylesheet"
     />
-    <title></title>
-    <!-- <link rel="stylesheet" href="../front-end/signature/style/ficha.css" /> -->
+    <title>ficha pdf</title>
     <style>
+      body {
+        height: 500px;
+      }
+
       #principal {
         height: 600px;
         width: 100%;
@@ -20,39 +23,48 @@
       #dircriton-main {
         border-radius: 1px;
         border: 5px solid lightgray;
-        height: 90%;
+        height: 115%;
+
+        display: -webkit-flex;
+        display: flex;
+        flex-direction: column;
+        -webkit-flex-direction: column;
+        -webkit-justify-content: space-around;
+        justify-content: space-around;
+        -webkit-align-items: center;
+        align-items: center;
+        font-size: 0.9rem;
       }
       .print_pages {
-        width: 172mm;
-        height: 251mm;
+        width: 210mm;
+        height: 297mm;
         page-break-after: always;
       }
       .relative {
         display: -webkit-flex;
         display: flex;
-        -webkit-justify-content: flex-start;
-        justify-content: flex-start;
+        -webkit-justify-content: center;
+        justify-content: center;
         -webkit-align-items: center;
         align-items: center;
       }
       .block1 {
         display: -webkit-flex;
         display: flex;
-        font-size: 1.2rem;
       }
       .block {
         display: -webkit-flex;
         display: flex;
-        font-size: 1.2rem;
       }
 
       #titlemain {
         background-color: #555555;
         color: #333333;
-        height: 8%;
+        height: 10%;
         display: -webkit-flex;
         display: flex;
         align-items: center;
+        justify-content: space-between;
         -webkit-justify-content: space-between;
         margin-bottom: 1%;
       }
@@ -86,31 +98,47 @@
       .double-div-right {
         display: -webkit-flex;
         display: flex;
-        justify-content: center;
+        -webkit-justify-content: flex-end;
+        justify-content: flex-end;
+        -webkit-align-items: center;
+        align-items: center;
         width: 50%;
       }
 
-      /*    .double-div-left-firt {
-        width: 56%;
-        display: -webkit-flex;
+      .double-div-left-firt {
         display: flex;
-        justify-content: flex-end;
-      } */
+        display: -webkit-flex;
+      }
 
-      .double-div-left-second {
+      .double-div-left-second2 {
+        width: 58%;
+      }
+
+      .double-div {
+        margin-left: 10px;
       }
 
       .signature {
-        display: block;
+        display: -webkit-flex;
+        display: flex;
+        width: 700px;
       }
       #canvasDiv {
+        height: 150px;
         width: 90%;
-        margin-top: 3%;
         background-color: white;
         border: 1px solid lightgray;
         margin-left: 5%;
       }
       #confirmation-politc {
+        display: -webkit-flex;
+        display: flex;
+        flex-direction: row;
+        -webkit-justify-content: center;
+        justify-content: center;
+        -webkit-align-items: center;
+        align-items: center;
+
         margin-top: 3%;
       }
       .single-div {
@@ -120,43 +148,93 @@
         display: -webkit-flex;
         display: flex;
         flex-direction: row;
-        -webkit-justify-content: flex-start;
-        justify-content: flex-start;
-        -webkit-align-items: flex-start;
-        align-items: flex-start;
+        -webkit-justify-content: center;
+        justify-content: center;
+        -webkit-align-items: center;
+        align-items: center;
 
         margin-top: 10px;
         font-size: 1rem;
         width: 100%;
       }
 
+      .border {
+        display: -webkit-flex;
+        display: flex;
+        flex-direction: row;
+        -webkit-flex-direction: row;
+        -webkit-justify-content: center;
+        justify-content: center;
+        -webkit-align-items: center;
+        align-items: center;
+        width: 700px;
+      }
+      /*==========inicio new============*/
+
+      #line-2 input {
+        width: 110%;
+        padding: 0;
+      }
+
+      #line-4 input {
+        width: 170%;
+      }
+
+      #line-5 input {
+        width: 90%;
+      }
+
+      #line-6 input {
+        width: 270%;
+      }
+      /*==========fim new============*/
+
+      #birth-title {
+        margin-left: 0px;
+      }
+      #birth {
+        width: 149px;
+      }
+
+      #gender-title {
+        margin-left: -0px;
+      }
+      #gender {
+        width: 230px;
+      }
+
       #right1 {
-        width: 86.5%;
+        margin-left: 10px;
       }
 
-      .single-div-right1 {
-        width: 86.5%;
-      }
-      #right2 {
-        width: 89.5%;
-      }
-
-      .single-div-right2 {
-        width: 89.5%;
-      }
       #right3 {
-        width: 80%;
+        width: 68%;
       }
 
-      .single-div-right3 {
-        width: 80%;
-      }
       #right4 {
-        width: 91%;
+        width: 80%;
       }
 
-      .single-div-right4 {
-        width: 91%;
+      /*---------------lefts-------------*/
+
+      .single-div-left {
+        width: 20%;
+      }
+
+      #language {
+        width: 98%;
+      }
+
+      #plan {
+        width: 63%;
+      }
+
+      #block1 {
+        margin-left: 60px;
+      }
+
+      #left {
+        width: 18%;
       }
 
       #canvas {
@@ -180,150 +258,98 @@
           </div>
         </div>
       </div>
-
       <div id="dircriton-main">
-        <div class="relative">
-          <div id="division-div">
-            <div class="double-div-left">
-              <div class="double-div-left-firt">
-                <span id="in-date-title" class="block1"
-                  >Data da inscrição:</span
-                >
-              </div>
-              <div class="double-div-left-second">
-                <input
-                  id="in-date"
-                  class="double-div"
-                  value="<%= nm_member %>"
-                />
-              </div>
+        <!-- linha 01 -->
+        <div id="line-1" class="border">
+          <div class="double-div-left">
+            <div class="double-div-left-firt">
+              <span id="in-date-title" class="block1">Data da inscrição:</span>
             </div>
-            <div class="double-div-right">
-              <span id="number-menber-title" class="block"
-                >Número do aluno:</span
-              >
-              <input
-                id="number-menber"
-                maxlength="180"
-                id="languagen"
-                class="double-div"
-              />
+            <div class="double-div-left-second">
+              <input id="in-date" class="double-div" value="<%= nm_member %>" />
             </div>
           </div>
-        </div>
 
-        <div id="division-div">
-          <div id="left" class="left">
-            <span id="fullnametitle" class="single-div-left"
-              >Nome completo:</span
-            >
-          </div>
-          <div id="right1" class="right">
+          <div class="double-div-right">
+            <span id="number-menber-title" class="block">Número do aluno:</span>
             <input
-              id="name"
-              class="single-div-right1"
-              value="<%= nm_member %>"
-            /><!---->
+              id="number-menber"
+              maxlength="180"
+              id="languagen"
+              class="double-div"
+            />
           </div>
         </div>
+        <!-- linha 02 -->
+        <div id="line-2" class="border">
+          <span id="fullnametitle" class="single-div-left">Nome completo:</span>
 
-        <div class="relative">
-          <div id="division-div">
-            <div class="double-div-left">
-              <div class="double-div-left-firt">
-                <span id="birth-title" class="block1">Data da nascimento:</span>
-              </div>
-              <div class="double-div-left-second">
-                <input
-                  id="birth"
-                  class="double-div"
-                  value="<%= birthday%>"
-                /><!---->
-              </div>
-            </div>
-            <div class="double-div-right">
-              <span id="gender-title" class="block">Sexo:</span>
-              <input
-                id="gender"
-                maxlength="180"
-                id="languagen"
-                class="double-div"
-                value="<%= genero%>"
-              /><!---->
-            </div>
-          </div>
+          <input class="single-div-right1" value="<%= nm_member %>" />
         </div>
-
-        <div id="division-div">
-          <div id="left" class="left">
-            <span id="adress-title" class="single-div-left">Endereço:</span>
+        <!-- linha 03 -->
+        <div id="line-3" class="border">
+          <div class="double-div-left">
+            <div class="double-div-left-firt">
+              <span id="birth-title" class="block1">Data da nascimento:</span>
+            </div>
+            <div class="double-div-left-second">
+              <input id="birth" class="double-div" value="<%= birthday%>" />
+            </div>
           </div>
-          <div id="right2" class="right">
+          <div class="double-div-right">
+            <span id="gender-title" class="block">Sexo:</span>
             <input
-              id="adress"
-              class="single-div-right2"
-              value="<%= adress%>"
-            /><!---->
+              id="gender"
+              maxlength="180"
+              id="languagen"
+              class="double-div"
+              value="<%= genero%>"
+            />
           </div>
         </div>
+        <!-- linha 04 -->
+        <div id="line-4" class="border">
+          <span id="adress-title" class="single-div-left">Endereço:</span>
 
-        <div id="division-div">
-          <div id="left" class="left">
-            <span id="phone-title" class="single-div-left"
-              >Número de telefone:</span
-            >
-          </div>
-          <div id="right3" class="right">
-            <input
-              id="phone"
-              class="single-div-right3"
-              value="<%= phone%>"
-            /><!---->
-          </div>
+          <input id="adress" class="single-div-right2" value="<%= adress%>" />
         </div>
-
-        <div id="division-div">
-          <div id="left" class="left">
-            <span id="email-title" class="single-div-left">Email:</span>
-          </div>
-          <div id="right4" class="right">
-            <input
-              id="email"
-              class="single-div-right4"
-              value="<%= email%>"
-            /><!---->
-          </div>
+        <!-- linha 05 -->
+        <div id="line-5" class="border">
+          <span id="phone-title" class="single-div-left"
+            >Número de telefone:</span
+          >
+          <input id="phone" class="single-div-right3" value="<%= phone%>" />
         </div>
+        <!-- linha 06 -->
+        <div id="line-6" class="border">
+          <span id="email-title" class="single-div-left">Email:</span>
 
-        <div class="relative">
-          <div id="division-div">
-            <div class="double-div-left">
-              <div class="double-div-left-firt">
-                <span id="language-title" class="block1">Idioma:</span>
-              </div>
-              <div class="double-div-left-second">
-                <input
-                  id="language"
-                  class="double-div"
-                  value="<%= language%>"
-                /><!---->
-              </div>
+          <input id="email" class="single-div-right4" value="<%= email%>" />
+        </div>
+        <!-- linha 07 -->
+        <div id="line-7" class="border">
+          <div class="double-div-left">
+            <div class="double-div-left-firt">
+              <span id="language-title" class="block1">Idioma:</span>
             </div>
-            <div class="double-div-right">
-              <span id="plantitle" class="block">Plano:</span>
-              <input
-                id="plan"
-                maxlength="180"
-                id="languagen"
-                class="double-div"
-                value="<%= plan%>"
-              /><!---->
+            <div class="double-div-left-second2">
+              <input id="language" class="double-div" value="<%= language%>" />
             </div>
+          </div>
+          <div class="double-div-right">
+            <span id="plantitle" class="block">Plano:</span>
+            <input
+              id="plan"
+              maxlength="180"
+              id="languagen"
+              class="double-div"
+              value="<%= plan%>"
+            />
           </div>
         </div>
 
         <div id="confirmation-politc">
-          <span class="block"
+          <span
             >✓Eu verifiquei as políticas da academia e estou de acordo com a
             mesma</span
           >
@@ -334,77 +360,8 @@
           </div>
         </div>
       </div>
-      <!--    <center>
-        <input
-          id="confirm-button"
-          class="confirmbutton"
-          type="button"
-          value="finalizar"
-          onClick="generatePDF()"
-        />
-      </center> -->
     </section>
 
     <script src="../plugin/package/dist/signature_pad.umd.min.js"></script>
-    <!--<script src="../plugin/html2pdf.bundle.min.js"></script>
-    <script src="../script/ficha.js"></script> -->
-    <script>
-      const canvas = document.querySelector("canvas");
-      canvas.style.backgroundColor = "pink";
-
-      const signaturePad = new SignaturePad(canvas);
-
-      signaturePad.minWidth = 0;
-      signaturePad.maxWidth = 0;
-      signaturePad.penColor = "#000";
-
-      function resizeCanvas() {
-        const ratio = Math.max(window.devicePixelRatio || 1, 1);
-        canvas.width = canvas.offsetWidth * ratio;
-        canvas.height = canvas.offsetHeight * ratio;
-        canvas.getContext("2d").scale(ratio, ratio);
-        signaturePad.clear(); // otherwise isEmpty() might return incorrect value
-      }
-
-      resizeCanvas();
-
-      /* var data = {
-    nm_member: 
-}, */
-
-      fetch("http://localhost:3333/img")
-        .then((x) => x.json())
-        .then((response) => {
-          signaturePad.fromDataURL(response[0].signature);
-          console.log(response[0].signature);
-        });
-
-      function generatePDF() {
-        /*     const element = document.getElementById("body");
-    const element2 = document.getElementById('principal');
-  
-    let opt = {
-      margin: 0,
-      filename: 'CTR.PDF',
-      image: { type: 'jpeg', quality: 0.98 },
-      htmlcanvas: { scale: 2 },
-      jsPDF: { orientation: 'l' }
-    };
-    
-    html2pdf().from(element).set(opt).save();  */
-      }
-    </script>
   </body>
 </html>
-
-<!-- Template simples de e-mail, arquivo com o nome email.ejs -->
-<!-- <header style="background-color: black; color: #ffffff; padding: 10px">
-  <h3>Seja bem vindo ao sistema</h3>
-</header>
-<article>
-  <p>Este é o seu acesso no sistema</p>
-  <p>Aproveite muito bem ele</p>
-</article>
-<footer style="background-color: black; color: #ffffff; padding: 10px">
-  <h4>Siga as redes sociais</h4>
-</footer> -->
