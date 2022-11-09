@@ -77,15 +77,17 @@
       #image-gym-name {
         display: -webkit-flex;
         display: flex;
+        -webkit-align-items: center;
         align-items: center;
+        margin-left: 500px;
       }
       #ficha-de-inscricao {
         color: white;
-        font-size: 4vh;
+        font-size: 1rem;
       }
       #gym-name {
         color: white;
-        font-size: 4vh;
+        font-size: 1rem;
       }
       .double-div-left {
         display: -webkit-flex;
@@ -255,7 +257,7 @@
             style="background-image: url('./image/ficha.png')"
           ></div>
           <div id="gym-name">
-            <b><i>Kussano dojo</i></b>
+            <b><i><%= gymname%></i></b>
           </div>
         </div>
       </div>
@@ -267,7 +269,7 @@
               <span id="in-date-title" class="block1">Data da inscrição:</span>
             </div>
             <div class="double-div-left-second">
-              <input id="in-date" class="double-div" value="<%= nm_member %>" />
+              <input id="in-date" class="double-div" value="<%= entryDate %>" />
             </div>
           </div>
 
@@ -278,6 +280,7 @@
               maxlength="180"
               id="languagen"
               class="double-div"
+              value="<%= uuid %>"
             />
           </div>
         </div>
