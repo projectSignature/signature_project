@@ -270,7 +270,7 @@ router.post('/listDelete', async (req, res) => {
 
 //gerar PDF inscrição
 router.get('/pdf', async (req, response) => {
-
+try{
   const countMax = await Member.findAll({
     attributes: [[Sequelize.fn('max', Sequelize.col('id')), 'id']],
     raw: true,
@@ -312,8 +312,12 @@ router.get('/pdf', async (req, response) => {
             } catch (err) { console.log(err) }
           }
         });
-    }
+      }
   });
+} catch(err) {
+ return res.status(400).json(err)
+}
+ 
 
 });
 
