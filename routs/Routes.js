@@ -307,7 +307,7 @@ router.get('/pdf', async (req, response) => {
           } else {
             //response.send(res)
             try {
-              let a = await mailer(`./historico/Ficha de Inscrição.pdf`, obj.email);
+              let a = await mailer(`./historico/Ficha de Inscrição.pdf`, obj.email, obj.nm_member);
               response.send(a);
             } catch (err) { console.log(err) }
           }
