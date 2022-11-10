@@ -360,10 +360,8 @@ router.put('/calender', async (req, res) => {
     try {
       const newCalender = await Calender.update({
         GYM_ID: req.body.GYM,
-        DAY: req.body.DAY,
         START_TIME: req.body.START,
         FINISH_TIME: req.body.FINISH,
-        LINE_NO: req.body.LINE,
         DESCRITION_1: req.body.DESC1,
         DESCRITION_2: req.body.DESC2,
         IMAGE: req.body.IMAGE,
