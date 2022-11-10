@@ -68,6 +68,11 @@ const Clients = database.define('client', {
         allowNull: false
     },
    
+    LANGUAGE: {
+        type: Sequelize.STRING(150),
+        allowNull: false
+    }
+    
 });
 
 module.exports = Clients;
