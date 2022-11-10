@@ -301,13 +301,13 @@ try{
       console.log("erro!!!!!")
     } else {
       pdf.create(html, { "orientation": "landscape", format: 'a10' })
-        .toFile(`/signature-project-front/historico/Ficha de Inscrição.pdf`, async (err, res) => {
+        .toFile(`../historico/Ficha de Inscrição.pdf`, async (err, res) => {
           if (err) {
             console.log('erro')
           } else {
             //response.send(res)
             try {
-              let a = await mailer(`/signature-project-front/historico/Ficha de Inscrição.pdf`, obj.email, obj.nm_member);
+              let a = await mailer(`../historico/Ficha de Inscrição.pdf`, obj.email, obj.nm_member);
               response.send(a);
             } catch (err) { console.log(err) }
           }
