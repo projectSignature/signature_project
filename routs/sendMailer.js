@@ -17,7 +17,7 @@ const transporter = nodemailer.createTransport({
     } 
  });
 
-module.exports = async function (path, email, name) {
+module.exports = async function (path, email, name, lang, lang2, email2) {
 
     //variaveis do corpo de envio do email com variação de idiomas para o novo aluno
     switch (lang) {
