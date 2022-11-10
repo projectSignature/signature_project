@@ -280,6 +280,12 @@ try{
       id: countMax[0].id
     }
   });
+  
+  const client = await Client.findAll({
+    where: {
+      GYM_NAME: members[0].gym
+    }
+   });
 
   var obj = {
     'uuid': members[0].id.toString(),
@@ -307,8 +313,8 @@ try{
           } else {
             //response.send(res)
             try {
-              let a = await mailer(`./historico/Ficha de Inscricao.pdf`, obj.email, obj.nm_member);
-              response.send(a);
+              let memberEmail = await mailer(`./historico/Ficha de Inscricao.pdf`, obj.email, obj.nm_member, obj.language, client[0].LANGUAGE, client[0].EMAIL);
+              response.send(memberEmail);
             } catch (err) { console.log(err) }
           }
         });
