@@ -53,7 +53,8 @@ router.get('/client', async (req, res) => {
       TEL: 999999999,
       EMAIL: 'john.doe@gmail.com',
       SAVE_DAY: '12-85-22',
-      STATUS: 'ativo'
+      STATUS: 'ativo',
+      LANGUAGE: 'EN'
     });
 
     //console.log(req.body) 
