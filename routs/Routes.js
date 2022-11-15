@@ -8,6 +8,7 @@ const Member = require('../schema/members');
 const Client = require('../schema/clients');
 const Calender = require('../schema/calender');
 const Entrance = require('../schema/registerEntrance');
+const Plan = require('../schema/plans');
 const mailer = require('./sendMailer');
 
 //LIBS
