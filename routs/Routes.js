@@ -165,7 +165,7 @@ router.get('/planget', async (req, res) => {
   const plans = await Plan.findAll({
   }); //findAll findByPk
 
-  res.json(plans.length)
+  res.json(plans)
 
 });
 
