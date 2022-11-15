@@ -32,6 +32,7 @@ app.use('/calenderteste', rout);
 app.use('/calender/entrance', rout);
 app.use('/registerEntrance', rout);
 app.use('/pass', rout);
+app.use('/planget', rout);
 
 
 
