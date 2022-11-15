@@ -162,10 +162,10 @@ router.get('/info', async (req, res) => {
 
 //read dos planos------------------------------->
 router.get('/planget', async (req, res) => {
-  const members = await Plan.findAll({
+  const plans = await Plan.findAll({
   }); //findAll findByPk
 
-  res.json(members.length)
+  res.json(plans.length)
 
 });
 
