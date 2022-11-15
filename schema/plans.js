@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 const database = require('../db');
 
 const Plans = database.define('plan', {
-    id: {
+    ID: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         allowNull: false,
