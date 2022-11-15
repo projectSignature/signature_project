@@ -159,6 +159,15 @@ router.get('/info', async (req, res) => {
   
 });
 
+//read dos planos------------------------------->
+router.get('/planget', async (req, res) => {
+  const members = await Plan.findAll({
+  }); //findAll findByPk
+
+  res.json(members.length)
+
+});
+
 //List Alunos---------------------------------->
 router.post('/list', async (req, res) => {
   var filter1 = req.body.opt1;
