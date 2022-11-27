@@ -9,6 +9,7 @@ const Client = require('../schema/clients');
 const Calender = require('../schema/calender');
 const Entrance = require('../schema/registerEntrance');
 const Plan = require('../schema/plans');
+const Graduation = require('../schema/graduation');
 const mailer = require('./sendMailer');
 
 //LIBS
@@ -139,6 +140,16 @@ router.post('/member', async (req, res) => {
       gym: req.body.gymname
     });
     console.log(req.body)
+    
+        const newgraduation = await Graduation.create({
+      nm_member: req.body.nm_member,
+      color: "0",
+      status: "active",
+      graduation_dt: New Date(),
+      lesson_after:"0",
+      gym: req.body.gymname
+    });
+      console.log(req.body)
 
     res.json(newMember);
   }
