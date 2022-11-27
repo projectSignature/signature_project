@@ -145,7 +145,7 @@ router.post('/member', async (req, res) => {
       nm_member: req.body.nm_member,
       color: "0",
       status: "active",
-      graduation_dt: New Date(),
+      graduation_dt: "2022-11-27",
       lesson_after:"0",
       gym: req.body.gymname
     });
