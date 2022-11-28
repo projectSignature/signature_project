@@ -65,11 +65,6 @@ const Calender = database.define('calender', {
         type: Sequelize.STRING(150),
         allowNull: false
     },
-    
-     GYM_ID: {
-        type: Sequelize.DECIMAL,
-        allowNull: false
-    },
 
 });
 
