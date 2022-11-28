@@ -41,6 +41,11 @@ const Entrance = database.define('entrance', {
             },
         }
     },
+    
+    GYM_ID: {
+        type: Sequelize.DECIMAL,
+        allowNull: false,
+    },
 
 });
 
