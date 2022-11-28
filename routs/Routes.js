@@ -444,7 +444,8 @@ router.post('/registerEntrance', async (req, res) => {
     const newEntrance = await Entrance.create({
       LESSON_NAME: req.body.LESSON_NAME,
       LESSON_HOUR: req.body.LESSON_HOUR,
-      MEMBER_ID: req.body.MEMBER_ID
+      MEMBER_ID: req.body.MEMBER_ID,
+      GYM_ID: req.body.GYM_ID
     });
 
     res.json(newEntrance)
