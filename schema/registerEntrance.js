@@ -12,7 +12,7 @@ const Entrance = database.define('entrance', {
     LESSON_NAME: {
         type: Sequelize.STRING(150),
         allowNull: false,
-        unique: true,
+        
         validate: {
             notEmpty: {
                 msg: "Esse campo não pode está vazio.."
@@ -23,7 +23,7 @@ const Entrance = database.define('entrance', {
     LESSON_HOUR: {
         type: Sequelize.STRING(150),
         allowNull: false,
-        unique: true,
+        
         validate: {
             notEmpty: {
                 msg: "Esse campo não pode está vazio.."
@@ -34,7 +34,7 @@ const Entrance = database.define('entrance', {
     MEMBER_ID: {
         type: Sequelize.DECIMAL,
         allowNull: false,
-        unique: true,
+       
         validate: {
             notEmpty: {
                 msg: "Esse campo não pode está vazio.."
