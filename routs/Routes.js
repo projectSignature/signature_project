@@ -445,7 +445,7 @@ router.post('/registerEntrance', async (req, res) => {
       LESSON_NAME: req.body.LESSON_NAME,
       LESSON_HOUR: req.body.LESSON_HOUR,
       MEMBER_ID: req.body.MEMBER_ID,
-      GYM_ID: req.body.GYM_ID
+      GYM_ID: 1
     });
 
     res.json(newEntrance)
