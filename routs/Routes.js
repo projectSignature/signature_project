@@ -119,7 +119,6 @@ router.post('/auth', async (req, res) => {
 router.post('/member', async (req, res) => {
   try {
     await database.sync();
-
     const newMember = await Member.create({
       nm_member: req.body.nm_member,
       birthday_year: req.body.birthday_year,
@@ -140,7 +139,18 @@ router.post('/member', async (req, res) => {
       gym: req.body.gymname
     });
     console.log(req.body)
-    
+    res.json(newMember);
+  }
+  catch (err) {
+    return res.status(400).json(err)
+  }
+
+});
+
+//insert de dados-------------------------------->
+router.post('/graduation', async (req, res) => {
+  try {
+    await database.sync();
         const newgraduation = await Graduation.create({
       nm_member: req.body.nm_member,
       color: "0",
@@ -150,13 +160,11 @@ router.post('/member', async (req, res) => {
       gym: req.body.gymname
     });
       console.log(req.body)
-
     res.json(newMember);
   }
   catch (err) {
     return res.status(400).json(err)
   }
-
 });
 
 //read de dados------------------------------->
