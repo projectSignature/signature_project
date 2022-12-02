@@ -153,14 +153,14 @@ router.post('/graduation', async (req, res) => {
     await database.sync();
         const newgraduation = await Graduation.create({
       nm_member: req.body.nm_member,
-      color: "0",
-      status: "active",
-      graduation_dt: "2022-11-27",
-      lesson_after:"0",
+      color: req.body.color,
+      status: req.body.status,
+      graduation_dt: req.body.graduation_dt,
+      lesson_after: req.body.lesson_after,
       gym: req.body.gymname
     });
       console.log(req.body)
-    res.json(newMember);
+    res.json(newgraduation);
   }
   catch (err) {
     return res.status(400).json(err)
