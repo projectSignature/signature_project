@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 const database = require('../db');
 
-const Members = database.define('member', {
+const Graduations = database.define('graduation', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -12,80 +12,32 @@ const Members = database.define('member', {
         type: Sequelize.STRING(150),
         allowNull: false,
         unique: true,
-        validate: {    
+        validate: {
          notEmpty: {
             msg: "Esse campo não pode está vazio.."
          },
-        } 
-    }, 
-    birthday_year: Sequelize.DECIMAL,
-      
-    birthday_month: Sequelize.DECIMAL,
-    
-    birthday_day: Sequelize.DECIMAL,
-    
-    birthday_age: Sequelize.DECIMAL,
-    
-    genero: {
-        type:Sequelize.STRING(150),
-        allowNull: false
+        }
     },
+    color: Sequelize.STRING(150),
 
-    adress_input: {
-        type:Sequelize.STRING(150),
-        allowNull: false
-    },
+    status: Sequelize.STRING(150),
 
-    phone01: {
-        type:Sequelize.DECIMAL,
-        allowNull: false
-    },
+    graduation_dt: Sequelize.STRING(150),
 
-    phone02: {
-        type:Sequelize.DECIMAL,
-        allowNull: false
-    },
+  first_point: Sequelize.STRING(150),
 
-    phone03: {
-        type:Sequelize.DECIMAL,
-        allowNull: false
-    },
+  second_point: Sequelize.STRING(150),
 
-    email: {
-        type:Sequelize.STRING(150),
-        allowNull: false
-    },
-    lang01: {
-        type:Sequelize.STRING(150),
-        allowNull: false
-    },
+third_point: Sequelize.STRING(150),
 
-    plans: {
-        type:Sequelize.STRING(150),
-        allowNull: false
-    },
+  fourth_point: Sequelize.STRING(150),
 
-    status: {
-        type:Sequelize.STRING(150),
-        allowNull: false
-    },
+  lesson_after: Sequelize.STRING(150),
 
-    signature: {
-        type:Sequelize.TEXT,
-        allowNull: false
-    },
-    
-   pass: {
-        type:Sequelize.DECIMAL,
-        allowNull: false
-    },
-    
-    gym: {
-        type: Sequelize.STRING(150),
-        allowNull: false
-    }
+  obs: Sequelize.STRING(150),
 
+  gym: Sequelize.STRING(150),
 
 });
 
-module.exports = Members;
+module.exports = Graduations;
