@@ -256,6 +256,16 @@ router.post('/list', async (req, res) => {
 
 });
 
+//List graduation---------------------------------->
+router.post('/graduationlist', async (req, res) => {
+  var filter1 = req.body.opt1;
+  var filter2 = req.body.opt2;
+let members = await Graduation.findAll();
+  res.json(members);
+});
+
+
+
 //List Alunos Update---------------------------------->
 router.post('/listUpdate', async (req, res) => {
  try{
