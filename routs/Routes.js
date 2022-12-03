@@ -156,7 +156,12 @@ router.post('/graduation', async (req, res) => {
       color: req.body.color,
       status: req.body.status,
       graduation_dt: req.body.graduation_dt,
+      first_point: req.body.first_point,
+      second_point: req.body.second_point,
+      third_point: req.body.third_point,
+      fourth_point: req.body.fourth_point,
       lesson_after: req.body.lesson_after,
+      obs: req.body.obs,
       gym: req.body.gymname
     });
       console.log(req.body)
