@@ -310,6 +310,7 @@ router.post('/listUpdate', async (req, res) => {
 
 //List Graduação Update---------------------------------->
 router.post('/graduationUpdate', async (req, res) => {
+  console.log('in')
  try{
 
   const graduation = await Graduation.update({
@@ -329,7 +330,7 @@ router.post('/graduationUpdate', async (req, res) => {
     }
   });
 
-
+ console.log(graduation)
   res.json(graduation)
  } catch(err) {
   return res.status(400).json(err)
