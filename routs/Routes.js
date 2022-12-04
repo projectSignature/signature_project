@@ -298,7 +298,7 @@ router.post('/listUpdate', async (req, res) => {
     }
   });
   console.log(`${separateTel[5]}${separateTel[6]}${separateTel[7]}${separateTel[8]}`) //5-6 mês
-
+console.log(menbers)
   res.json(members)
  } catch(err) {
   return res.status(400).json(err)
