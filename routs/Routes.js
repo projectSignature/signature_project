@@ -327,7 +327,7 @@ router.post('/graduationUpdate', async (req, res) => {
      obs:req.body.obs,
   }, {
     where: {
-      nm_number_id: req.body.id,
+      nm_member_id: req.body.id,
     }
   });
 
