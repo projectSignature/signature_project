@@ -147,30 +147,30 @@ router.post('/member', async (req, res) => {
 
 });
 
-//insert de dados-------------------------------->
-router.post('/graduation', async (req, res) => {
-  try {
-    await database.sync();
-        const newgraduation = await Graduation.create({
-      nm_member: req.body.nm_member,
-      color: req.body.color,
-      status: req.body.status,
-      graduation_dt: req.body.graduation_dt,
-      first_point: req.body.first_point,
-      second_point: req.body.second_point,
-      third_point: req.body.third_point,
-      fourth_point: req.body.fourth_point,
-      lesson_after: req.body.lesson_after,
-      obs: req.body.obs,
-      gym: req.body.gymname
-    });
-      console.log(req.body)
-    res.json(newgraduation);
-  }
-  catch (err) {
-    return res.status(400).json(err)
-  }
-});
+//insert de dados-------------------------------->USE MYSQL TRIGGER
+//router.post('/graduation', async (req, res) => {
+  //try {
+  //  await database.sync();
+     //   const newgraduation = await Graduation.create({
+    //  nm_member: req.body.nm_member,
+   //   color: req.body.color,
+    //  status: req.body.status,
+   //   graduation_dt: req.body.graduation_dt,
+    //  first_point: req.body.first_point,
+    //  second_point: req.body.second_point,
+    //  third_point: req.body.third_point,
+    //  fourth_point: req.body.fourth_point,
+     // lesson_after: req.body.lesson_after,
+     // obs: req.body.obs,
+     // gym: req.body.gymname
+   // });
+   //   console.log(req.body)
+   // res.json(newgraduation);
+  //}
+ // catch (err) {
+ //   return res.status(400).json(err)
+ // }
+//});
 
 //read de dados------------------------------->
 router.get('/info', async (req, res) => {
