@@ -315,7 +315,6 @@ router.post('/graduationUpdate', async (req, res) => {
  try{
 
   const members = await Graduation.update({
-    nm_member: req.body.id,
     color: req.body.color,
     status: req.body.status,
     graduation_dt: req.body.graduation_dt,
