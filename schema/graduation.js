@@ -37,7 +37,11 @@ third_point: Sequelize.STRING(150),
   obs: Sequelize.STRING(150),
 
   gym: Sequelize.STRING(150),
-
+    
+    nm_member_id: {
+        type: Sequelize.INTEGER
+         allowNull: false,
+    }
 });
 
 module.exports = Graduations;
