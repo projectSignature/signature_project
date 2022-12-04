@@ -39,7 +39,7 @@ third_point: Sequelize.STRING(150),
   gym: Sequelize.STRING(150),
     
     nm_member_id: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
          allowNull: false,
     }
 });
