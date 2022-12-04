@@ -307,6 +307,37 @@ router.post('/listUpdate', async (req, res) => {
 
 });
 
+
+//List Graduação Update---------------------------------->
+router.post('/graduationUpdate', async (req, res) => {
+ try{
+
+  const graduation = await Graduation.update({
+    nm_member: req.body.nm_member,
+    color: req.body.color,
+    status: req.body.status,
+    graduation_dt: req.body.graduation_dt,
+    first_point: req.body.first_point,
+    second_point: req.body.second_point,
+    third_point: req.body.third_point,
+    fourth_point: req.body.fourth_point,
+    lesson_after: req.body.lesson_after,
+     obs:req.body.obs,
+  }, {
+    where: {
+      nm_number_id: req.body.id,
+    }
+  });
+
+
+  res.json(graduation)
+ } catch(err) {
+  return res.status(400).json(err)
+ }
+ 
+
+});
+
 //list alunos delete------------------->
 router.post('/listDelete', async (req, res) => {
   Member.destroy({ where: { id: req.body.id } })
