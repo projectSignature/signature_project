@@ -468,8 +468,9 @@ router.get('/calender/entrance', async (req, res) => {
   res.json(newCalender)
 
   function atualDay() {
-    let day = new Date().getDay();
-    switch (day) {
+    const japanStandardTime = new Date().toLocaleString({ timeZone: 'Asia/Tokyo' });
+    const japantime = new Date(japanStandardTime)
+     switch (japantime) {
       case 0:
         return 'sunday';
       case 1:
