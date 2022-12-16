@@ -471,6 +471,7 @@ router.get('/calender/entrance', async (req, res) => {
     const japanStandardTime = new Date().toLocaleString({ timeZone: 'Asia/Tokyo' });
     const japantime = new Date(japanStandardTime)
     const japanweekeday = japantime.getDay()
+    console.log(japanweekeday)
      switch (japanweekeday) {
       case 0:
         return 'sunday';
