@@ -468,10 +468,11 @@ router.get('/calender/entrance', async (req, res) => {
   res.json(newCalender)
 
   function atualDay() {
-    const japanStandardTime = new Date().toLocaleString({ timeZone: 'Asia/Tokyo' });
-    const japantime = new Date(japanStandardTime)
-    const japanweekeday = japantime.getDay()
-    console.log(japantime)
+    //new Date(Date.now() + ((new Date().getTimezoneOffset() + (9 * 60)) * 60 * 1000));
+    const japanStandardTime = new Date(Date.now() + ((new Date().getTimezoneOffset() + (9 * 60)) * 60 * 1000));
+   // const japantime = new Date(japanStandardTime)
+    const japanweekeday = japanStandardTime.getDay()
+    //console.log(japantime)
     console.log(japanweekeday)
      switch (japanweekeday) {
       case 0:
