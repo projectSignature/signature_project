@@ -335,9 +335,27 @@ router.post('/graduationUpdate', async (req, res) => {
  } catch(err) {
   return res.status(400).json(err)
  }
- 
-
 });
+
+
+// Graduação Update da quantidade de aulas---------------------------------->
+router.post('/graduationafter', async (req, res) => {
+  console.log('in')
+  console.log(req.body)
+ try{
+  const members = await Graduation.update({
+    lesson_after: req.body.lesson_after
+  }, {
+    where: {
+      nm_member_id: req.body.id,
+    }
+  });
+  res.json(members)
+ } catch(err) {
+  return res.status(400).json(err)
+ }
+});
+
 
 //list alunos delete------------------->
 router.post('/listDelete', async (req, res) => {
