@@ -65,6 +65,11 @@ const Calender = database.define('calender', {
         type: Sequelize.STRING(150),
         allowNull: false
     },
+    
+      GRADUATION_FLUG: {
+        type: Sequelize.DECIMAL,
+        allowNull: false
+    },
 
 });
 
