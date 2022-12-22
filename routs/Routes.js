@@ -11,6 +11,7 @@ const Entrance = require('../schema/registerEntrance');
 const Plan = require('../schema/plans');
 const Graduation = require('../schema/graduation');
 const mailer = require('./sendMailer');
+const Pay = require('../schema/payment');
 
 //LIBS
 const pdf = require('html-pdf');
