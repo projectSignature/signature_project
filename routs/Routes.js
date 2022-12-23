@@ -186,6 +186,13 @@ router.get('/info', async (req, res) => {
   
 });
 
+//read de dados------------------------------->
+router.get('/paymentall', async (req, res) => {
+  const members = await Pay.findAll({
+  }); //findAll findByPk
+  res.json(members.length)
+});
+
 //read dos planos------------------------------->
 router.get('/planget', async (req, res) => {
   const plans = await Plan.findAll({
