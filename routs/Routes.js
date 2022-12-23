@@ -10,7 +10,6 @@ const Calender = require('../schema/calender');
 const Entrance = require('../schema/registerEntrance');
 const Plan = require('../schema/plans');
 const Graduation = require('../schema/graduation');
-const Graduations = require('../schema/graduation');
 const mailerGrau = require('./sendGrau');
 const mailer = require('./sendMailer');
 const Pay = require('../schema/payment');
@@ -362,7 +361,7 @@ router.post('/graduationafter', async (req, res) => {
 //rota para verificar graduação-------------------------------------------->
 router.get('/lesson_after/:id', async (req, res) => {
   let index = req.params.id;
-  const grau = await Graduations.findAll({
+  const grau = await Graduation.findAll({
     where: { id: index }
   });
 
