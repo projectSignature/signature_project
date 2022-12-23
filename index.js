@@ -33,6 +33,7 @@ app.use('/calender/entrance', rout);
 app.use('/registerEntrance', rout);
 app.use('/pass', rout);
 app.use('/planget', rout);
+app.use('/lesson_after/:id', rout);
 
 
 
