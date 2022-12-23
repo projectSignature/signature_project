@@ -363,7 +363,7 @@ router.get('/lesson_after/:id', async (req, res) => {
   try{
    let index = req.params.id;
     const grau = await Graduation.findAll({
-      where: { id: index }
+      where: { nm_member_id: index }
     });
 
     if (grau[0].lesson_after === "39") {
