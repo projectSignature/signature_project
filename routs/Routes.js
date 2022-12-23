@@ -190,7 +190,7 @@ router.get('/info', async (req, res) => {
 router.get('/paymentall', async (req, res) => {
   const members = await Pay.findAll({
   }); //findAll findByPk
-  res.json(members.length)
+  res.json(members)
 });
 
 //read dos planos------------------------------->
