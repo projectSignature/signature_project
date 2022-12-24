@@ -189,7 +189,9 @@ router.get('/info', async (req, res) => {
 //read de dados------------------------------->
 router.get('/paymentall', async (req, res) => {
   const members = await Pay.findAll({
-  }); //findAll findByPk
+  });   where: {
+    division: 1
+  }
   res.json(members)
 });
 
