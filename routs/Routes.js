@@ -138,7 +138,9 @@ router.post('/member', async (req, res) => {
       status: "active",
       signature: req.body.signature,
       pass: req.body.phone03,
-      gym: req.body.gymname
+      gym: req.body.gymname,
+      active_date: req.body.active_date,
+  		inactive_date: req.body.inactive_date
     });
     console.log(req.body)
     res.json(newMember);
