@@ -83,6 +83,14 @@ const Members = database.define('member', {
     gym: {
         type: Sequelize.STRING(150),
         allowNull: false
+    },
+    active_date: {
+        type: Sequelize.STRING(150),
+        allowNull: false
+    },
+    inactive_date: {
+        type: Sequelize.STRING(150),
+        allowNull: false
     }
 
 
