@@ -405,11 +405,9 @@ try{
     where: {
       id: countMax[0].id
     }
-      console.log(members)
   });
   
   const client = await Client.findAll({
-    console.log(members[0].gym)
     where: {
       GYM_NAME: members[0].gym
     }
