@@ -84,6 +84,10 @@ const Members = database.define('member', {
         type: Sequelize.STRING(150),
         allowNull: false
     },
+     gymid: {
+        type: Sequelize.STRING(150),
+        allowNull: false
+    },
     active_date: {
         type: Sequelize.STRING(150),
         allowNull: false
