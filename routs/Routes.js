@@ -427,7 +427,7 @@ try{
     'entryDate': new Intl.DateTimeFormat('ja-JP').format(members[0].createdAt),
     'gymname': members[0].gym
   };
-
+console.log(obj)
   ejs.renderFile('./views/email.ejs', obj, async (err, html) => {
     if (err) {
       console.log("erro!!!!!")
