@@ -140,6 +140,7 @@ router.post('/member', async (req, res) => {
       signature: req.body.signature,
       pass: req.body.phone03,
       gym: req.body.gymname,
+      gymid: req.body.gymid,
       active_date: req.body.active_date,
   		inactive_date: req.body.inactive_date
     });
