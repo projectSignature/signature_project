@@ -150,6 +150,7 @@ router.post('/member', async (req, res) => {
   }
   catch (err) {
     console.log('in2')
+    console.log(err)
     return res.status(400).json(err)
   }
 
