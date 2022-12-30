@@ -87,26 +87,26 @@ router.post('/auth', async (req, res) => {
     let name = clients[0].REPRESENTATIVE;
     let code = clients[0].UNIQUE_CODE;
     var gymname = clients[0].GYM_NAME;
-    var id = clients[0].GYM_NAME.id
+    var id = clients[0].id
 
     switch (code) {
       case '1':
-        validationRes(primaryKey, name, code, gymname,id)
+        validationRes(primaryKey, name, code, gymname, id)
         break;
       case '2':
-        validationRes(secondKey, name, code, gymname,id)
+        validationRes(secondKey, name, code, gymname, id)
         break;
       default:
         console.log("eroor")
     };
 
-    function validationRes(key, name, code, gymname,id) {
+    function validationRes(key, name, code, gymname, id) {
       if (key > 0) {
         res.json({
           status: 200,
           token: key,
           gym: gymname,
-          number: { NAME: name, AUTHORITY: code ,ID:id },
+          number: { NAME: name, AUTHORITY: code , ID: id },
         });
       } else {
         res.json({ message: 'internal error1' })
