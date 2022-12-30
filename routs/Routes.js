@@ -408,6 +408,7 @@ try{
   });
   
   const client = await Client.findAll({
+    console.log(members[0].gym)
     where: {
       GYM_NAME: members[0].gym
     }
