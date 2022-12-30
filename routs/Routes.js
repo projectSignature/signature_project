@@ -439,7 +439,7 @@ try{
           } else {
             //response.send(res)
             try {
-              let memberEmail = await mailer(`./historico/Ficha de Inscricao.pdf`, obj.email, obj.nm_member, obj.language, client[0].LANGUAGE, client[0].EMAIL);
+              let memberEmail = await mailer(`./historico/Ficha de Inscricao.pdf`, obj.email, obj.nm_member, obj.language, client[0].LANGUAGE, client[0].EMAIL, obj.gymname);
               response.send(memberEmail);
             } catch (err) { console.log(err) }
           }
