@@ -120,6 +120,7 @@ router.post('/auth', async (req, res) => {
 
 //insert de dados-------------------------------->
 router.post('/member', async (req, res) => {
+  console.log('in')
   try {
     await database.sync();
     const newMember = await Member.create({
@@ -148,6 +149,7 @@ router.post('/member', async (req, res) => {
     res.json(newMember);
   }
   catch (err) {
+    console.log('in2')
     return res.status(400).json(err)
   }
 
