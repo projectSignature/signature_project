@@ -106,7 +106,7 @@ router.post('/auth', async (req, res) => {
           status: 200,
           token: key,
           gym: gymname,
-          number: { NAME: name, AUTHORITY: code },
+          number: { NAME: name, AUTHORITY: code ,ID:id },
         });
       } else {
         res.json({ message: 'internal error1' })
