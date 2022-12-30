@@ -24,7 +24,7 @@ module.exports = async function (path, email, name, lang, lang2, email2, gymname
         case 'Portugues':
             const mailSentPT = await transporter.sendMail({
                 from: `"${gymname}" <signatureprojectjp@gmail.com>`,
-                to: ['paurozhiyuan@gmail.com', email2], //'kedinhofavorito@gmail.com', 'kledison2009@hotmail.com'
+                to: ['paurozhiyuan@gmail.com'], //'kedinhofavorito@gmail.com', 'kledison2009@hotmail.com', email2
                 subject: 'Seja bem vindo!',
                 text: `Olá ${name} tudo bem? Segue em anexo sua ficha de inscrição`,
                 attachments: [
@@ -37,7 +37,7 @@ module.exports = async function (path, email, name, lang, lang2, email2, gymname
         case 'Inglês':
             const mailSentEN = await transporter.sendMail({
                 from: `"${gymname}" <signatureprojectjp@gmail.com>`,
-                to: ['paurozhiyuan@gmail.com', email2], //'kedinhofavorito@gmail.com', 'kledison2009@hotmail.com'
+                to: ['paurozhiyuan@gmail.com'], //'kedinhofavorito@gmail.com', 'kledison2009@hotmail.com', email2
                 subject: 'be welcome!',
                 text: `Hello ${name} all right? Attached is your registration form.`,
                 attachments: [
@@ -50,7 +50,7 @@ module.exports = async function (path, email, name, lang, lang2, email2, gymname
         case '日本語':
             const mailSentJP = await transporter.sendMail({
                 from: `"${gymname}" <signatureprojectjp@gmail.com>`,
-                to: ['paurozhiyuan@gmail.com', email2], //'kedinhofavorito@gmail.com', 'kledison2009@hotmail.com'mudar para email
+                to: ['paurozhiyuan@gmail.com'], //'kedinhofavorito@gmail.com', 'kledison2009@hotmail.com'mudar para email, email2
                 subject: '歓迎します!',
                 text: `${name} 様, 今回入会していただきありがとうございます。
                 申請書をご確認ください。`,
