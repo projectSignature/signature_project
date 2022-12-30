@@ -87,19 +87,20 @@ router.post('/auth', async (req, res) => {
     let name = clients[0].REPRESENTATIVE;
     let code = clients[0].UNIQUE_CODE;
     var gymname = clients[0].GYM_NAME;
+    var id = clients[0].GYM_NAME.id
 
     switch (code) {
       case '1':
-        validationRes(primaryKey, name, code, gymname)
+        validationRes(primaryKey, name, code, gymname,id)
         break;
       case '2':
-        validationRes(secondKey, name, code, gymname)
+        validationRes(secondKey, name, code, gymname,id)
         break;
       default:
         console.log("eroor")
     };
 
-    function validationRes(key, name, code, gymname) {
+    function validationRes(key, name, code, gymname,id) {
       if (key > 0) {
         res.json({
           status: 200,
