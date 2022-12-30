@@ -405,6 +405,7 @@ try{
     where: {
       id: countMax[0].id
     }
+      console.log(members)
   });
   
   const client = await Client.findAll({
