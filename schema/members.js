@@ -11,7 +11,6 @@ const Members = database.define('member', {
     nm_member: {unique: false,
         type: Sequelize.STRING(150),
         allowNull: false,
-        unique: true,
         validate: {    
          notEmpty: {
             msg: "Esse campo não pode está vazio.."
