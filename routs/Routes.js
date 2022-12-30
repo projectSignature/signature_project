@@ -419,7 +419,7 @@ try{
     'birthday': `${members[0].birthday_year}/${members[0].birthday_month}/${members[0].birthday_day}`,
     'genero': members[0].genero,
     'adress': members[0].adress_input,
-    'phone': `(${members[0].phone01}) ${members[0].phone02}-${members[0].phone03}`,
+    'phone': `0${members[0].phone01} ${members[0].phone02}-${members[0].phone03}`,
     'email': members[0].email,
     'language': members[0].lang01,
     'plan': members[0].plans,
