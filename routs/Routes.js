@@ -396,6 +396,8 @@ router.get('/lesson_after/:id', async (req, res) => {
 //list alunos delete------------------->
 router.post('/listDelete', async (req, res) => {
   Member.destroy({ where: { id: req.body.id } })
+  Graduation.destroy({ where: { nm_member_id: req.body.id } })
+  Pay.destroy({ where: { nm_member_id: req.body.id } })
   res.json('deletado');
 });
 
