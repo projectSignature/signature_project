@@ -293,8 +293,6 @@ let members = await Graduation.findAll();
 router.post('/listUpdate', async (req, res) => {
  try{
    var separateDate = req.body.birth;
-  var separateTel = req.body.tel;
-
   const members = await Member.update({
     nm_member: req.body.nm_member,
     birthday_year: `${separateDate[0]}${separateDate[1]}${separateDate[2]}${separateDate[3]}`,
@@ -303,9 +301,9 @@ router.post('/listUpdate', async (req, res) => {
     birthday_age: req.body.age,
     genero: req.body.gender,
     adress_input: req.body.address,
-    phone01: `${separateTel[1]}${separateTel[2]}${separateTel[3]}`,
-    phone02: `${separateTel[5]}${separateTel[6]}${separateTel[7]}${separateTel[8]}`,
-    phone03: `${separateTel[10]}${separateTel[11]}${separateTel[12]}${separateTel[13]}`,
+    phone01: req.body.tel1,
+    phone02: req.body.tel2,
+    phone03: req.body.tel3,
     email: req.body.email,
     lang01: req.body.language,
     plans: req.body.plan,
@@ -315,13 +313,11 @@ router.post('/listUpdate', async (req, res) => {
       id: req.body.id,
     }
   });
-  console.log(`${separateTel[5]}${separateTel[6]}${separateTel[7]}${separateTel[8]}`) //5-6 mês
-console.log(menbers)
   res.json(members)
  } catch(err) {
   return res.status(400).json(err)
  }
- 
+
 
 });
 
