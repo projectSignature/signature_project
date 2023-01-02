@@ -314,7 +314,7 @@ router.post('/listUpdate', async (req, res) => {
       id: req.body.id,
     }
   });
-  return res.status(200).json(err)
+  return res.status(200)
  } catch(err) {
   return res.status(400).json(err)
  }
