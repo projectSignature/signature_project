@@ -308,17 +308,16 @@ router.post('/listUpdate', async (req, res) => {
     lang01: req.body.language,
     plans: req.body.plan,
     status: req.body.status,
+    pass: req.body.pass,
   }, {
     where: {
       id: req.body.id,
     }
   });
-  res.json(members)
+  return res.status(200).json(err)
  } catch(err) {
   return res.status(400).json(err)
  }
-
-
 });
 
 
