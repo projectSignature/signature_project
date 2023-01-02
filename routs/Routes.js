@@ -292,12 +292,11 @@ let members = await Graduation.findAll();
 //List Alunos Update---------------------------------->
 router.post('/listUpdate', async (req, res) => {
  try{
-   var separateDate = req.body.birth;
   const members = await Member.update({
     nm_member: req.body.nm_member,
-    birthday_year: `${separateDate[0]}${separateDate[1]}${separateDate[2]}${separateDate[3]}`,
-    birthday_month: `${separateDate[5]}${separateDate[6]}`,
-    birthday_day: `${separateDate[8]}${separateDate[9]}`,
+    birthday_year: req.body.birth1,
+    birthday_month: req.body.birth2,
+    birthday_day: req.body.birth3,
     birthday_age: req.body.age,
     genero: req.body.gender,
     adress_input: req.body.address,
