@@ -267,6 +267,25 @@ router.get('/planget', async (req, res) => {
 
 });
 
+//pay table Update---------------------------------->
+router.post('/paymentUpdate', async (req, res) => {
+ try{
+  const members = await Pay.update({
+    division:req.body.division
+  }, {
+    where: {
+      id: req.body.id,
+      year: req.body.year,
+      month: req.body.month,
+    }
+  });
+  return res.json(members)
+ } catch(err) {
+   console.log(err)
+  return res.status(400).json(err)
+ }
+});
+
 //List Alunos---------------------------------->
 router.post('/list', async (req, res) => {
   var filter1 = req.body.opt1;
