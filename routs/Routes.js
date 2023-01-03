@@ -202,14 +202,7 @@ router.get('/paymentall', async (req, res) => {
   res.json(members)
 });
 
-//checar se existe dados do mês------------------------------->
-router.get('/paymonthexist', async (req, res) => {
-  const members = await Pay.findAll({
-  });     where: {
-      year: req.body.select_year,
-    }
-  res.json(members)
-});
+
 
 //read dos planos------------------------------->
 router.get('/planget', async (req, res) => {
