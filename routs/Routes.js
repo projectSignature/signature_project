@@ -207,7 +207,6 @@ router.get('/paymentall/monthexist', async (req, res) => {
   const members = await Pay.findAll({
   });     where: {
       year: req.body.select_year,
-      GYM_ID: req.body.gymid
     }
   res.json(members)
 });
