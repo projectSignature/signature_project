@@ -226,7 +226,6 @@ router.post('/paymentallexist', async (req, res) => {
 router.post('/createpayment', async (req, res) => {
    try{
    console.log(req.body)
-   for( let i=0; i < req.body.length; i++){
        let newPay = await Pay.create({
          nm_member_id: req.body.id,
          nm_member: req.body.name,
@@ -237,8 +236,7 @@ router.post('/createpayment', async (req, res) => {
          plan: req.body.plans,
          GYM_ID: req.body.gymid,
          plan_value: req.body.valor
-        });
-      }
+        });  
 } catch(err) {
   console.log(err)
  return res.status(400).json(err)
