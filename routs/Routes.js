@@ -204,7 +204,7 @@ router.get('/paymentall', async (req, res) => {
 
 
 //read de dados do pay------------------------------->
-router.get('/paymentallexist', async (req, res) => {
+router.post('/paymentallexist', async (req, res) => {
   console.log('in')
   console.log(req.body)
    try{
