@@ -39,58 +39,7 @@ const Payment = database.define('payments', {
        type: Sequelize.DECIMAL,
        allowNull: false
       },
-    //jan: {
-      //  type: Sequelize.DECIMAL,
-      //  allowNull: false
-  //  },
-
-  //  feb: {
-    //    type: Sequelize.STRING(150),
-      //  allowNull: false
-    //},
-
-    //mar: {
-      //  type: Sequelize.STRING(150),
-      //  allowNull: false
-  //  },
-
-  //  abr: {
-    //    type: Sequelize.STRING(150),
-      //  allowNull: false
-  //  },
-
-  //  may: {
-    //    type: Sequelize.STRING(150),
-    //    allowNull: false
-  //  },
-  //  jun: {
-    //    type: Sequelize.STRING(150),
-    //    allowNull: false
-    //},
-    //jul: {
-      //  type: Sequelize.STRING(150),
-      //  allowNull: false
-  //  },
-  //  aug: {
-  //      type: Sequelize.STRING(150),
-    //    allowNull: false
-  //  },
-  //  sep: {
-    //    type: Sequelize.STRING(150),
-      //  allowNull: false
-  //  },
-  //  oct: {
-    //    type: Sequelize.STRING(150),
-      //  allowNull: false
-  //  },
-    //nov: {
-    //    type: Sequelize.STRING(150),
-    //    allowNull: false
-  //  },
-  //  dez: {
-  //      type: Sequelize.STRING(150),
-  //      allowNull: false
-  //  },
+   
     obs: {
         type: Sequelize.STRING(150),
         allowNull: false
@@ -100,6 +49,11 @@ const Payment = database.define('payments', {
         allowNull: false
     },
 
+    plan_value: {
+        type: Sequelize.STRING(150),
+        allowNull: false
+    },
+    
     GYM_ID: {
         type: Sequelize.STRING(150),
         allowNull: false,
