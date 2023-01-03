@@ -226,18 +226,17 @@ router.post('/paymentallexist', async (req, res) => {
 router.post('/createpayment', async (req, res) => {
    try{
    console.log(req.body)
-     console.log(req.body.length)
-     console.log(req.body[1](0))
    for( let i=0; i < req.body.length; i++){
        let newPay = await Pay.create({
-         nm_member_id: req.body[i](0),
-         nm_member: req.body[i](1),
-         year: 2022,
-         month: 12,
+         nm_member_id: req.body.id,
+         nm_member: req.body.name,
+         year: req.body.year,
+         month: req.body.month,
          division: 1,
          obs: 0,
-         plan: req.body[i](2),
-         GYM_ID: 4
+         plan: req.body.plans,
+         GYM_ID: req.body.gymid,
+         plan_values: req.body.valor
         });
       }
 } catch(err) {
