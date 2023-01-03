@@ -270,6 +270,8 @@ router.get('/planget', async (req, res) => {
 //pay table Update---------------------------------->
 router.post('/paymentUpdate', async (req, res) => {
  try{
+   console.log(req.body)
+   console.log('inpay')
   const members = await Pay.update({
     division:req.body.division
   }, {
