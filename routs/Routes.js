@@ -288,6 +288,25 @@ router.post('/paymentUpdate', async (req, res) => {
  }
 });
 
+//checar se existe os dados do mês------------------------------->
+router.post('/paymonthcheck', async (req, res) => {
+  console.log('in')
+  console.log(req.body)
+   try{
+  const members = await Pay.findAll({
+    where: {
+      year: req.body.year,
+      month: req.body.month,
+      nm_member_id: req.body.id
+    }
+  });
+  res.json(members)
+} catch(err) {
+  console.log(err)
+ return res.status(400).json(err)
+}
+});
+
 //List Alunos---------------------------------->
 router.post('/list', async (req, res) => {
   var filter1 = req.body.opt1;
