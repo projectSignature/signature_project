@@ -226,6 +226,8 @@ router.post('/paymentallexist', async (req, res) => {
 router.post('/createpayment', async (req, res) => {
    try{
    console.log(req.body)
+     console.log(req.body.length)
+     console.log(req.body[1](0))
    for( let i=0; i < req.body.length; i++){
        let newPay = await Pay.create({
          nm_member_id: req.body[i](0),
