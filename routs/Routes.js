@@ -202,6 +202,21 @@ router.get('/paymentall', async (req, res) => {
   res.json(members)
 });
 
+//read de dados do pay------------------------------->
+router.post('/getpaymentAll', async (req, res) => {
+   try{
+  const members = await Pay.findAll({
+    where: {
+      year: req.body.year,
+      GYM_ID: req.body.gymid
+    }
+  });
+  res.json(members)
+} catch(err) {
+  console.log(err)
+ return res.status(400).json(err)
+}
+});
 
 //read de dados do pay------------------------------->
 router.post('/paymentallexist', async (req, res) => {
