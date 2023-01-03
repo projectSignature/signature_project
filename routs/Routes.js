@@ -203,6 +203,19 @@ router.get('/paymentall', async (req, res) => {
 });
 
 
+//read de dados do pay------------------------------->
+router.get('/paymentallexist', async (req, res) => {
+  const members = await Pay.findAll({
+    where: {
+      year: req.body.year,
+      month: req.body.month,
+      GYM_ID: req.body.gymid
+    }
+  });
+  res.json(members)
+});
+
+
 
 //read dos planos------------------------------->
 router.get('/planget', async (req, res) => {
