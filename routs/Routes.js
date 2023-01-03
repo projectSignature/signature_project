@@ -676,7 +676,7 @@ router.post('/pass', async (req, res) => {
 });
 
 //rota para pagamentos
-router.get('/payment/:name/:gym_id/:plan', async (req, res) => {
+router.get('/payment/:name/:gym_id/:plan/:valor', async (req, res) => {
   const countMax = await Member.findAll({
     attributes: [[Sequelize.fn('max', Sequelize.col('id')), 'id']],
     raw: true,
@@ -684,13 +684,6 @@ router.get('/payment/:name/:gym_id/:plan', async (req, res) => {
   var month = new Date().getMonth();
   var year = new Date().getFullYear();
   var param = req.params;
-
-   //var arr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-//  for (let i = (month - 1); i < arr.length; i++) {
-
-  //  arr[i] = 1;
-  //}
-
   await database.sync();
   let newPay = await Pay.create({
     nm_member_id: countMax[0].id,
@@ -698,24 +691,14 @@ router.get('/payment/:name/:gym_id/:plan', async (req, res) => {
     year: year,
     month: month,
     division: 1,
-    //mar: arr[2],
-    //abr: arr[3],
-    //may: arr[4],
-  //  jun: arr[5],
-  //  jul: arr[6],
-  //  aug: arr[7],
-  //sep: arr[8],
-  //  oct: arr[9],
-    //nov: arr[10],
-    //dez: arr[11],
     obs: 0,
     plan: param.plan,
-    GYM_ID: param.gym_id
+    GYM_ID: param.gym_id,
+    plan_value: param.valor,
   });
-
-
   res.json(newPay);
 });
+
 
 module.exports = router;
 
