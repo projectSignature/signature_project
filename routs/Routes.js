@@ -276,7 +276,7 @@ router.post('/paymentUpdate', async (req, res) => {
     division:req.body.division
   }, {
     where: {
-      id: req.body.id,
+      nm_member_id: req.body.id,
       year: req.body.year,
       month: req.body.month,
     }
