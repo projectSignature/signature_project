@@ -236,7 +236,7 @@ router.post('/createpayment', async (req, res) => {
          obs: 0,
          plan: req.body.plans,
          GYM_ID: req.body.gymid,
-         plan_values: req.body.valor
+         plan_value: req.body.valor
         });
       }
 } catch(err) {
