@@ -222,7 +222,15 @@ router.post('/paymentallexist', async (req, res) => {
 }
 });
 
-
+//create de dados do pay------------------------------->
+router.post('/createpayment', async (req, res) => {
+   try{
+   console.log(req.body)
+} catch(err) {
+  console.log(err)
+ return res.status(400).json(err)
+}
+});
 
 //read dos planos------------------------------->
 router.get('/planget', async (req, res) => {
