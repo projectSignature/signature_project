@@ -204,9 +204,9 @@ router.get('/paymentall', async (req, res) => {
 
 
 //read de dados do pay------------------------------->
-router.post('/paymentallexist', async (req, res) => {
+router.get('/paymentallexist', async (req, res) => {
   console.log('in')
-              console.log(req.body)
+  console.log(req.body)
    try{
   const members = await Pay.findAll({
     where: {
