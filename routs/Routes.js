@@ -246,7 +246,7 @@ router.post('/createpayment', async (req, res) => {
          nm_member: req.body.name,
          year: req.body.year,
          month: req.body.month,
-         division: 1,
+         division: req.body.division,
          obs: 0,
          plan: req.body.plans,
          GYM_ID: req.body.gymid,
