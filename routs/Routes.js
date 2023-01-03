@@ -252,6 +252,7 @@ router.post('/createpayment', async (req, res) => {
          GYM_ID: req.body.gymid,
          plan_value: req.body.valor
         });  
+     res.json(newPay)
 } catch(err) {
   console.log(err)
  return res.status(400).json(err)
