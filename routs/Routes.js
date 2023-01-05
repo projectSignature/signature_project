@@ -197,7 +197,7 @@ router.get('/info', async (req, res) => {
 router.get('/paymentall', async (req, res) => {
   const members = await Pay.findAll({
   });   where: {
-    division: 1
+    division: "1"
   }
   res.json(members)
 });
