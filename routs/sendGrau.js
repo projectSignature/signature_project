@@ -21,7 +21,7 @@ module.exports = async function mailerGrau(name) {
 
       const mailSentPT = await transporter.sendMail({
         from: '"YK technology"" <signatureprojectjp@gmail.com>',
-        to: ['paurozhiyuan@gmail.com'],
+        to: ['paurozhiyuan@gmail.com','leandrokussano@gmail.com'],
         subject: `Aviso sobra a graduação do aluno ${name}`,
         text: `Prezado cliente
 
