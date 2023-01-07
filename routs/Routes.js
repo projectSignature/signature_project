@@ -723,6 +723,7 @@ router.get('/parents/:name/:birthday/:gender/:age/:gymid', async (req, res) => {
    }
   catch (err) {
     return res.status(400).json(err)
+    console.log(err)
   }
 });
 
