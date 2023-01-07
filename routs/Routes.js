@@ -226,7 +226,7 @@ router.get('/family', async (req, res) => {
   try{
   const members = await Parent.findAll({
     where: {
-      nm_member_id: req.body.nm.id
+      nm_member_id: req.body.id
     }
   }); //findAll findByPk
 
