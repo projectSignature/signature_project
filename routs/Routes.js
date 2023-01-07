@@ -536,6 +536,7 @@ console.log(obj)
       pdf.create(html, { "orientation": "landscape", format: 'a10' })
         .toFile(`./historico/Ficha de Inscricao.pdf`, async (err, res) => {
           if (err) {
+            console.log(err
             console.log('erro')
           } else {
             //response.send(res)
