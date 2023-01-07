@@ -536,7 +536,7 @@ console.log(obj)
       pdf.create(html, { "orientation": "landscape", format: 'a10' })
         .toFile(`./historico/Ficha de Inscricao.pdf`, async (err, res) => {
           if (err) {
-            console.log(err
+            console.log(err)
             console.log('erro')
           } else {
             //response.send(res)
@@ -705,6 +705,7 @@ router.get('/payment/:name/:gym_id/:plan/:valor', async (req, res) => {
 //rota para criar dados dos parentes
 router.get('/parents/:name/:birthday/:gender/:age/:gymid', async (req, res) => {
     try {
+      console.log('in')
   const countMax = await Member.findAll({
     attributes: [[Sequelize.fn('max', Sequelize.col('id')), 'id']],
     raw: true,
