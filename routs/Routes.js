@@ -5,6 +5,7 @@ const database = require('../db');
 
 //SCHEMAS
 const Member = require('../schema/members');
+const Parent = require('../schema/parents');
 const Client = require('../schema/clients');
 const Calender = require('../schema/calender');
 const Entrance = require('../schema/registerEntrance');
@@ -700,6 +701,30 @@ router.get('/payment/:name/:gym_id/:plan/:valor', async (req, res) => {
   res.json(newPay);
 });
 
+//rota para criar dados dos parentes
+router.get('/parents/:name/:birthday/:gender/:age/:gymid', async (req, res) => {
+    try {
+  const countMax = await Member.findAll({
+    attributes: [[Sequelize.fn('max', Sequelize.col('id')), 'id']],
+    raw: true,
+  });
+  var param = req.params;
+  console.log(param)
+  await database.sync();
+  let newPay = await Parent.create({
+    nm_member_id: countMax[0].id,
+    family_name: param.name,
+    birthday: param.birthday,
+    gender: param.gender,
+    birthday_age: param.age,
+    gymid: param.gym_id,
+  });
+   res.json(newPay);
+   }
+  catch (err) {
+    return res.status(400).json(err)
+  }
+});
 
 module.exports = router;
 
