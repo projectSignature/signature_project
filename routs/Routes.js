@@ -713,15 +713,15 @@ router.get('/parents/:name/:birthday/:gender/:age/:gymid', async (req, res) => {
   var param = req.params;
   console.log(param)
   await database.sync();
-  let newPay = await Parent.create({
+  let newParents = await Parent.create({
     nm_member_id: countMax[0].id,
     family_name: param.name,
     birthday: param.birthday,
     gender: param.gender,
     birthday_age: param.age,
-    gymid: param.gym_id,
+    gymid: param.gymid,
   });
-   res.json(newPay);
+   return res.status(200)
    }
   catch (err) {
     return res.status(400).json(err)
