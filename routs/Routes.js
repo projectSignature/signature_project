@@ -220,6 +220,24 @@ router.post('/getpaymentAll', async (req, res) => {
 }
 });
 
+
+//read de dados------------------------------->
+router.get('/family', async (req, res) => {
+  try{
+  const members = await Parent.findAll({
+    where: {
+      nm_member_id: req.body.nm.id
+    }
+  }); //findAll findByPk
+
+  res.json(members)
+} catch(err) {
+  console.log(err)
+ return res.status(400).json(err)
+}
+});
+
+
 //read de dados do pay------------------------------->
 router.post('/paymentallexist', async (req, res) => {
   console.log('in')
