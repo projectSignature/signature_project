@@ -22,7 +22,7 @@ const Parents = database.define('parent', {
 
     birthday_age: Sequelize.STRING(150),
 
-    genero: {
+    gender: {
         type:Sequelize.STRING(150),
         allowNull: false
     },
