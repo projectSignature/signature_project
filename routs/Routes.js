@@ -222,7 +222,7 @@ router.post('/getpaymentAll', async (req, res) => {
 
 
 //read de dados------------------------------->
-router.('/family', async (req, res) => {
+router.post('/family', async (req, res) => {
   try{
   const members = await Parent.findAll({
     where: {
