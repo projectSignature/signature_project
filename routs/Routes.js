@@ -239,6 +239,8 @@ router.post('/family', async (req, res) => {
 
 //update do familiar------------------------------->
 router.post('/familyupdate', async (req, res) => {
+   console.log('in')
+  console.log(req.body)
   try{
   const members = await Parent.update({
     family_name:req.body.name,
@@ -253,15 +255,13 @@ router.post('/familyupdate', async (req, res) => {
   res.json(members)
 } catch(err) {
   console.log(err)
- return res.status(400).json(err)
+ return res.status(400)
 }
 });
 
 
 //read de dados do pay------------------------------->
 router.post('/paymentallexist', async (req, res) => {
-  console.log('in')
-  console.log(req.body)
    try{
   const members = await Pay.findAll({
     where: {
