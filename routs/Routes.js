@@ -237,6 +237,26 @@ router.post('/family', async (req, res) => {
 }
 });
 
+//update do familiar------------------------------->
+router.post('/familyupdate', async (req, res) => {
+  try{
+  const members = await Parent.update({
+    family_name:req.body.name,
+    birthday:req.body.birth,
+    gender:req.body.gender,
+    birthday_age:req.body.age
+  }, {
+    where: {
+      nm_member_id: req.body.id
+    }
+  });
+  res.json(members)
+} catch(err) {
+  console.log(err)
+ return res.status(400).json(err)
+}
+});
+
 
 //read de dados do pay------------------------------->
 router.post('/paymentallexist', async (req, res) => {
@@ -510,8 +530,15 @@ router.post('/listDelete', async (req, res) => {
   Member.destroy({ where: { id: req.body.id } })
   Graduation.destroy({ where: { nm_member_id: req.body.id } })
   Pay.destroy({ where: { nm_member_id: req.body.id } })
+  Parent.destroy({ where: { nm_member_id: req.body.id } })
   res.json('deletado');
 });
+
+
+router.post('/familyDelete', async (req, res) => {
+  Parent.destroy({ where: { id: req.body.id } })
+  res.json('deletado');
+})
 
 //gerar PDF inscrição
 router.get('/pdf', async (req, response) => {
