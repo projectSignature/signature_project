@@ -249,7 +249,7 @@ router.post('/familyupdate', async (req, res) => {
     birthday_age:req.body.age
   }, {
     where: {
-      nm_member_id: req.body.id
+      id: req.body.id
     }
   });
   res.json(members)
