@@ -729,7 +729,7 @@ router.get('/payment/:name/:gym_id/:plan/:valor', async (req, res) => {
     attributes: [[Sequelize.fn('max', Sequelize.col('id')), 'id']],
     raw: true,
   });
-  var month = new Date().getMonth();
+  var month = new Date().getMonth()+1;
   var year = new Date().getFullYear();
   var param = req.params;
   await database.sync();
