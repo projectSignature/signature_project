@@ -72,6 +72,21 @@ router.get('/client', async (req, res) => {
 
 });
 
+//clients data get------------------------->
+router.get('/clientesDados', async (req, res) => {
+  try {
+  const members = await Client.findAll({
+    where: {
+      id: req.body.id
+    }
+  }); //findAll findByPk
+
+  res.json(members)
+} catch (err) {
+  res.json(err)
+}
+});
+
 //autenticação de usuario------------------------>
 router.post('/auth', async (req, res) => {
   const [numbers, password] = [req.body.numbers, req.body.password];
