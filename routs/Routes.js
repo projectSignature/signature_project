@@ -73,8 +73,10 @@ router.get('/client', async (req, res) => {
 });
 
 //clients data get------------------------->
-router.get('/clientesDados:id', async (req, res) => {
+router.get('/clientesDados/:id', async (req, res) => {
   try {
+    console.log('in')
+    console.log(req.params.id)
   const members = await Client.findAll({
     where: {
       id: req.params.id
@@ -84,6 +86,7 @@ router.get('/clientesDados:id', async (req, res) => {
   res.json(members)
 } catch (err) {
   res.json(err)
+  console.log(err)
 }
 });
 
