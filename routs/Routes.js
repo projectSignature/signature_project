@@ -347,6 +347,29 @@ router.post('/paymentUpdate', async (req, res) => {
  }
 });
 
+//client  Update---------------------------------->
+router.post('/clientUpdate', async (req, res) => {
+ try{
+   console.log(req.body)
+   console.log('inpay')
+  const members = await Client.update({
+    GYM_NAME:req.body.name2,
+    REPRESENTATIVE:req.body.name1,
+    TEL:req.body.tel,
+    EMAIL:req.body.email,
+    LANGUAGE:req.body.language  
+  }, {
+    where: {
+      id: req.body.id,
+    }
+  });
+  return res.json(members)
+ } catch(err) {
+   console.log(err)
+  return res.status(400).json(err)
+ }
+});
+
 //checar se existe os dados do mês------------------------------->
 router.post('/paymonthcheck', async (req, res) => {
   console.log('in')
