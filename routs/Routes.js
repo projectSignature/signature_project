@@ -73,11 +73,11 @@ router.get('/client', async (req, res) => {
 });
 
 //clients data get------------------------->
-router.get('/clientesDados', async (req, res) => {
+router.get('/clientesDados:id', async (req, res) => {
   try {
   const members = await Client.findAll({
     where: {
-      id: req.body.id
+      id: req.params.id
     }
   }); //findAll findByPk
 
