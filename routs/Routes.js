@@ -370,6 +370,32 @@ router.post('/clientUpdate', async (req, res) => {
  }
 });
 
+//client  Update---------------------------------->
+router.post('/planUpdate', async (req, res) => {
+ try{
+   console.log(req.body)
+   console.log('inplan')
+  const members = await Plan.update({
+    PLANS_NAME:req.body.name,
+    PLAN_VALOR:req.body.pvalue,
+    PLAN_KUBUN:req.body.divi,
+    PLAN_DISCRITION1:req.body.dis1,
+    PLAN_DISCRITION2:req.body.dis2,
+    PLAN_DISCRITION3:req.body.dis3,
+    PLAN_DISCRITION4:req.body.dis4,
+    PLAN_DISCRITION5:req.body.dis5,
+  }, {
+    where: {
+      id: req.body.id,
+    }
+  });
+  return res.json(members)
+ } catch(err) {
+   console.log(err)
+  return res.status(400).json(err)
+ }
+});
+
 //checar se existe os dados do mês------------------------------->
 router.post('/paymonthcheck', async (req, res) => {
   console.log('in')
