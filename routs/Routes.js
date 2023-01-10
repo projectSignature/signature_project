@@ -607,6 +607,12 @@ router.post('/familyDelete', async (req, res) => {
   res.json('deletado');
 })
 
+
+router.post('/planDelete', async (req, res) => {
+  Plan.destroy({ where: { id: req.body.id } })
+  res.json('deletado');
+})
+
 //gerar PDF inscrição
 router.get('/pdf', async (req, response) => {
 try{
