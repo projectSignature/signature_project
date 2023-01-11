@@ -384,6 +384,7 @@ router.post('/planUpdate', async (req, res) => {
     PLAN_DISCRITION3:req.body.dis3,
     PLAN_DISCRITION4:req.body.dis4,
     PLAN_DISCRITION5:req.body.dis5,
+    CONTROL_NAME:req.body.controlname,
   }, {
     where: {
       id: req.body.id,
