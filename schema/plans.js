@@ -74,6 +74,10 @@ const Plans = database.define('plan', {
     PLAN_DISCRITION5: {
         type: Sequelize.STRING(150),
     },
+    
+    CONTROL_NAME: {
+        type: Sequelize.STRING(150),
+    },
 
 });
 
