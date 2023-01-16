@@ -711,7 +711,8 @@ router.put('/calender', async (req, res) => {
         FINISH_TIME: req.body.FINISH,
         DESCRITION_1: req.body.DESC1,
         DESCRITION_2: req.body.DESC2,
-        GRADUATION_FLUG: req.body.IMAGE,
+        IMAGE:req.body.IMG,
+        GRADUATION_FLUG: req.body.flug,
         COLOR: req.body.COLOR
       }, {
         where: {
