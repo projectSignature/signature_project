@@ -725,6 +725,7 @@ router.put('/calender', async (req, res) => {
     catch (err) { console.log(err) }
 });
 
+
 //Rota para recuperar DADOS do calendario
 router.get('/calenderteste', async (req, res) => {
   const newCalender = await Calender.findAll();
