@@ -94,7 +94,6 @@ router.get('/clientesDados/:id', async (req, res) => {
 router.post('/auth', async (req, res) => {
   const [numbers, password] = [req.body.numbers, req.body.password];
   const [primaryKey, secondKey] = [1234, 567]
-
   const clients = await Client.findAll({
     where: {
       GYM_NAME: numbers,
@@ -107,24 +106,25 @@ router.post('/auth', async (req, res) => {
     let code = clients[0].UNIQUE_CODE;
     var gymname = clients[0].GYM_NAME;
     var id = clients[0].id
-
+    var language = clients[0].LANGUAGE
     switch (code) {
       case '1':
-        validationRes(primaryKey, name, code, gymname, id)
+        validationRes(primaryKey, name, code, gymname, id, language)
         break;
       case '2':
-        validationRes(secondKey, name, code, gymname, id)
+        validationRes(secondKey, name, code, gymname, id, language)
         break;
       default:
         console.log("eroor")
     };
 
-    function validationRes(key, name, code, gymname, id) {
+    function validationRes(key, name, code, gymname, id, language) {
       if (key > 0) {
         res.json({
           status: 200,
           token: key,
           gym: gymname,
+          language: language,
           number: { NAME: name, AUTHORITY: code , ID: id },
         });
       } else {
@@ -136,6 +136,7 @@ router.post('/auth', async (req, res) => {
   }
 
 });
+
 
 //insert de dados-------------------------------->
 router.post('/member', async (req, res) => {
