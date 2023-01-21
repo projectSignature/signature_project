@@ -787,17 +787,14 @@ router.get('/calender/entrance', async (req, res) => {
 //Rota para registrar entradas da entrance
 router.post('/registerEntrance', async (req, res) => {
   try {
-    const japanStandardTime = new Date(Date.now() + ((new Date().getTimezoneOffset() + (9 * 60)) * 60 * 1000));
-    const japanweekeday = japanStandardTime.getDay()
-    //let lessonday = `${japanStandardTime.getFullYear()}_${japanStandardTime.getMonth()+1}_${japanStandardTime.getDate()}`
     await database.sync();
     const newEntrance = await Entrance.create({
       LESSON_NAME: req.body.LESSON_NAME,
       LESSON_HOUR: req.body.LESSON_HOUR,
       MEMBER_ID: req.body.MEMBER_ID,
       GYM_ID: req.body.GYM_ID,
-      LESSON_DATE: japanStandardTime,
-      LESSON_DAY: japanweekeday,
+      LESSON_DATE: req.body.d1,
+      LESSON_DAY: req.body.japanweekeday,
     });
     console.log(res)
     res.json(newEntrance)
