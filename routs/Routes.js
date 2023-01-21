@@ -822,7 +822,7 @@ router.post('/entrancehistory', async (req, res) => {
   const members = await Entrance.findAll({
       where: {
       LESSON_DATE: {
-        [Op.gt]::req.body.entrancedate        
+        [Op.gt]:req.body.entrancedate        
       }
     }
   });
