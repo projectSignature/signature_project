@@ -46,6 +46,16 @@ const Entrance = database.define('entrance', {
         type: Sequelize.DECIMAL,
         allowNull: false,
     },
+    
+    LESSON_DAY: {
+        type: Sequelize.DECIMAL,
+        allowNull: false,
+    },
+
+    LESSON_DATE: {
+        type: Sequelize.STRING(150),
+        allowNull: false,
+    },
 
 });
 
