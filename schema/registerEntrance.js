@@ -53,7 +53,7 @@ const Entrance = database.define('entrance', {
     },
 
     LESSON_DATE: {
-        type: Sequelize.DATETIME,
+        type: Sequelize.STRING(150),
         allowNull: false,
     },
 
