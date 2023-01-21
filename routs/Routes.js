@@ -789,7 +789,7 @@ router.post('/registerEntrance', async (req, res) => {
   try {
     const japanStandardTime = new Date(Date.now() + ((new Date().getTimezoneOffset() + (9 * 60)) * 60 * 1000));
     const japanweekeday = japanStandardTime.getDay()
-    let lessonday = `${japanStandardTime.getFullYear()}_${japanStandardTime.getMonth()+1}_${japanStandardTime.getDate()}`)
+    let lessonday = `${japanStandardTime.getFullYear()}_${japanStandardTime.getMonth()+1}_${japanStandardTime.getDate()}`
     await database.sync();
     const newEntrance = await Entrance.create({
       LESSON_NAME: req.body.LESSON_NAME,
