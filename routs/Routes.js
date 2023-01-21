@@ -819,8 +819,10 @@ router.post('/pass', async (req, res) => {
 //rota para pegar o history das aulas
 router.post('/entrancehistory', async (req, res) => {
   const members = await Entrance.findAll({
-    where: {
-      LESSON_DATE: req.body.entrancedate
+      where: {
+      LESSON_DATE: {
+        $gte:req.body.entrancedate        
+      }
     }
   });
   res.json(members)
