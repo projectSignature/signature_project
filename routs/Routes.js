@@ -818,10 +818,11 @@ router.post('/pass', async (req, res) => {
 
 //rota para pegar o history das aulas
 router.post('/entrancehistory', async (req, res) => {
+  const { Op } = require('sequelize')
   const members = await Entrance.findAll({
       where: {
       LESSON_DATE: {
-        $gte:req.body.entrancedate        
+        [Op.gt]::req.body.entrancedate        
       }
     }
   });
