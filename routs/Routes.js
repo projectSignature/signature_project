@@ -787,6 +787,8 @@ router.get('/calender/entrance', async (req, res) => {
 //Rota para registrar entradas da entrance
 router.post('/registerEntrance', async (req, res) => {
   try {
+    console.log(req.body.d1)
+    console.log(req.body.japanweekeday)
     await database.sync();
     const newEntrance = await Entrance.create({
       LESSON_NAME: req.body.LESSON_NAME,
