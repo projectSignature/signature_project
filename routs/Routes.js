@@ -816,6 +816,16 @@ router.post('/pass', async (req, res) => {
 
 });
 
+//rota para pegar o history das aulas
+router.post('/entrancehistory', async (req, res) => {
+  const members = await Entrance.findAll({
+    where: {
+      LESSON_DATE: req.body.entrancedate
+    }
+  });
+  res.json(members)
+});
+
 //rota para pagamentos
 router.get('/payment/:name/:gym_id/:plan/:valor', async (req, res) => {
   const countMax = await Member.findAll({
