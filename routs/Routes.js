@@ -403,6 +403,23 @@ router.post('/clientUpdate', async (req, res) => {
  }
 });
 
+//client  Age Update---------------------------------->
+router.post('/memberAgeUpdate', async (req, res) => {
+ try{
+  const members = await Member.update({
+    birthday_age:req.body.age,
+  }, {
+    where: {
+      id: req.body.id,
+    }
+  });
+  return res.json(members)
+ } catch(err) {
+  return res.status(400).json(err)
+ }
+});
+
+
 //client  Update---------------------------------->
 router.post('/planUpdate', async (req, res) => {
  try{
