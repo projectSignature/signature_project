@@ -276,6 +276,24 @@ router.post('/familyupdate', async (req, res) => {
 }
 });
 
+//update dos dados do membro na graduação------------------------------->
+router.post('/graduationmemberupdate', async (req, res) => {
+  try{
+  const members = await Graduation.update({
+    nm_member:req.body.name,
+    status:req.body.status,
+  }, {
+    where: {
+      nm_member_id: req.body.id
+    }
+  });
+  res.json(members)
+} catch(err) {
+  console.log(err)
+ return res.status(400).json(err)
+}
+});
+
 //update do pass------------------------------->
 router.post('/passupdate', async (req, res) => {
   try{
