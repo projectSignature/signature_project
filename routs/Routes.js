@@ -240,23 +240,51 @@ router.post('/getpaymentAll', async (req, res) => {
 });
 
 
-//read de dados do pay------------------------------->
-router.post('/getpaymentAlltest', async (req, res) => {  //req.query
+//get de dados do pay------------------------------->
+router.get('/gymgetpaymentAll', async (req, res) => {  //req.query
    try{
-     console.log(req.query)
-     console.log(req.query.id)
-  //const members = await Pay.findAll({
-  //  where: {
-    //  year: req.body.year,
-    //  GYM_ID: req.body.gymid
-  //  }
-//  });
-//  res.json(members)
+  const members = await Pay.findAll({
+ where: {
+     year: req.query.year,
+     GYM_ID: req.query.id
+    }
+  });
+  res.json(clients)
 } catch(err) {
   console.log(err)
  return res.status(400).json(err)
 }
 });
+
+//get dos planos------------------------------->
+router.get('/gymplanget', async (req, res) => {
+  try{
+    const plans = await Plan.findAll({
+      where:{
+        GYM_ID: req.query.id
+      }
+    }); //findAll findByPk
+    res.json(plans)
+  }catch(err) {
+    console.log(err)
+   return res.status(400).json(err)
+  }
+});
+//get dos membros da academia------------------------------->
+router.get('/gymmemberlist', async (req, res) => {
+  try{
+    let members = await Member.findAll({
+      where:{
+        GYM_ID: req.query.id
+      }
+    }); //findAll findByPk
+    res.json(membros)
+  }catch(err) {
+    console.log(err)
+   return res.status(400).json(err)
+  }
+});
+
 
 //read de dados------------------------------->
 router.post('/family', async (req, res) => {
