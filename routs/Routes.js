@@ -240,6 +240,24 @@ router.post('/getpaymentAll', async (req, res) => {
 });
 
 
+//read de dados do pay------------------------------->
+router.post('/getpaymentAlltest', async (req, res) => {  //req.query
+   try{
+     console.log(req.query)
+     console.log(req.query.id)
+  //const members = await Pay.findAll({
+  //  where: {
+    //  year: req.body.year,
+    //  GYM_ID: req.body.gymid
+  //  }
+//  });
+//  res.json(members)
+} catch(err) {
+  console.log(err)
+ return res.status(400).json(err)
+}
+});
+
 //read de dados------------------------------->
 router.post('/family', async (req, res) => {
   try{
