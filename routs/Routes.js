@@ -275,7 +275,7 @@ router.get('/gymmemberlist', async (req, res) => {
   try{
     let memberslist = await Member.findAll({
       where:{
-        GYM_ID: req.query.id
+        gymid: req.query.id
       }
     }); //findAll findByPk
     res.json(memberslist)
