@@ -285,6 +285,22 @@ router.get('/gymmemberlist', async (req, res) => {
   }
 });
 
+//checar se existe dados do request------------------------------->
+router.get('/gympaymonthcheck', async (req, res) => {
+  try{
+    let members = await Pay.findAll({
+      where:{
+        year: req.query.year,
+        month: req.query.month,
+        nm_member_id: req.query.id
+      }
+    }); //findAll findByPk
+    res.json(membros)
+  }catch(err) {
+    console.log(err)
+   return res.status(400).json(err)
+  }
+});
 
 //read de dados------------------------------->
 router.post('/family', async (req, res) => {
