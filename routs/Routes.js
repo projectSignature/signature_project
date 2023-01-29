@@ -243,13 +243,13 @@ router.post('/getpaymentAll', async (req, res) => {
 //get de dados do pay------------------------------->
 router.get('/gymgetpaymentAll', async (req, res) => {  //req.query
    try{
-  const members = await Pay.findAll({
+  const paymentdata = await Pay.findAll({
  where: {
      year: req.query.year,
      GYM_ID: req.query.id
     }
   });
-  res.json(clients)
+  res.json(paymentdata)
 } catch(err) {
   console.log(err)
  return res.status(400).json(err)
@@ -273,12 +273,12 @@ router.get('/gymplanget', async (req, res) => {
 //get dos membros da academia------------------------------->
 router.get('/gymmemberlist', async (req, res) => {
   try{
-    let members = await Member.findAll({
+    let memberslist = await Member.findAll({
       where:{
         GYM_ID: req.query.id
       }
     }); //findAll findByPk
-    res.json(membros)
+    res.json(memberslist)
   }catch(err) {
     console.log(err)
    return res.status(400).json(err)
