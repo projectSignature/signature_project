@@ -418,6 +418,7 @@ router.post('/createpayment', async (req, res) => {
 router.post('/createplans', async (req, res) => {
    try{
    console.log(req.body)
+     console.log(req.body.age)
        let newPlan = await Plan.create({
          GYM_ID: req.body.id,
          PLANS_NAME: req.body.name,
@@ -429,7 +430,7 @@ router.post('/createplans', async (req, res) => {
          PLAN_DISCRITION4: req.body.dis4,
          PLAN_DISCRITION5: req.body.dis5,
          CONTROL_NAME: req.body.controlname,
-         AGE:req.body.age,
+         AGE: req.body.age,
         });
      res.json(newPlan)
 } catch(err) {
