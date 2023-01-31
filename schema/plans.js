@@ -78,6 +78,7 @@ const Plans = database.define('plan', {
     CONTROL_NAME: {
         type: Sequelize.STRING(150),
     },
+    
      AGE: {
         type: Sequelize.STRING(45),
     },
