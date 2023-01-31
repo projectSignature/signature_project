@@ -42,6 +42,8 @@ third_point: Sequelize.STRING(150),
         type: Sequelize.INTEGER,
          allowNull: false,
     }
+    
+    GYM_ID: Sequelize.STRING(150),
 });
 
 module.exports = Graduations;
