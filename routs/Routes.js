@@ -657,6 +657,17 @@ router.get('/gympaymentall', async (req, res) => {
   res.json(paymentlist)
 });
 
+//アクティブメンバー数をセレクト------------------------------->
+router.get('/gyminfo', async (req, res) => {
+  const members = await Member.findAll({
+    where: {
+      status: "active",
+      gymid: req.query.id,
+    }
+  }); //findAll findByPk
+  res.json(members)
+});
+
 //List Alunos Update---------------------------------->
 router.post('/listUpdate', async (req, res) => {
  try{
