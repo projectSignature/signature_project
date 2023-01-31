@@ -631,7 +631,20 @@ let members = await Graduation.findAll();
   res.json(members);
 });
 
-
+//昇格管理テーブルを全セレクト------------------------------->
+router.get('/gymgraduationlist', async (req, res) => {
+  try{
+    let members = await Graduation.findAll({
+      where:{
+        GYM_ID: req.query.id,
+      }
+    }); //findAll findByPk
+    res.json(membros)
+  }catch(err) {
+    console.log(err)
+   return res.status(400).json(err)
+  }
+});
 
 //List Alunos Update---------------------------------->
 router.post('/listUpdate', async (req, res) => {
