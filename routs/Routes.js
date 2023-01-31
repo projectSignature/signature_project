@@ -412,6 +412,29 @@ router.post('/createpayment', async (req, res) => {
 }
 });
 
+//create de dados do pay------------------------------->
+router.post('/createplans', async (req, res) => {
+   try{
+   console.log(req.body)
+       let newPlan = await Plan.create({
+         GYM_ID: req.body.id,
+         PLANS_NAME: req.body.name,
+         PLAN_VALOR: req.body.valor,
+         PLAN_KUBUN: req.body.kubun,
+         PLAN_DISCRITION1: req.body.dis1,
+         PLAN_DISCRITION2: req.body.dis2,
+         PLAN_DISCRITION3: req.body.dis3,
+         PLAN_DISCRITION4: req.body.dis4,
+         PLAN_DISCRITION5: req.body.dis5,
+         CONTROL_NAME: req.body.controlname,
+        });
+     res.json(newPlan)
+} catch(err) {
+  console.log(err)
+ return res.status(400).json(err)
+}
+});
+
 //read dos planos------------------------------->
 router.get('/planget', async (req, res) => {
   const plans = await Plan.findAll({
