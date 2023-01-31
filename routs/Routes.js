@@ -646,6 +646,17 @@ router.get('/gymgraduationlist', async (req, res) => {
   }
 });
 
+//未支払い者を支払い管理テーブルセレクト------------------------------->
+router.get('/gympaymentall', async (req, res) => {
+  const paymentlist = await Pay.findAll({
+    where: {
+    division: 1,
+    GYM_ID: req.query.id,
+  }
+  });
+  res.json(paymentlist)
+});
+
 //List Alunos Update---------------------------------->
 router.post('/listUpdate', async (req, res) => {
  try{
