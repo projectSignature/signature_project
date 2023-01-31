@@ -634,12 +634,12 @@ let members = await Graduation.findAll();
 //昇格管理テーブルを全セレクト------------------------------->
 router.get('/gymgraduationlist', async (req, res) => {
   try{
-    let members = await Graduation.findAll({
+    let graduationlist = await Graduation.findAll({
       where:{
         GYM_ID: req.query.id,
       }
     }); //findAll findByPk
-    res.json(membros)
+    res.json(graduationlist)
   }catch(err) {
     console.log(err)
    return res.status(400).json(err)
