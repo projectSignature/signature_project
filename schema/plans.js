@@ -81,6 +81,7 @@ const Plans = database.define('plan', {
      AGE: {
         type: Sequelize.STRING(45),
     },
+    
 
 });
 
