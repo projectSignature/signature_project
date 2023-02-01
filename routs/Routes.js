@@ -748,21 +748,7 @@ router.post('/graduationafter', async (req, res) => {
  }
 });
 
-  //ダッシュボードから支払いの更新------------------------------------------>
-router.post('/payUpdatedashbord', async (req, res) => {
- try{
-  const members = await Pay.update({
-    division: 2
-  }, {
-    where: {
-      id: req.body.id,
-    }
-  });
-  res.json(members)
- } catch(err) {
-  return res.status(400).json(err)
- }
-});
+
 
 //rota para verificar graduação-------------------------------------------->
 router.get('/lesson_after/:id', async (req, res) => {
