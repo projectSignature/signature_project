@@ -668,6 +668,17 @@ router.get('/gyminfo', async (req, res) => {
   res.json(members)
 });
 
+//カレンダーテーブルから全レッスン取得
+router.get('/gymcalenderGet', async (req, res) => {
+  const newCalender = await Calender.findAll({
+    where: {
+      GYM_ID: req.query.id,
+    }
+  });
+  res.json(newCalender)
+});
+
+
 //入場履歴の照会------------------------------->
 router.get('/gymEntrancehistory', async (req, res) => {
     const { Op } = require('sequelize')
