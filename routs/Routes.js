@@ -668,6 +668,17 @@ router.get('/gyminfo', async (req, res) => {
   res.json(members)
 });
 
+//入場履歴の照会------------------------------->
+router.get('/gymEntrancehistory', async (req, res) => {
+  const members = await Entrance.findAll({
+    where: {
+      $gte:: req.query.date,
+      gymid: req.query.id,
+    }
+  }); //findAll findByPk
+  res.json(members)
+});
+
 //List Alunos Update---------------------------------->
 router.post('/listUpdate', async (req, res) => {
  try{
