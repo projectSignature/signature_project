@@ -670,11 +670,13 @@ router.get('/gyminfo', async (req, res) => {
 
 //入場履歴の照会------------------------------->
 router.get('/gymEntrancehistory', async (req, res) => {
+    const { Op } = require('sequelize')
   const members = await Entrance.findAll({
     where: {
       LESSON_DATE: {
-        $gte:req.query.entrancedate
-      }
+        [Op.gt]:req.query.entrancedate        
+      },
+      GYM_ID:req.query.id
     }
   }); //findAll findByPk
   res.json(members)
