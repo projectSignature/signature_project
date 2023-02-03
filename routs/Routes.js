@@ -672,10 +672,9 @@ router.get('/gyminfo', async (req, res) => {
 router.get('/gymEntrancehistory', async (req, res) => {
   const members = await Entrance.findAll({
     where: {
-        LESSON_DATE: {
-        $gte: req.query.entrancedate
-      },
-      GYM_ID: req.query.id,
+      LESSON_DATE: {
+        $gte:req.body.entrancedate
+      }
     }
   }); //findAll findByPk
   res.json(members)
