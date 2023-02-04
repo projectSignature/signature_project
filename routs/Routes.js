@@ -14,6 +14,7 @@ const Graduation = require('../schema/graduation');
 const mailerGrau = require('./sendGrau');
 const mailer = require('./sendMailer');
 const Pay = require('../schema/payment');
+const MemberCount = require('../schema/member_count');
 
 //LIBS
 const pdf = require('html-pdf');
@@ -87,6 +88,20 @@ router.get('/clientesDados/:id', async (req, res) => {
 } catch (err) {
   res.json(err)
   console.log(err)
+}
+});
+
+//メンバー数カウントGET------------------------->
+router.get('/membersCount', async (req, res) => {
+  try {
+  const memberscount = await MemberCount.findAll({
+    where: {
+      GYM_ID: >=req.query.id
+    }
+  }); 
+  res.json(memberscount)
+} catch (err) {
+  res.json(err)
 }
 });
 
