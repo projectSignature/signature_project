@@ -94,10 +94,11 @@ router.get('/clientesDados/:id', async (req, res) => {
 //メンバー数カウントGET------------------------->
 router.get('/membersCount', async (req, res) => {
   console.log('in')
+  console.log(req.query.id)
   try {
   const memberscount = await MemberCount.findAll({
     where: {
-      GYM_ID: >=req.query.id
+      GYM_ID: req.query.id
     }
   }); 
   res.json(memberscount)
