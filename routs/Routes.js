@@ -29,7 +29,6 @@ router.use(function timelog(req, res, next) {
 
 //rota principal-------------------------->
 router.get('/', (req, res) => {
-
   res.json({ message: 'funcionando', status: 200 });
 });
 
@@ -62,9 +61,6 @@ router.get('/client', async (req, res) => {
       STATUS: 'ativo',
       LANGUAGE: 'EN'
     });
-
-    //console.log(req.body) 
-
     res.json(newClient);
 
   } catch (err) {
@@ -76,8 +72,6 @@ router.get('/client', async (req, res) => {
 //clients data get------------------------->
 router.get('/clientesDados/:id', async (req, res) => {
   try {
-    console.log('in')
-    console.log(req.params.id)
   const members = await Client.findAll({
     where: {
       id: req.params.id
@@ -93,8 +87,6 @@ router.get('/clientesDados/:id', async (req, res) => {
 
 //メンバー数カウントGET------------------------->
 router.get('/membersCount', async (req, res) => {
-  console.log('in')
-  console.log(req.query.id)
   try {
   const memberscount = await MemberCount.findAll({
     where: {
@@ -117,7 +109,6 @@ router.post('/auth', async (req, res) => {
       PASSWORD: password
     }
   });
-  console.log(clients)
   try {
     let name = clients[0].REPRESENTATIVE;
     let code = clients[0].UNIQUE_CODE;
@@ -157,7 +148,6 @@ router.post('/auth', async (req, res) => {
 
 //insert de dados-------------------------------->
 router.post('/member', async (req, res) => {
-  console.log('in')
   try {
     await database.sync();
     const newMember = await Member.create({
@@ -182,11 +172,9 @@ router.post('/member', async (req, res) => {
       active_date: req.body.active_date,
   		inactive_date: req.body.inactive_date
     });
-    console.log(req.body)
     res.json(newMember);
   }
   catch (err) {
-    console.log('in2')
     console.log(err)
     return res.status(400).json(err)
   }
@@ -210,7 +198,6 @@ router.post('/member', async (req, res) => {
      // obs: req.body.obs,
      // gym: req.body.gymname
    // });
-   //   console.log(req.body)
    // res.json(newgraduation);
   //}
  // catch (err) {
@@ -410,7 +397,6 @@ router.post('/paymentallexist', async (req, res) => {
 //create de dados do pay------------------------------->
 router.post('/createpayment', async (req, res) => {
    try{
-   console.log(req.body)
        let newPay = await Pay.create({
          nm_member_id: req.body.id,
          nm_member: req.body.name,
@@ -434,8 +420,6 @@ router.post('/createpayment', async (req, res) => {
 //create de dados do pay------------------------------->
 router.post('/createplans', async (req, res) => {
    try{
-   console.log(req.body)
-     console.log(req.body.age)
        let newPlan = await Plan.create({
          GYM_ID: req.body.id,
          PLANS_NAME: req.body.name,
@@ -468,8 +452,6 @@ router.get('/planget', async (req, res) => {
 //pay table Update---------------------------------->
 router.post('/paymentUpdate', async (req, res) => {
  try{
-   console.log(req.body)
-   console.log('inpay')
   const members = await Pay.update({
     division:req.body.division
   }, {
@@ -489,8 +471,6 @@ router.post('/paymentUpdate', async (req, res) => {
 //client  Update---------------------------------->
 router.post('/clientUpdate', async (req, res) => {
  try{
-   console.log(req.body)
-   console.log('inpay')
   const members = await Client.update({
     GYM_NAME:req.body.name2,
     REPRESENTATIVE:req.body.name1,
@@ -529,8 +509,6 @@ router.post('/memberAgeUpdate', async (req, res) => {
 //client  Update---------------------------------->
 router.post('/planUpdate', async (req, res) => {
  try{
-   console.log(req.body)
-   console.log('inplan')
   const members = await Plan.update({
     PLANS_NAME:req.body.name,
     PLAN_VALOR:req.body.pvalue,
@@ -555,8 +533,6 @@ router.post('/planUpdate', async (req, res) => {
 
 //checar se existe os dados do mês------------------------------->
 router.post('/paymonthcheck', async (req, res) => {
-  console.log('in')
-  console.log(req.body)
    try{
   const members = await Pay.findAll({
     where: {
@@ -744,8 +720,6 @@ router.post('/listUpdate', async (req, res) => {
 
 //List Graduação Update---------------------------------->
 router.post('/graduationUpdate', async (req, res) => {
-  console.log('in')
-  console.log(req.body)
  try{
 
   const members = await Graduation.update({
@@ -763,8 +737,6 @@ router.post('/graduationUpdate', async (req, res) => {
       nm_member_id: req.body.id,
     }
   });
-
- console.log(members)
   res.json(members)
  } catch(err) {
   return res.status(400).json(err)
@@ -789,8 +761,6 @@ router.post('/payUpdatedashbord', async (req, res) => {
 
 // Graduação Update da quantidade de aulas---------------------------------->
 router.post('/graduationafter', async (req, res) => {
-  console.log('in')
-  console.log(req.body)
  try{
   const members = await Graduation.update({
     lesson_after: req.body.lesson_after
@@ -880,7 +850,6 @@ try{
     'entryDate': new Intl.DateTimeFormat('ja-JP').format(members[0].createdAt),
     'gymname': members[0].gym
   };
-console.log(obj)
   ejs.renderFile('./views/email.ejs', obj, async (err, html) => {
     if (err) {
       console.log("erro!!!!!")
@@ -953,7 +922,6 @@ router.put('/calender', async (req, res) => {
           LINE_NO: req.body.LINE
         }
       });
-      console.log(req.body)
       res.json(newCalender)
     }
     catch (err) { console.log(err) }
@@ -978,8 +946,6 @@ router.get('/calender/entrance', async (req, res) => {
     const japanStandardTime = new Date(Date.now() + ((new Date().getTimezoneOffset() + (9 * 60)) * 60 * 1000));
    // const japantime = new Date(japanStandardTime)
     const japanweekeday = japanStandardTime.getDay()
-    //console.log(japantime)
-    console.log(japanweekeday)
      switch (japanweekeday) {
       case 0:
         return 'sunday';
@@ -1077,13 +1043,11 @@ router.get('/payment/:name/:gym_id/:plan/:valor', async (req, res) => {
 //rota para criar dados dos parentes
 router.get('/parents/:name/:birthday/:gender/:age/:gymid', async (req, res) => {
     try {
-      console.log('in')
   const countMax = await Member.findAll({
     attributes: [[Sequelize.fn('max', Sequelize.col('id')), 'id']],
     raw: true,
   });
   var param = req.params;
-  console.log(param)
   await database.sync();
   let newParents = await Parent.create({
     nm_member_id: countMax[0].id,
