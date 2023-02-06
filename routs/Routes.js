@@ -1049,14 +1049,17 @@ router.post('/entrancehistory', async (req, res) => {
 
 //rota para pagamentos
 router.get('/payment/:name/:gym_id/:plan/:valor', async (req, res) => {
+  await console.log('in1')
   const countMax = await Member.findAll({
     attributes: [[Sequelize.fn('max', Sequelize.col('id')), 'id']],
     raw: true,
   });
-  var month = new Date().getMonth()+1;
+  await console.log(countMax)
+  var month = new Date().getMonth() +1;
   var year = new Date().getFullYear();
   var param = req.params;
   await database.sync();
+    await console.log('in2')
   let newPay = await Pay.create({
     nm_member_id: countMax[0].id,
     nm_member: param.name,
