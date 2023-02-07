@@ -276,6 +276,8 @@ router.get('/gymplanget', async (req, res) => {
 });
 //get dos membros da academia------------------------------->
 router.get('/gymmemberlist', async (req, res) => {
+  console.log('in')
+  console.log(req.query.id)
   try{
     let memberslist = await Member.findAll({
       where:{
