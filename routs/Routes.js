@@ -145,6 +145,15 @@ router.post('/auth', async (req, res) => {
 
 });
 
+router.get('/trygyminfo', async (req, res) => {
+  const members = await Member.findAll({
+    where: {
+      status: "active",
+      gymid: req.query.id,
+    }
+  });
+  res.json(members)
+});
 
 //insert de dados-------------------------------->
 router.post('/member', async (req, res) => {
