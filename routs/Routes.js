@@ -333,6 +333,41 @@ router.post('/family', async (req, res) => {
 }
 });
 
+//Rota para recuperar DADOS do calendario para o front do entrance
+router.get('/calender/gymentrance', async (req, res) => {
+  const newCalender = await Calender.findAll({
+    where: { 
+      DAY: atualDay(),
+      GYM_ID:req.query.id
+     }
+  });
+  res.json(newCalender)
+  function atualDay() {
+    //new Date(Date.now() + ((new Date().getTimezoneOffset() + (9 * 60)) * 60 * 1000));
+    const japanStandardTime = new Date(Date.now() + ((new Date().getTimezoneOffset() + (9 * 60)) * 60 * 1000));
+   // const japantime = new Date(japanStandardTime)
+    const japanweekeday = japanStandardTime.getDay()
+     switch (japanweekeday) {
+      case 0:
+        return 'sunday';
+      case 1:
+        return 'monday';
+      case 2:
+        return 'tuesday';
+      case 3:
+        return 'wednesday';
+      case 4:
+        return 'thursday';
+      case 5:
+        return 'friday';
+      case 6:
+        return 'saturday';
+      default:
+    };
+  };
+});
+
+
 //update do familiar------------------------------->
 router.post('/familyupdate', async (req, res) => {
   try{
