@@ -88,7 +88,7 @@ router.get('/clientesDados/:id', async (req, res) => {
 //rotas de testes------------------------------>
 router.post('/clientTest', async (req, res) => {
   try {
-    await database.sync();
+   // await database.sync();
 
     const newClient = await Client.create({
       GYM_NAME: req.body.gymname,
