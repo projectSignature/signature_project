@@ -104,6 +104,7 @@ router.post('/clientTest', async (req, res) => {
     });
     res.json(newClient);
   } catch (err) {
+    console.log(err)
     return res.status(400).json(err)
   }
 });
