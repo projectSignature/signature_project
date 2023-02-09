@@ -85,6 +85,29 @@ router.get('/clientesDados/:id', async (req, res) => {
 }
 });
 
+//rotas de testes------------------------------>
+router.post('/clientTest', async (req, res) => {
+  try {
+    await database.sync();
+
+    const newClient = await Client.create({
+      GYM_NAME: req.body.gymname,
+      REPRESENTATIVE: req.body.rep,
+      UNIQUE_CODE: 5,
+      PASSWORD: req.body.pass,
+      ADRESS: req.body.end,
+      TEL: req.body.tel,
+      EMAIL: req.body.email,
+      SAVE_DAY: req.body.save,
+      STATUS: 'ativo',
+      LANGUAGE: req.body.language
+    });
+    res.json(newClient);
+  } catch (err) {
+    return res.status(400).json(err)
+  }
+});
+
 //メンバー数カウントGET------------------------->
 router.get('/membersCount', async (req, res) => {
   try {
