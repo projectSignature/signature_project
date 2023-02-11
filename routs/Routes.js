@@ -15,6 +15,7 @@ const mailerGrau = require('./sendGrau');
 const mailer = require('./sendMailer');
 const Pay = require('../schema/payment');
 const MemberCount = require('../schema/member_count');
+const Finencepay = require('../schema/finencepays');
 
 //LIBS
 const pdf = require('html-pdf');
