@@ -123,6 +123,20 @@ router.get('/membersCount', async (req, res) => {
 }
 });
 
+//支出のアイテム名をGET------------------------->
+router.get('/finenceGet', async (req, res) => {
+  try {
+  const memberscount = await Finencepay.findAll({
+    where: {
+      GYM_ID: req.query.id
+    }
+  });
+  res.json(memberscount)
+} catch (err) {
+  res.json(err)
+}
+});
+
 //autenticação de usuario------------------------>
 router.post('/auth', async (req, res) => {
   const [numbers, password] = [req.body.numbers, req.body.password];
