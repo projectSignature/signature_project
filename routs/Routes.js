@@ -16,6 +16,7 @@ const mailer = require('./sendMailer');
 const Pay = require('../schema/payment');
 const MemberCount = require('../schema/member_count');
 const Finencepay = require('../schema/finencepays');
+const Finence_category = require('../schema/finence_category');
 
 //LIBS
 const pdf = require('html-pdf');
@@ -128,6 +129,20 @@ router.get('/membersCount', async (req, res) => {
 router.get('/finenceGet', async (req, res) => {
   try {
   const memberscount = await Finencepay.findAll({
+    where: {
+      GYM_ID: req.query.id
+    }
+  });
+  res.json(memberscount)
+} catch (err) {
+  res.json(err)
+}
+});
+
+//支出のアイテム名をGET------------------------->
+router.get('/finenceCategoryGet', async (req, res) => {
+  try {
+  const memberscount = await Finence_category.findAll({
     where: {
       GYM_ID: req.query.id
     }
