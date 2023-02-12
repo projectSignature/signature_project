@@ -111,6 +111,23 @@ router.post('/clientTest', async (req, res) => {
   }
 });
 
+//rotas de testes------------------------------>
+router.post('/createCategory', async (req, res) => {
+  try {
+  //  await database.sync();
+    const newClient = await Finence_category.create({
+      GYM_ID: req.body.id,
+      CATEGORY: req.body.category,
+      KUBUN: req.body.kubun,
+      COLOR: req.body.color
+    });
+    res.json(newClient);
+  } catch (err) {
+    console.log(err)
+    return res.status(400).json(err)
+  }
+});
+
 //メンバー数カウントGET------------------------->
 router.get('/membersCount', async (req, res) => {
   try {
