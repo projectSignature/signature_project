@@ -33,6 +33,11 @@ const Finencepays = database.define('finencepay', {
         type: Sequelize.STRING(150),
         allowNull: false,
     },
+    
+    KUBUN: {
+      type:Sequelize.DECIMAL,
+      allowNull: false
+    },
 
     Date: {
         type: Sequelize.STRING(150),
