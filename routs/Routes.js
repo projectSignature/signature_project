@@ -960,6 +960,10 @@ router.post('/listDelete', async (req, res) => {
   res.json('deletado');
 });
 
+//支出カテゴリーを削除します------------------->
+router.post('/destroyCategory', async (req, res) => {
+  Finence_category.destroy({ where: { id: req.body.id } })
+});
 
 router.post('/familyDelete', async (req, res) => {
   Parent.destroy({ where: { id: req.body.id } })
