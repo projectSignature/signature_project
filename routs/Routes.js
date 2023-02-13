@@ -111,6 +111,25 @@ router.post('/clientTest', async (req, res) => {
   }
 });
 
+//支出項目の登録------------------------------>
+router.post('/createexpenses', async (req, res) => {
+  try {
+    const newExpense = await Finencepay.create({
+      GYM_ID: req.body.id,
+      CATEGORY: req.body.category,
+      NAME: req.body.kubun,
+      VALUE:req.body.value,
+      COLOR: req.body.color,
+      KUBUN: req.body.kubun,
+      DATE: req.body.date
+    });
+    res.json(newExpense);
+  } catch (err) {
+    console.log(err)
+    return res.status(400).json(err)
+  }
+});
+
 //rotas de testes------------------------------>
 router.post('/createCategory', async (req, res) => {
   try {
