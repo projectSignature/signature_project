@@ -121,7 +121,7 @@ router.post('/createexpenses', async (req, res) => {
       VALUE:req.body.value,
       COLOR: req.body.color,
       KUBUN: req.body.kubun,
-      DATE: req.body.date
+      Date: req.body.date
     });
     res.json(newExpense);
   } catch (err) {
