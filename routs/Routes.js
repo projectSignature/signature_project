@@ -17,6 +17,7 @@ const Pay = require('../schema/payment');
 const MemberCount = require('../schema/member_count');
 const Finencepay = require('../schema/finencepays');
 const Finence_category = require('../schema/finence_category');
+const Expense = require('../schema/expenses');
 
 //LIBS
 const pdf = require('html-pdf');
