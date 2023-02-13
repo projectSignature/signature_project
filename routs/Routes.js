@@ -117,7 +117,7 @@ router.post('/createexpenses', async (req, res) => {
     const newExpense = await Finencepay.create({
       GYM_ID: req.body.id,
       CATEGORY: req.body.category,
-      NAME: req.body.kubun,
+      NAME: req.body.name,
       VALUE:req.body.value,
       COLOR: req.body.color,
       KUBUN: req.body.kubun,
