@@ -893,6 +893,25 @@ router.post('/graduationafter', async (req, res) => {
 });
 
 
+  //支出カテゴリーのアップデート------------------------------------------>
+router.post('/categoryupdate', async (req, res) => {
+try{
+const members = await Finence_category.update({
+  CATEGORY: req.body.category,
+  KUBUN:'1',
+  COLOR:req.body.color,
+  
+}, {
+  where: {
+    id: req.body.id,
+  }
+});
+res.json(members)
+} catch(err) {
+ res.status(400).json(err)
+}
+});
+
 
 //rota para verificar graduação-------------------------------------------->
 router.get('/lesson_after/:id', async (req, res) => {
