@@ -184,6 +184,25 @@ router.get('/membersCount', async (req, res) => {
 }
 });
 
+//支出の履歴取得------------------------->
+router.get('/expensesHistoryGet', async (req, res) => {
+  try {
+    const { Op } = require('sequelize')
+  const clients = await Expense.findAll({
+    where: {
+      GYM_ID: req.query.id,
+       Date :{
+         [Op.gt]:req.query.getdat
+       } ,
+       kubun: req.query.kubun
+    }
+  });
+  res.json(clients)
+} catch (err) {
+  res.json(err)
+}
+});
+
 //支出のアイテム名をGET------------------------->
 router.get('/finenceGet', async (req, res) => {
   try {
