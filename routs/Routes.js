@@ -148,7 +148,6 @@ router.post('/expenseHistoryupdate', async (req, res) => {
       Date: req.body.date,
       note: req.body.note
     },{
-      , {
         where: {
           id: req.body.upid
         }
