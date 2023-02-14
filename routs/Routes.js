@@ -134,6 +134,33 @@ router.post('/expenseHistory', async (req, res) => {
   }
 });
 
+router.post('/expenseHistoryupdate', async (req, res) => {
+  try {
+    const newClient = await Expense.update({
+      category: req.body.category,
+      expense_id: req.body.id,
+      GYM_ID: req.body.gymid,
+      NAME: req.body.name,
+      VALUE: req.body.value,
+      COLOR: req.body.color,
+      KUBUN: req.body.kubun,
+      STATUS: req.body.status,
+      Date: req.body.date,
+      note: req.body.note
+    },{
+      , {
+        where: {
+          id: req.body.upid
+        }
+    });
+    res.json(newClient);
+  } catch (err) {
+    console.log(err)
+    return res.status(400).json(err)
+  }
+});
+
+
 //支出項目の登録------------------------------>
 router.post('/createexpenses', async (req, res) => {
   try {
