@@ -91,7 +91,6 @@ router.get('/clientesDados/:id', async (req, res) => {
 router.post('/ParentsCreate', async (req, res) => {
     try {
   var param = req.body;
-  await database.sync();
   let newParents = await Parent.create({
     nm_member_id: param.id,
     family_name: param.name,
