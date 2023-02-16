@@ -88,6 +88,26 @@ router.get('/clientesDados/:id', async (req, res) => {
 }
 });
 
+router.post('/ParentsCreate', async (req, res) => {
+    try {
+  var param = req.body;
+  await database.sync();
+  let newParents = await Parent.create({
+    nm_member_id: param.id,
+    family_name: param.name,
+    birthday: param.birthday,
+    gender: param.gender,
+    birthday_age: param.age,
+    gymid: param.gymid,
+  });
+   return res.status(200)
+   }
+  catch (err) {
+    return res.status(400).json(err)
+    console.log(err)
+  }
+});
+
 //rotas de testes------------------------------>
 router.post('/clientTest', async (req, res) => {
   try {
