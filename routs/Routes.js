@@ -491,6 +491,22 @@ router.post('/family', async (req, res) => {
 }
 });
 
+//read de dados------------------------------->
+router.get('/newfamily', async (req, res) => {
+  try{
+  const members = await Parent.findAll({
+    where: {
+      nm_member_id: req.query.id
+    }
+  }); //findAll findByPk
+  res.json(members)
+} catch(err) {
+  console.log(err)
+ return res.status(400).json(err)
+}
+});
+
+
 //Rota para recuperar DADOS do calendario para o front do entrance
 router.get('/calender/gymentrance', async (req, res) => {
   const newCalender = await Calender.findAll({
