@@ -99,7 +99,7 @@ router.post('/ParentsCreate', async (req, res) => {
     birthday_age: param.age,
     gymid: param.gymid,
   });
-   return res.status(200)
+   res.json(newParents);
    }
   catch (err) {
     return res.status(400).json(err)
