@@ -1066,6 +1066,19 @@ router.post('/listDelete', async (req, res) => {
 //支出カテゴリーを削除します------------------->
 router.post('/destroyCategory', async (req, res) => {
   Finence_category.destroy({ where: { id: req.body.id } })
+  try {
+    const newCalender = await Expense.update({
+      category: req.body.id,
+      COLOR: '#666666'
+    }, {
+      where: {
+        category: req.body.id,
+      }
+    });
+    res.json(newCalender)
+  }
+  catch (err) { console.log(err) }
+
 });
 
 router.post('/familyDelete', async (req, res) => {
