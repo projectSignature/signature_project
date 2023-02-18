@@ -30,7 +30,7 @@ const Expenses = database.define('expense', {
     },
 
     VALUE: {
-        type: Sequelize.STRING(100),
+        type: Sequelize.STRING(300),
     },
 
     COLOR: {
