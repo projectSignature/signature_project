@@ -31,7 +31,6 @@ const Expenses = database.define('expense', {
 
     VALUE: {
         type: Sequelize.STRING(100),
-        allowNull: false,
     },
 
     COLOR: {
