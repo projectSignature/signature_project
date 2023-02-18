@@ -1069,7 +1069,7 @@ router.post('/destroyCategory', async (req, res) => {
   try {
     const newCalender = await Expense.update({
       category: 0,
-      COLOR: '#666666'
+      COLOR: '#8B4513'
     }, {
       where: {
         category: req.body.id,
