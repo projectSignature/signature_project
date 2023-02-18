@@ -1068,7 +1068,7 @@ router.post('/destroyCategory', async (req, res) => {
   Finence_category.destroy({ where: { id: req.body.id } })
   try {
     const newCalender = await Expense.update({
-      category: req.body.id,
+      category: 0,
       COLOR: '#666666'
     }, {
       where: {
