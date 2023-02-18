@@ -1081,6 +1081,25 @@ router.post('/destroyCategory', async (req, res) => {
 
 });
 
+//支出項目を削除します------------------->
+router.post('/FinencepayCategory', async (req, res) => {
+  Finencepay.destroy({ where: { id: req.body.id } })
+  try {
+    const newCalender = await Expense.update({
+      category: '0',
+      COLOR: '#8B4513',
+      expense_id: '0'
+    }, {
+      where: {
+        category: req.body.id,
+      }
+    });
+    res.json(newCalender)
+  }
+  catch (err) { console.log(err) }
+
+});
+
 router.post('/familyDelete', async (req, res) => {
   Parent.destroy({ where: { id: req.body.id } })
   res.json('deletado');
