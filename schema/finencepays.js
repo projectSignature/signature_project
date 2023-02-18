@@ -26,7 +26,6 @@ const Finencepays = database.define('finencepay', {
 
     VALUE: {
         type: Sequelize.STRING(150),
-        allowNull: false,
     },
 
     COLOR: {
@@ -41,7 +40,6 @@ const Finencepays = database.define('finencepay', {
 
     Date: {
         type: Sequelize.STRING(150),
-        allowNull: false,
     },
 
 });
