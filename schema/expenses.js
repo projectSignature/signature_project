@@ -29,7 +29,7 @@ const Expenses = database.define('expense', {
         allowNull: false,
     },
 
-    VALUE: {
+    KAKAKU: {
         type: Sequelize.STRING(150),
         allowNull: false,
     },
