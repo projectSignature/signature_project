@@ -1091,7 +1091,7 @@ router.post('/FinencepayCategory', async (req, res) => {
       expense_id: '0'
     }, {
       where: {
-        category: req.body.id,
+        expense_id: req.body.id,
       }
     });
     res.json(newCalender)
