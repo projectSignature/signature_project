@@ -253,7 +253,8 @@ router.get('/finenceGet', async (req, res) => {
   try {
   const memberscount = await Finencepay.findAll({
     where: {
-      GYM_ID: req.query.id
+      GYM_ID: req.query.id,
+      KUBUN:req.query.kubun
     }
   });
   res.json(memberscount)
