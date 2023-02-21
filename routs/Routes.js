@@ -1349,7 +1349,6 @@ router.get('/parents/:name/:birthday/:gender/:age/:gymid', async (req, res) => {
     raw: true,
   });
   var param = req.params;
-  await database.sync();
   let newParents = await Parent.create({
     nm_member_id: countMax[0].id,
     family_name: param.name,
