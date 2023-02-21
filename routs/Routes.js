@@ -1365,6 +1365,29 @@ router.get('/parents/:name/:birthday/:gender/:age/:gymid', async (req, res) => {
   }
 });
 
+router.post('/newParentsCreate', async (req, res) => {
+    try {
+      const countMax = await Member.findAll({
+        attributes: [[Sequelize.fn('max', Sequelize.col('id')), 'id']],
+        raw: true,
+      });
+  var param = req.body;
+  let newParents = await Parent.create({
+    nm_member_id: countMax[0].id,
+    family_name: param.name,
+    birthday: param.birthday,
+    gender: param.gender,
+    birthday_age: param.age,
+    gymid: param.gymid,
+  });
+   return res.status(200)
+   }
+  catch (err) {
+    return res.status(400).json(err)
+    console.log(err)
+  }
+});
+
 module.exports = router;
 
 
