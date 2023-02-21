@@ -1316,7 +1316,6 @@ router.post('/entrancehistory', async (req, res) => {
 
 //rota para pagamentos
 router.get('/payment/:name/:gym_id/:plan/:valor', async (req, res) => {
-  await console.log('in1')
   const countMax = await Member.findAll({
     attributes: [[Sequelize.fn('max', Sequelize.col('id')), 'id']],
     raw: true,
@@ -1380,7 +1379,7 @@ router.post('/newParentsCreate', async (req, res) => {
     birthday_age: param.age,
     gymid: param.gymid,
   });
-   return res.status(200)
+   return res.json(newParents)
    }
   catch (err) {
     return res.status(400).json(err)
