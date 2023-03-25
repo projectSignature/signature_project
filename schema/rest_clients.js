@@ -48,6 +48,16 @@ const RestClients = database.define('restClient', {
          },
         }
     },
+      password: {unique: false,
+        type: Sequelize.STRING(150),
+        allowNull: false,
+        unique: false,
+        validate: {
+         notEmpty: {
+            msg: "Esse campo não pode está vazio.."
+         },
+        }
+    }
 });
 
 module.exports = RestClients;
