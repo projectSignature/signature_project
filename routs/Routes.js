@@ -1442,6 +1442,7 @@ router.post('/authClients', async (req, res) => {
 
 //menu GET------------------------->
 router.get('/menuGet', async (req, res) => {
+  console.log('in')
   try {
   const memberscount = await RestMenu.findAll({
     where: {
@@ -1450,6 +1451,7 @@ router.get('/menuGet', async (req, res) => {
   });
   res.json(memberscount)
 } catch (err) {
+  console.log(err)
   res.json(err)
 }
 });
