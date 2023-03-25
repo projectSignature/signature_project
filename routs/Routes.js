@@ -1444,12 +1444,12 @@ router.post('/authClients', async (req, res) => {
 router.get('/menuGet', async (req, res) => {
   console.log('in')
   try {
-  const memberscount = await RestMenu.findAll({
+  const restmenu = await RestMenu.findAll({
     where: {
       rest_id: req.query.id
     }
   });
-  res.json(memberscount)
+  res.json(restmenu)
 } catch (err) {
   console.log(err)
   res.json(err)
