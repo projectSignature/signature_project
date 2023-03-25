@@ -18,6 +18,7 @@ const MemberCount = require('../schema/member_count');
 const Finencepay = require('../schema/finencepays');
 const Finence_category = require('../schema/finence_category');
 const Expense = require('../schema/expenses');
+const RestClient = require('../schema/rest_clients')
 
 //LIBS
 const pdf = require('html-pdf');
@@ -1386,6 +1387,28 @@ router.post('/newParentsCreate', async (req, res) => {
     console.log(err)
   }
 });
+
+//Rotas para o app do rest------------------------------------------------------>
+/////////////////////////////////////////////////////////////////////////////////
+
+//rotas de testes------------------------------>
+router.post('/newMemberRoots', async (req, res) => {
+  try {
+  //  await database.sync();
+    const newClient = await RestClient.create({
+      id: req.body.id,
+      name: req.body.name,
+      phone: req.body.phone,
+      post: req.body.post,
+      adress: req.body.adress,
+    });
+    res.json(newClient);
+  } catch (err) {
+    console.log(err)
+    return res.status(400).json(err)
+  }
+});
+
 
 module.exports = router;
 
