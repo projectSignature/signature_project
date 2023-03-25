@@ -1401,6 +1401,7 @@ router.post('/newMemberRoots', async (req, res) => {
       phone: req.body.phone,
       post: req.body.post,
       adress: req.body.adress,
+      password:req.body.pass,
     });
     res.json(newClient);
   } catch (err) {
