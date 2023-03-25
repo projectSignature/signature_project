@@ -1414,6 +1414,7 @@ router.post('/newMemberRoots', async (req, res) => {
 router.post('/authClients', async (req, res) => {
   const [numbers, password] = [req.body.numbers, req.body.password];
   const [primaryKey, secondKey] = [1234, 567]
+  try {
   const clients = await RestClient.findAll({
     where: {
       phone: numbers,
@@ -1421,31 +1422,21 @@ router.post('/authClients', async (req, res) => {
     }
   });
   console.log(clients)
-  //try {
-  ///  let name = clients[0].name;
-  ///  let phone = clients[0].phone;
-  //  var post = clients[0].post;
-  //  var id = clients[0].id
-  //  var adress = clients[0].adress
-  //  validationRes(name, phone, post, id, adress)
-
-  //  function validationRes(key, name, code, gymname, id, language) {
-  ///    if (key > 0) {
-  //      res.json({
-    //      status: 200,
-    //      token: key,
-    //      gym: gymname,
-  //        language: language,
-  //        number: { NAME: name, AUTHORITY: code , ID: id },
-  //      });
-  //    } else {
-  //      res.json({ message: 'internal error1' })
-  //    }
-  //  };
-  //} catch (err) {
-  //  res.json({ message: 'internal error' })
-//  }
-
+  if(clients.length==0){
+    res.json({ message: 'internal error' })
+  }else{
+    res.json({
+         status: 200,
+         name: clients[0].name,
+         phone: clients[0].phone,
+         post: clients[0].post,
+         id: clients[0].id,
+         adress: clients[0].adress,
+          });
+  }
+} catch (err) {
+  res.json({ message: 'internal error' })
+}
 });
 
 
