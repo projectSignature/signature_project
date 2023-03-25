@@ -18,7 +18,8 @@ const MemberCount = require('../schema/member_count');
 const Finencepay = require('../schema/finencepays');
 const Finence_category = require('../schema/finence_category');
 const Expense = require('../schema/expenses');
-const RestClient = require('../schema/rest_clients')
+const RestClient = require('../schema/rest_clients');
+const RestMenu = require('../schema/restmenu')
 
 //LIBS
 const pdf = require('html-pdf');
@@ -1436,6 +1437,20 @@ router.post('/authClients', async (req, res) => {
   }
 } catch (err) {
   res.json({ message: 'internal error' })
+}
+});
+
+//menu GET------------------------->
+router.get('/menuGet', async (req, res) => {
+  try {
+  const memberscount = await RestMenu.findAll({
+    where: {
+      rest_id: req.query.id
+    }
+  });
+  res.json(memberscount)
+} catch (err) {
+  res.json(err)
 }
 });
 
