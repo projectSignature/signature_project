@@ -1441,7 +1441,8 @@ router.post('/authClients', async (req, res) => {
 });
 
 //rest app menu Get------------------------>
-router.get('/restmenu', async (req, res) => {  //req.query
+router.get('/restmenu', async (req, res) => {
+  console.log("in")
    try{
   const menuAnswer = await RestMenu.findAll({
     where: {
