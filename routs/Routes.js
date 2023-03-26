@@ -1440,6 +1440,20 @@ router.post('/authClients', async (req, res) => {
 }
 });
 
+//rest app menu Get------------------------>
+router.get('/restmenu', async (req, res) => {
+  try {
+  const memberscount = await RestMenu.findAll({
+    where: {
+      rest_id: req.query.id,
+      menu_id:req.query.menuid
+    }
+  });
+  res.json(memberscount)
+} catch (err) {
+  res.json(err)
+}
+});
 
 
 module.exports = router;
