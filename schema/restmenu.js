@@ -11,14 +11,12 @@ const RestMenus = database.define('restmenu', {
     menu_id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
-        allowNull: false,
-        primaryKey: true
+        allowNull: false
     },
     menu_child_id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
-        allowNull: false,
-        primaryKey: true
+        allowNull: false
     },
     menu_name_0: {unique: false,
         type: Sequelize.STRING(150),
@@ -63,8 +61,7 @@ const RestMenus = database.define('restmenu', {
     rest_id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
-        allowNull: false,
-        primaryKey: true
+        allowNull: false
     }
 });
 
