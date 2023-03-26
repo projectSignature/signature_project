@@ -1449,7 +1449,7 @@ router.get('/menuGet', async (req, res) => {
   const menuAnswer = await RestMenu.findAll({
    where: {
    rest_id: req.query.id,
-   menu_id: req.query.menuid
+   //menu_id: req.query.menuid
     }
   });
   res.json(menuAnswer)
