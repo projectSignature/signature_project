@@ -1443,6 +1443,8 @@ router.post('/authClients', async (req, res) => {
 //rest app menu Get------------------------>
 router.get('/menuGet', async (req, res) => {
   console.log("in")
+  console.log(req.query.id)
+  console.log(req.query.menuid)
    try{
   const menuAnswer = await RestMenu.findAll({
     where: {
