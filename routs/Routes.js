@@ -19,7 +19,7 @@ const Finencepay = require('../schema/finencepays');
 const Finence_category = require('../schema/finence_category');
 const Expense = require('../schema/expenses');
 const RestClient = require('../schema/rest_clients');
-//const RestMenu = require('../schema/restmenu');
+const RestMenu = require('../schema/restmenu');
 
 //LIBS
 const pdf = require('html-pdf');
