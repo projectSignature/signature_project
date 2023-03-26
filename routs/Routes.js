@@ -1451,6 +1451,7 @@ router.get('/restmenu', async (req, res) => {
   });
   res.json(memberscount)
 } catch (err) {
+  console.log(err)
   res.json(err)
 }
 });
