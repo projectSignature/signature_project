@@ -1441,20 +1441,20 @@ router.post('/authClients', async (req, res) => {
 });
 
 //rest app menu Get------------------------>
-//router.get('/restmenu', async (req, res) => {
- // try {
- // const memberscount = await RestMenu.findAll({
- //   where: {
-   //   rest_id: req.query.id,
-    //  menu_id:req.query.menuid
-   // }
- // });
-//  res.json(memberscount)
-//} catch (err) {
- // console.log(err)
-//  res.json(err)
-//}
-//});
+router.get('/restmenu', async (req, res) => {  //req.query
+   try{
+  const menuAnswer = await RestMenu.findAll({
+    where: {
+      rest_id: req.query.id,
+      menu_id: req.query.menuid
+    }
+  });
+  res.json(menuAnswer)
+} catch(err) {
+  console.log(err)
+ return res.status(400).json(err)
+}
+});
 
 
 module.exports = router;
