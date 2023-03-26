@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 const database = require('../db');
 
-const RestMenu = database.define('restMenu', {
+const RestMenus = database.define('restMenu', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -68,4 +68,4 @@ const RestMenu = database.define('restMenu', {
     }
 });
 
-module.exports = RestMenu;
+module.exports = RestMenus;
