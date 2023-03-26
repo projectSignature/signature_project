@@ -10,53 +10,30 @@ const RestMenus = database.define('restmenu', {
     },
     menu_id: {
         type: Sequelize.INTEGER,
-        autoIncrement: true,
         allowNull: false
     },
     menu_child_id: {
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
         allowNull: false
     },
     menu_name_0: {unique: false,
         type: Sequelize.STRING(150),
         allowNull: false,
-        unique: false,
-        validate: {
-         notEmpty: {
-            msg: "Esse campo não pode está vazio.."
-         },
-        }
+        unique: false
     },
     menu_name_1: {unique: false,
         type: Sequelize.STRING(150),
         allowNull: false,
-        unique: false,
-        validate: {
-         notEmpty: {
-            msg: "Esse campo não pode está vazio.."
-         },
-        }
+        unique: false
     },
     menu_name_2: {unique: false,
         type: Sequelize.STRING(150),
         allowNull: false,
-        unique: false,
-        validate: {
-         notEmpty: {
-            msg: "Esse campo não pode está vazio.."
-         },
-        }
+        unique: false
     },
     menu_value: {unique: false,
         type: Sequelize.STRING(150),
         allowNull: false,
         unique: false,
-        validate: {
-         notEmpty: {
-            msg: "Esse campo não pode está vazio.."
-         },
-        }
     },
     rest_id: {
         type: Sequelize.INTEGER,
