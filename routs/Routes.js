@@ -1447,12 +1447,11 @@ router.get('/menuGet', async (req, res) => {
   console.log(req.query.menuid)
    try{
   const menuAnswer = await RestMenu.findAll({
-  //  where: {
-   //   rest_id: req.query.id,
-    //  menu_id: req.query.menuid
-  //  }
+   where: {
+   rest_id: req.query.id,
+   menu_id: req.query.menuid
+    }
   });
-
   res.json(menuAnswer)
 } catch(err) {
   console.log(err)
