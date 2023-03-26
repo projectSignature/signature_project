@@ -13,31 +13,25 @@ const RestMenus = database.define('restmenu', {
         allowNull: false
     },
     menu_child_id: {
+        type: Sequelize.INTEGER,
         allowNull: false
     },
-    menu_name_0: {unique: false,
+    menu_name_0: {
         type: Sequelize.STRING(150),
-        allowNull: false,
-        unique: false
+        allowNull: false
     },
-    menu_name_1: {unique: false,
-        type: Sequelize.STRING(150),
-        allowNull: false,
-        unique: false
+    menu_name_1: {
+        type: Sequelize.STRING(150)
     },
-    menu_name_2: {unique: false,
-        type: Sequelize.STRING(150),
-        allowNull: false,
-        unique: false
+    menu_name_2: {
+        type: Sequelize.STRING(150)
     },
-    menu_value: {unique: false,
+    menu_value: {
         type: Sequelize.STRING(150),
-        allowNull: false,
-        unique: false,
+        allowNull: false
     },
     rest_id: {
         type: Sequelize.INTEGER,
-        autoIncrement: true,
         allowNull: false
     }
 });
