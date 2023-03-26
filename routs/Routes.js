@@ -19,7 +19,7 @@ const Finencepay = require('../schema/finencepays');
 const Finence_category = require('../schema/finence_category');
 const Expense = require('../schema/expenses');
 const RestClient = require('../schema/rest_clients');
-const RestMenu = require('../schema/restmenu');
+//const RestMenu = require('../schema/restmenu');
 
 //LIBS
 const pdf = require('html-pdf');
@@ -1441,20 +1441,20 @@ router.post('/authClients', async (req, res) => {
 });
 
 //rest app menu Get------------------------>
-router.get('/restmenu', async (req, res) => {
-  try {
-  const memberscount = await RestMenu.findAll({
-    where: {
-      rest_id: req.query.id,
-      menu_id:req.query.menuid
-    }
-  });
-  res.json(memberscount)
-} catch (err) {
-  console.log(err)
-  res.json(err)
-}
-});
+//router.get('/restmenu', async (req, res) => {
+ // try {
+ // const memberscount = await RestMenu.findAll({
+ //   where: {
+   //   rest_id: req.query.id,
+    //  menu_id:req.query.menuid
+   // }
+ // });
+//  res.json(memberscount)
+//} catch (err) {
+ // console.log(err)
+//  res.json(err)
+//}
+//});
 
 
 module.exports = router;
