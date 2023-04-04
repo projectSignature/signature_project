@@ -20,6 +20,7 @@ const Finence_category = require('../schema/finence_category');
 const Expense = require('../schema/expenses');
 const RestClient = require('../schema/rest_clients');
 const RestMenu = require('../schema/restmenu');
+const Historyorder = require('../schema/historyorder');
 
 //LIBS
 const pdf = require('html-pdf');
@@ -1458,6 +1459,33 @@ router.get('/menuGet', async (req, res) => {
  return res.status(400).json(err)
 }
 });
+
+router.post('/newOrder', async (req, res) => {
+  try {
+    const maxIdorder = maxorder()
+    //const newClient = await Historyorder.create({
+    //  id: req.body.id,
+  //    name: req.body.name,
+    //  phone: req.body.phone,
+    //  post: req.body.post,
+    //  adress: req.body.adress,
+    //  password:req.body.pass,
+    //});
+    res.json(maxIdorder);
+  } catch (err) {
+    console.log(err)
+    return res.status(400).json(err)
+  }
+});
+
+async function maxorder(){
+  const members = await Historyorder.findAll({
+    where: {
+      order_id: countMax[0].order_id
+    }
+  });
+  return members
+}
 
 
 module.exports = router;
