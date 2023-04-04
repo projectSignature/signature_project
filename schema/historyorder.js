@@ -13,11 +13,11 @@ const Historyorders = database.define('historyorder', {
         allowNull: false
     },
     menu_id: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING(150),
         allowNull: false
     },
     menu_child_id: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING(150),
         allowNull: false
     },
     menu_value: {
@@ -30,11 +30,11 @@ const Historyorders = database.define('historyorder', {
         }
     },
     quantity_menu: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING(150),
         allowNull: false
     },
     order_id: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING(150),
         allowNull: false
     },
     status: {
