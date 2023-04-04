@@ -1462,7 +1462,7 @@ router.get('/menuGet', async (req, res) => {
 
 router.post('/newOrder', async (req, res) => {
   try {
-    const maxIdorder = maxorder()
+  //  const maxIdorder = maxorder()
     //const newClient = await Historyorder.create({
     //  id: req.body.id,
   //    name: req.body.name,
@@ -1478,14 +1478,7 @@ router.post('/newOrder', async (req, res) => {
   }
 });
 
-async function maxorder(){
-  const members = await Historyorder.findAll({
-    where: {
-      order_id: countMax[0].order_id
-    }
-  });
-  return members
-}
+
 
 
 module.exports = router;
