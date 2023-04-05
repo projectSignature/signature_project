@@ -25,9 +25,9 @@ module.exports = async function restaurant(name,tel,email,mens) {
         subject: `Aviso sobre contato pelo website`,
         text: `Prezado cliente
 
-        ${nome} entrou em contato atrávez to web site.
+        ${name} entrou em contato atrávez to web site.
 
-        Nome:${nome}
+        Nome:${name}
         Telefone:${tel}
         E-mail:${email}
         Menssagem:${mens}
