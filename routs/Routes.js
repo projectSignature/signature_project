@@ -13,6 +13,7 @@ const Plan = require('../schema/plans');
 const Graduation = require('../schema/graduation');
 const mailerGrau = require('./sendGrau');
 const mailer = require('./sendMailer');
+const restaurant = require('./contactRestaurant');
 const Pay = require('../schema/payment');
 const MemberCount = require('../schema/member_count');
 const Finencepay = require('../schema/finencepays');
@@ -1058,6 +1059,16 @@ router.get('/lesson_after/:id', async (req, res) => {
 
 });
 
+
+//rota para enviar email de contacto-------------------------------------------->
+router.post('/restaurantContact', async (req, res) => {
+  try{
+      await restaurant(req.body.name,req.body.tel,req.body.email,req.body.mens);
+    res.send("enviado");
+  } catch(err) {
+    return res.status(400).json(err)
+  };
+});
 
 //list alunos delete------------------->
 router.post('/listDelete', async (req, res) => {
