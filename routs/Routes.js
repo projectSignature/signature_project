@@ -22,6 +22,7 @@ const Expense = require('../schema/expenses');
 const RestClient = require('../schema/rest_clients');
 const RestMenu = require('../schema/restmenu');
 const Historyorder = require('../schema/historyorder');
+const Restadmin = require('../schema/restadmins')
 
 //LIBS
 const pdf = require('html-pdf');
@@ -280,6 +281,25 @@ router.get('/finenceCategoryGet', async (req, res) => {
 } catch (err) {
   res.json(err)
 }
+});
+
+//autenticação de usuario------------------------>
+router.post('/authRestmember', async (req, res) => {
+  const [numbers, password] = [req.body.numbers, req.body.password];
+  const clients = await Restadmin.findAll({
+    where: {
+      adress: numbers,
+      password: password
+    }
+  });
+  try {
+    let name = clients[0].rest_id;
+    let code = clients[0].worker_name;
+    var gymname = clients[0].status;
+  } catch (err) {
+    res.json({ message: 'internal error' })
+  }
+res.json(clients)
 });
 
 //autenticação de usuario------------------------>
