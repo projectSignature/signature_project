@@ -22,7 +22,8 @@ const Expense = require('../schema/expenses');
 const RestClient = require('../schema/rest_clients');
 const RestMenu = require('../schema/restmenu');
 const Historyorder = require('../schema/historyorder');
-const Restadmin = require('../schema/restadmins')
+const Restadmin = require('../schema/restadmins');
+const Costrest = require('../schema/costrests');
 
 //LIBS
 const pdf = require('html-pdf');
@@ -110,6 +111,26 @@ router.post('/ParentsCreate', async (req, res) => {
     return res.status(400).json(err)
     console.log(err)
   }
+});
+
+//レストアプリの支出追加ルート------------------------------>
+router.post('/createCostRest', async (req, res) => {
+  try {
+    const newClient = await Costrest.create({
+      rest_id: req.body.d1,
+      worker_id: req.body.d2,
+      cost_id: req.body.d3,
+      amount: req.body.d4,
+      payday: req.body.d5,
+      memo: req.body.d6,
+      paykubun: req.body.d7,
+      status: req.body.d8
+    });
+    res.json(newClient);
+  } catch (err) {
+    console.log(err)
+    return res.status(400).json(err)
+  }
 });
 
 //rotas de testes------------------------------>
