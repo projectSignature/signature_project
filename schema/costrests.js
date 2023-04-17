@@ -44,7 +44,7 @@ const Costrests = database.define('costrest', {
          },
         }
     },
-    payda:{
+    payday:{
       type: Sequelize.DATE,
       validate: {
        notEmpty: {
