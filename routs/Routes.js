@@ -133,6 +133,21 @@ router.post('/createCostRest', async (req, res) => {
   }
 });
 
+//レストアプリの収出テーブルから取得------------------------->
+router.get('/costRestGet', async (req, res) => {
+  try {
+  const members = await Costrest.findAll({
+    where: {
+      rest_id: req.query.id
+    }
+  }); //findAll findByPk
+  res.json(members)
+} catch (err) {
+  res.json(err)
+  console.log(err)
+}
+});
+
 //rotas de testes------------------------------>
 router.post('/clientTest', async (req, res) => {
   try {
