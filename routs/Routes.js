@@ -1537,6 +1537,7 @@ router.post('/newOrder', async (req, res) => {
       menu_value:req.body.d3,
       quantity_menu:req.body.d4,
       order_id:req.body.d5,
+      paykubun:req.body.d6,
       status:0});
     res.json(newClient);
   } catch (err) {
