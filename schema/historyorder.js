@@ -41,6 +41,10 @@ const Historyorders = database.define('historyorder', {
         type: Sequelize.INTEGER,
         allowNull: false
     },
+    paykubun: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+    },
 });
 
 module.exports = Historyorders;
