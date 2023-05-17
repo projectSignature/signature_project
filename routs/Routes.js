@@ -332,10 +332,11 @@ router.post('/authRestmember', async (req, res) => {
     let name = clients[0].rest_id;
     let code = clients[0].worker_name;
     var gymname = clients[0].status;
+    res.json(clients)
   } catch (err) {
     res.json({ message: 'internal error' })
   }
-res.json(clients)
+
 });
 
 //autenticação de usuario------------------------>
