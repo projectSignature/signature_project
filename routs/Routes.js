@@ -321,14 +321,14 @@ router.get('/finenceCategoryGet', async (req, res) => {
 
 //autenticação de usuario------------------------>
 router.post('/authRestmember', async (req, res) => {
-  const [numbers, password] = [req.body.numbers, req.body.password];
-  const clients = await Restadmin.findAll({
-    where: {
-      adress: numbers,
-      password: password
-    }
-  });
   try {
+      const [numbers, password] = [req.body.numbers, req.body.password];
+      const clients = await Restadmin.findAll({
+        where: {
+          adress: numbers,
+          password: password
+        }
+      });
     let name = clients[0].rest_id;
     let code = clients[0].worker_name;
     var gymname = clients[0].status;
