@@ -1556,6 +1556,7 @@ router.get('/orderget', async (req, res) => {
   });
     res.json({
          clients
+    })
 } catch (err) {
   res.json({ message: 'internal error' })
 }
