@@ -45,6 +45,14 @@ const Historyorders = database.define('historyorder', {
         type: Sequelize.INTEGER,
         allowNull: false
     },
+    obs:{
+      type: Sequelize.STRING(300),
+      allowNull: false
+    },
+    pickUp_day:{
+      type: Sequelize.STRING(45),
+      allowNull: false
+    }
 });
 
 module.exports = Historyorders;
