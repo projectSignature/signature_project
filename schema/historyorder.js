@@ -52,6 +52,10 @@ const Historyorders = database.define('historyorder', {
     pickUp_day:{
       type: Sequelize.STRING(45),
       allowNull: false
+    },
+    pickUp_way:{
+      type: Sequelize.INTEGER,
+      allowNull: false
     }
 });
 
