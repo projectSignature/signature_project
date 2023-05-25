@@ -653,7 +653,7 @@ router.post('/updatehistoryStatus', async (req, res) => {
       id:req.body.d1
     }
   });
-  return res.status(200)
+  res.json(members)
 } catch(err) {
   console.log(err)
  return res.status(400).json(err)
