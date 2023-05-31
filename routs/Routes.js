@@ -1548,14 +1548,17 @@ router.post('/newOrder', async (req, res) => {
   try {
     //const maxIdorder = maxorder()
     const newClient = await Historyorder.create({
-      rest_id:req.body.d0,
+        rest_id:req.body.d0,
       menu_id:req.body.d1,
       menu_child_id:req.body.d2,
       menu_value:req.body.d3,
       quantity_menu:req.body.d4,
       order_id:req.body.d5,
+      status:0,
       paykubun:req.body.d6,
-      status:0});
+      obs:req.body.d9,
+      pickUp_day:req.body.d8,
+      pickUp_way:req.body.d7});
     res.json(newClient);
   } catch (err) {
     console.log(err)
