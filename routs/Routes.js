@@ -1544,6 +1544,7 @@ router.get('/menuGet', async (req, res) => {
 }
 });
 
+//-------------------Order rout--------------------------------------->
 router.post('/newOrder', async (req, res) => {
   try {
     //const maxIdorder = maxorder()
@@ -1555,7 +1556,7 @@ router.post('/newOrder', async (req, res) => {
       quantity_menu:req.body.d4,
       order_id:req.body.d5,
       status:0,
-      paykubun:req.body.d6,
+      paykubun:(req.body.d6) ? req.body.d6 : "default value",
       obs:req.body.d9,
       pickUp_day:req.body.d8,
       pickUp_way:req.body.d7});
