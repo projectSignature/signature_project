@@ -4,6 +4,7 @@ const router = express.Router();
 const database = require('../db');
 const credentials = require('./credentials');
 const crypto = require('crypto');
+const { Client, Environment } = require('square');
 
 //SCHEMAS
 const Member = require('../schema/members');
