@@ -8,7 +8,7 @@ const credentials = require('./credentials');
 //SCHEMAS
 const Member = require('../schema/members');
 const Parent = require('../schema/parents');
-const Client = require('../schema/clients');
+const myClient = require('../schema/clients');
 const Calender = require('../schema/calender');
 const Entrance = require('../schema/registerEntrance');
 const Plan = require('../schema/plans');
@@ -61,7 +61,7 @@ router.get('/client', async (req, res) => {
   try {
     await database.sync();
 
-    const newClient = await Client.create({
+    const newClient = await myClient.create({
       GYM_NAME: 'marrone doe',
       REPRESENTATIVE: 'novo rep',
       UNIQUE_CODE: 2,
@@ -84,7 +84,7 @@ router.get('/client', async (req, res) => {
 //clients data get------------------------->
 router.get('/clientesDados/:id', async (req, res) => {
   try {
-  const members = await Client.findAll({
+  const members = await myClient.findAll({
     where: {
       id: req.params.id
     }
@@ -156,7 +156,7 @@ router.post('/clientTest', async (req, res) => {
   try {
    // await database.sync();
 
-    const newClient = await Client.create({
+    const newClient = await myClient.create({
       GYM_NAME: req.body.gymname,
       REPRESENTATIVE: req.body.rep,
       UNIQUE_CODE: 5,
@@ -346,7 +346,7 @@ router.post('/authRestmember', async (req, res) => {
 router.post('/auth', async (req, res) => {
   const [numbers, password] = [req.body.numbers, req.body.password];
   const [primaryKey, secondKey] = [1234, 567]
-  const clients = await Client.findAll({
+  const clients = await myClient.findAll({
     where: {
       GYM_NAME: numbers,
       PASSWORD: password
@@ -684,7 +684,7 @@ router.post('/graduationmemberupdate', async (req, res) => {
 //update do pass------------------------------->
 router.post('/passupdate', async (req, res) => {
   try{
-  const members = await Client.update({
+  const members = await myClient.update({
     PASSWORD:req.body.pass,
   }, {
     where: {
@@ -792,7 +792,7 @@ router.post('/paymentUpdate', async (req, res) => {
 //client  Update---------------------------------->
 router.post('/clientUpdate', async (req, res) => {
  try{
-  const members = await Client.update({
+  const members = await myClient.update({
     GYM_NAME:req.body.name2,
     REPRESENTATIVE:req.body.name1,
     TEL:req.body.tel,
@@ -1221,7 +1221,7 @@ try{
     }
   });
   
-  const client = await Client.findAll({
+  const client = await myClient.findAll({
     where: {
       GYM_NAME: members[0].gym
     }
@@ -1593,7 +1593,7 @@ router.post('/backend/create-payment-link', async (req, res) => {
     const { Client, Environment } = require('square');
 
     // Configure as informações do seu aplicativo Square
-    const client = new Clients({
+    const client = new Client({
       environment: Environment.Production,
       accessToken:  credentials.production.accessToken
     });
