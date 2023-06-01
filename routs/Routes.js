@@ -2,6 +2,8 @@
 const express = require('express');
 const router = express.Router();
 const database = require('../db');
+const credentials = require('./credentials');
+const crypto = require('crypto');
 
 //SCHEMAS
 const Member = require('../schema/members');
@@ -24,6 +26,7 @@ const RestMenu = require('../schema/restmenu');
 const Historyorder = require('../schema/historyorder');
 const Restadmin = require('../schema/restadmins');
 const Costrest = require('../schema/costrests');
+
 
 //LIBS
 const pdf = require('html-pdf');
@@ -1586,21 +1589,18 @@ router.get('/orderget', async (req, res) => {
 //----------------------------SQUARE------------------------------------------>
 router.post('/backend/create-payment-link', async (req, res) => {
   try {
-    const squareApplicationId = 'sandbox-sq0idb-0A10Jf4WOIi2NgJQ17LZMQ';
-    const accessToken = 'EAAAF3ZlmIUK5DR7uZ5tidme48j06k3E6TPhhaWKaC5QsDjtTdk6TTG_Q7eGIxZB';
-
     const { Client, Environment } = require('square');
 
     // Configure as informações do seu aplicativo Square
     const client = new Client({
-      environment: Environment.Production, // ou Environment.Sandbox para o ambiente de produção
-      accessToken: accessToken // Substitua pelo seu token de acesso válido
+      environment: Environment.Production,
+      accessToken:  credentials.production.accessToken
     });
 
     const response = await client.checkoutApi.createPaymentLink({
-      idempotencyKey: crypto.randomUUID(),//'7457eb98-c6b8-4ec4-9f4b-df4ab01b3e67',
+      idempotencyKey: crypto.randomUUID(),
       order: {
-        locationId: 'L8ZK9T0BNEATZ',
+        locationId: credentials.production.locationId,
         lineItems: [
           {
             name: req.body.name,
