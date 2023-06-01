@@ -1612,6 +1612,14 @@ router.post('/backend/create-payment-link', async (req, res) => {
             }
           }
         ]
+      },
+      checkoutOptions: {
+        redirectUrl: 'https://seashell-app-s8r4y.ondigitalocean.app/',
+        acceptedPaymentMethods: {
+          applePay: true,
+          googlePay: true,
+          cashAppPay: true
+        }
       }
     });
     const paymentLinkUrl = response;
