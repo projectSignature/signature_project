@@ -3,8 +3,7 @@ const express = require('express');
 const router = express.Router();
 const database = require('../db');
 const credentials = require('./credentials');
-const crypto = require('crypto');
-const { Clients, Environment } = require('square');
+
 
 //SCHEMAS
 const Member = require('../schema/members');
@@ -1590,6 +1589,7 @@ router.get('/orderget', async (req, res) => {
 //----------------------------SQUARE------------------------------------------>
 router.post('/backend/create-payment-link', async (req, res) => {
   try {
+    const crypto = require('crypto');
     const { Client, Environment } = require('square');
 
     // Configure as informações do seu aplicativo Square
