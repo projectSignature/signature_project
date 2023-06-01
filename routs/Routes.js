@@ -1583,6 +1583,43 @@ router.get('/orderget', async (req, res) => {
 }
 });
 
+//----------------------------SQUARE------------------------------------------>
+router.post('/backend/create-payment-link', async (req, res) => {
+  try {
+    const squareApplicationId = 'sandbox-sq0idb-0A10Jf4WOIi2NgJQ17LZMQ';
+    const accessToken = 'EAAAF3ZlmIUK5DR7uZ5tidme48j06k3E6TPhhaWKaC5QsDjtTdk6TTG_Q7eGIxZB';
+
+    const { Client, Environment } = require('square');
+
+    // Configure as informações do seu aplicativo Square
+    const client = new Client({
+      environment: Environment.Production, // ou Environment.Sandbox para o ambiente de produção
+      accessToken: accessToken // Substitua pelo seu token de acesso válido
+    });
+
+    const response = await client.checkoutApi.createPaymentLink({
+      idempotencyKey: crypto.randomUUID(),//'7457eb98-c6b8-4ec4-9f4b-df4ab01b3e67',
+      order: {
+        locationId: 'L8ZK9T0BNEATZ',
+        lineItems: [
+          {
+            name: req.body.name,
+            quantity: req.body.quantity,
+            basePriceMoney: {
+              amount: req.body.amount,
+              currency: req.body.currency
+            }
+          }
+        ]
+      }
+    });
+    const paymentLinkUrl = response;
+    res.json(paymentLinkUrl.result.paymentLink);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to create payment link' });
+  }
+});
 
 module.exports = router;
 
