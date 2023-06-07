@@ -26,7 +26,7 @@ const RestMenu = require('../schema/restmenu');
 const Historyorder = require('../schema/historyorder');
 const Restadmin = require('../schema/restadmins');
 const Costrest = require('../schema/costrests');
-const Rest_manegers = require('../schema/rest_maneger')
+const Rest_maneger = require('../schema/rest_manegers')
 
 
 //LIBS
