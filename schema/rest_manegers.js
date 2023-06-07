@@ -10,17 +10,14 @@ const Rest_manegers = database.define('rest_maneger', {
     },
     rest_id: {
         type: Sequelize.INTEGER,
-        autoIncrement: true,
         allowNull: false
     },
     work_status: {
         type: Sequelize.INTEGER,
-        autoIncrement: true,
         allowNull: false
     },
     pickup_time: {
         type: Sequelize.INTEGER,
-        autoIncrement: true,
         allowNull: false
     },
 
