@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 const database = require('../db');
 
-const Rest_manegers = database.define('rest_maneger', {
+const Rest_manegers = database.define('rest_manegers', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
