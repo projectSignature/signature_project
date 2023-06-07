@@ -1631,6 +1631,23 @@ router.post('/backend/create-payment-link', async (req, res) => {
   }
 });
 
+
+//clients data get------------------------->
+router.get('/restmanegerTimeGet', async (req, res) => {
+  try {
+  const members = await Rest_maneger.findAll({
+    where: {
+      rest_id:0
+    }
+  }); //findAll findByPk
+
+  res.json(members)
+} catch (err) {
+  res.json(err)
+  console.log(err)
+}
+});
+
 module.exports = router;
 
 
