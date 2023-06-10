@@ -117,25 +117,7 @@ router.post('/ParentsCreate', async (req, res) => {
   }
 });
 
-router.post('/updateorderHistory', async (req, res) => {
-  try {
-    const newClient = await Historyorder.update({
-      menu_id: req.body.d1,
-      menu_child_id: req.body.d2,
-      menu_value: req.body.d3,
-      quantity_menu: req.body.d4
-    },{
-      , {
-        where: {
-          id: req.body.d5
-        }
-    });
-    res.json(newClient);
-  } catch (err) {
-    console.log(err)
-    return res.status(400).json(err)
-  }
-});
+
 
 //レストアプリの支出追加ルート------------------------------>
 router.post('/createCostRest', async (req, res) => {
