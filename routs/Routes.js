@@ -195,6 +195,20 @@ router.post('/clientTest', async (req, res) => {
   }
 });
 
+router.post('/ordergetstatusconfirm', async (req, res) => {
+  try {
+  const clients = await Historyorder.findAll({
+    where: {
+      status: 1,
+    }
+  });
+    res.json({
+         clients
+} catch (err) {
+  res.json({ message: 'internal error' })
+}
+});
+
 // 支出履歴の登録
 router.post('/expenseHistory', async (req, res) => {
   try {
