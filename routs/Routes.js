@@ -1686,6 +1686,75 @@ router.get('/restmanegerTimeGet', async (req, res) => {
 
 module.exports = router;
 
+router.post('/cachChange', async (req, res) => {
+  try {
+    if(req.body.d0==0){
+      const newClient = await Historyorder.update({
+        cach: req.body.d2,
+        bank: req.body.d3,
+      },{
+          where: {
+            rest_id: 0
+          }
+      });
+      res.json(newClient);
+    }else if(req.body.d0==1){
+      const newClient = await Historyorder.update({
+        cach: req.body.d3,
+        bank: req.body.d2,
+      },{
+          where: {
+            rest_id: 0
+          }
+      });
+      res.json(newClient);
+    }else if(req.body.d0==2&&req.body.d1==1){
+      const newClient = await Historyorder.update({
+        uber: req.body.d2,
+        bank: req.body.d3,
+      },{
+          where: {
+            rest_id: 0
+          }
+      });
+      res.json(newClient);
+    }else if(req.body.d0==2&&req.body.d1==0){
+      const newClient = await Historyorder.update({
+        uber: req.body.d2,
+        cach: req.body.d3,
+      },{
+          where: {
+            rest_id: 0
+          }
+      });
+      res.json(newClient);
+    }else if(req.body.d0==3&&req.body.d1==1){
+      const newClient = await Historyorder.update({
+        squere: req.body.d2,
+        bank: req.body.d3,
+      },{
+          where: {
+            rest_id: 0
+          }
+      });
+      res.json(newClient);
+    }else if(req.body.d0==3&&req.body.d1==0){
+      const newClient = await Historyorder.update({
+        squere: req.body.d2,
+        cach: req.body.d3,
+      },{
+          where: {
+            rest_id: 0
+          }
+      });
+      res.json(newClient);
+    }
+
+  } catch (err) {
+    console.log(err)
+    return res.status(400).json(err)
+  }
+});
 
 //bae
 
