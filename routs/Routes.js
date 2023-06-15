@@ -1596,9 +1596,7 @@ router.post('/newOrder', async (req, res) => {
 router.get('/orderget', async (req, res) => {
   try {
   const clients = await Historyorder.findAll({
-    where: {
-      status: 0,
-    }
+
   });
     res.json({
          clients
