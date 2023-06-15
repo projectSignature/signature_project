@@ -1769,7 +1769,7 @@ router.post('/cachChangeonly', async (req, res) => {
       res.json(newClient);
     }else if(req.body.d0==1){
       const newClient = await Rest_maneger.update({
-        bank: req.body.d1,
+        squere: req.body.d1,
       },{
           where: {
             rest_id: 0
