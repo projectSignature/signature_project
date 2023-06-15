@@ -20,6 +20,26 @@ const Rest_manegers = database.define('rest_maneger', {
         type: Sequelize.INTEGER,
         allowNull: false
     },
+    cach: {
+        unique: false,
+        type: Sequelize.STRING(150),
+        allowNull: false,
+    },
+  bank: {
+        unique: false,
+        type: Sequelize.STRING(150),
+        allowNull: false,
+    },
+    uber: {
+        unique: false,
+        type: Sequelize.STRING(150),
+        allowNull: false,
+    },
+    squere: {
+        unique: false,
+        type: Sequelize.STRING(150),
+        allowNull: false,
+    },
 
 });
 
