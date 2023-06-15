@@ -1790,5 +1790,10 @@ router.post('/cachChangeonly', async (req, res) => {
     return res.status(400).json(err)
   }
 });
+
+router.post('/delehistoryorder', async (req, res) => {
+  Rest_maneger.destroy({ where: { id: req.body.id } })
+  res.json('deletado');
+});
 //bae
 
