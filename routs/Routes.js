@@ -1767,9 +1767,18 @@ router.post('/cachChangeonly', async (req, res) => {
           }
       });
       res.json(newClient);
-    }else{
+    }else if(req.body.d0==1){
       const newClient = await Rest_maneger.update({
         bank: req.body.d1,
+      },{
+          where: {
+            rest_id: 0
+          }
+      });
+      res.json(newClient);
+    }else{
+      const newClient = await Rest_maneger.update({
+        uber: req.body.d1,
       },{
           where: {
             rest_id: 0
