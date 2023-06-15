@@ -1792,7 +1792,7 @@ router.post('/cachChangeonly', async (req, res) => {
 });
 
 router.post('/delehistoryorder', async (req, res) => {
-  Rest_maneger.destroy({ where: { id: req.body.id } })
+  Historyorder.destroy({ where: { id: req.body.id } })
   res.json('deletado');
 });
 //bae
