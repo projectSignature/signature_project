@@ -672,7 +672,7 @@ router.post('/familyupdate', async (req, res) => {
 router.post('/updatehistoryStatus', async (req, res) => {
   try{
   const members = await Historyorder.update({
-    status:1
+    status:req.body.status
   }, {
     where: {
       id:req.body.d1
