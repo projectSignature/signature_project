@@ -1755,5 +1755,33 @@ router.post('/cachChange', async (req, res) => {
     return res.status(400).json(err)
   }
 });
+
+router.post('/cachChangeonly', async (req, res) => {
+  try {
+    if(req.body.d0==0){
+      const newClient = await Rest_maneger.update({
+        cach: req.body.d1,
+      },{
+          where: {
+            rest_id: 0
+          }
+      });
+      res.json(newClient);
+    }else{
+      const newClient = await Rest_maneger.update({
+        bank: req.body.d1,
+      },{
+          where: {
+            rest_id: 0
+          }
+      });
+      res.json(newClient);
+    }
+
+  } catch (err) {
+    console.log(err)
+    return res.status(400).json(err)
+  }
+});
 //bae
 
