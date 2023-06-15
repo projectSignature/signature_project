@@ -1689,7 +1689,7 @@ module.exports = router;
 router.post('/cachChange', async (req, res) => {
   try {
     if(req.body.d0==0){
-      const newClient = await Historyorder.update({
+      const newClient = await Rest_maneger.update({
         cach: req.body.d2,
         bank: req.body.d3,
       },{
@@ -1699,7 +1699,7 @@ router.post('/cachChange', async (req, res) => {
       });
       res.json(newClient);
     }else if(req.body.d0==1){
-      const newClient = await Historyorder.update({
+      const newClient = await Rest_maneger.update({
         cach: req.body.d3,
         bank: req.body.d2,
       },{
@@ -1709,7 +1709,7 @@ router.post('/cachChange', async (req, res) => {
       });
       res.json(newClient);
     }else if(req.body.d0==2&&req.body.d1==1){
-      const newClient = await Historyorder.update({
+      const newClient = await Rest_maneger.update({
         uber: req.body.d2,
         bank: req.body.d3,
       },{
@@ -1719,7 +1719,7 @@ router.post('/cachChange', async (req, res) => {
       });
       res.json(newClient);
     }else if(req.body.d0==2&&req.body.d1==0){
-      const newClient = await Historyorder.update({
+      const newClient = await Rest_maneger.update({
         uber: req.body.d2,
         cach: req.body.d3,
       },{
@@ -1729,7 +1729,7 @@ router.post('/cachChange', async (req, res) => {
       });
       res.json(newClient);
     }else if(req.body.d0==3&&req.body.d1==1){
-      const newClient = await Historyorder.update({
+      const newClient = await Rest_maneger.update({
         squere: req.body.d2,
         bank: req.body.d3,
       },{
@@ -1739,7 +1739,7 @@ router.post('/cachChange', async (req, res) => {
       });
       res.json(newClient);
     }else if(req.body.d0==3&&req.body.d1==0){
-      const newClient = await Historyorder.update({
+      const newClient = await Rest_maneger.update({
         squere: req.body.d2,
         cach: req.body.d3,
       },{
@@ -1755,6 +1755,5 @@ router.post('/cachChange', async (req, res) => {
     return res.status(400).json(err)
   }
 });
-
 //bae
 
