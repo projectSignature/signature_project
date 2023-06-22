@@ -37,6 +37,10 @@ const RestMenus = database.define('restmenu', {
     control_name: {
       type: Sequelize.STRING(150),
       unique: false,
+    },
+    status: {
+        type: Sequelize.INTEGER,
+        allowNull: false
     }
 });
 
