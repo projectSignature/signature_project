@@ -848,6 +848,22 @@ router.post('/updatehistoryPayStatus', async (req, res) => {
 }
 });
 
+router.post('/updatehistoryPicupStatus', async (req, res) => {
+  try{
+  const members = await Historyorder.update({
+    pickUp_way:req.body.status
+  }, {
+    where: {
+      id:req.body.id
+    }
+  });
+  res.json(members)
+} catch(err) {
+  console.log(err)
+ return res.status(400).json(err)
+}
+});
+
 //client  Age Update---------------------------------->
 router.post('/memberAgeUpdate', async (req, res) => {
  try{
