@@ -58,13 +58,7 @@ const Historyorders = database.define('historyorder', {
       allowNull: false
     },
     client_name: {
-        type: Sequelize.STRING(300),
-        allowNull: false,
-        validate: {
-         notEmpty: {
-            msg: "Esse campo não pode está vazio.."
-         },
-        }
+        type: Sequelize.STRING(300)
     }
 });
 
