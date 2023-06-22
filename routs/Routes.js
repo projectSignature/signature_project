@@ -1581,6 +1581,7 @@ router.post('/newOrder', async (req, res) => {
       quantity_menu:req.body.d4,
       order_id:req.body.d5,
       status:0,
+      client_name:req.body.d10 ,
       paykubun:(req.body.d6) ? req.body.d6 : 0,
       obs:(req.body.d9) ? req.body.d9 : "default value",
       pickUp_day:(req.body.d8) ? req.body.d8 : "default value",
