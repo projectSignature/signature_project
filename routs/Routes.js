@@ -841,7 +841,7 @@ router.post('/updatehistoryPayStatus', async (req, res) => {
       id:req.body.id
     }
   });
-  return res.status(200)
+  res.json(members)
 } catch(err) {
   console.log(err)
  return res.status(400).json(err)
