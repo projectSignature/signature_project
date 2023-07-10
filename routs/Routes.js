@@ -136,6 +136,23 @@ router.post('/updateorderHistory', async (req, res) => {
   }
 });
 
+router.post('/updateRestMenus', async (req, res) => {
+  try {
+    const newClient = await RestMenu.update({
+      status: req.body.d1
+    },{
+        where: {
+          id: req.body.d2
+        }
+    });
+    res.json(newClient);
+  } catch (err) {
+    console.log(err)
+    return res.status(400).json(err)
+  }
+});
+
+
 //レストアプリの支出追加ルート------------------------------>
 router.post('/createCostRest', async (req, res) => {
   try {
