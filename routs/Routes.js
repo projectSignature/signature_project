@@ -173,6 +173,26 @@ router.post('/createCostRest', async (req, res) => {
   }
 });
 
+router.post('/updateBBQmenus', async (req, res) => {
+  try {
+    let bbqkubun = 0
+    if(req.body.d1==1){
+      bbqkubun = 1
+    }
+    const newClient = await RestMenu.update({
+      status: bbqkubun
+    },{
+        where: {
+          bbq_kubun: 1
+        }
+    });
+    res.json(newClient);
+  } catch (err) {
+    console.log(err)
+    return res.status(400).json(err)
+  }
+});
+
 //レストアプリの収出テーブルから取得------------------------->
 router.get('/costRestGet', async (req, res) => {
   try {
