@@ -41,6 +41,10 @@ const RestMenus = database.define('restmenu', {
     status: {
         type: Sequelize.INTEGER,
         allowNull: false
+    },
+    bbq_kubun: {
+        type: Sequelize.INTEGER,
+        allowNull: false
     }
 });
 
