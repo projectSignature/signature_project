@@ -201,7 +201,7 @@ router.post('/updateAllmenus', async (req, res) => {
         status: req.body[i].status
       },{
           where: {
-            bbq_kubun: req.body[i].id
+            id: req.body[i].id
           }
       });
     }
