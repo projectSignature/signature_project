@@ -194,8 +194,10 @@ router.post('/updateBBQmenus', async (req, res) => {
 });
 
 router.post('/updateAllmenus', async (req, res) => {
-  console.log(req.body)
-
+  console.log(req.body.length)
+    for(let i=0;i<req.body.length;i++){
+      console.log(req.body[i].id)
+    }
 });
 
 //レストアプリの収出テーブルから取得------------------------->
