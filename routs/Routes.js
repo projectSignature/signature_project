@@ -1688,7 +1688,8 @@ router.post('/newOrder', async (req, res) => {
       paykubun:(req.body.d6) ? req.body.d6 : 0,
       obs:(req.body.d9) ? req.body.d9 : "default value",
       pickUp_day:(req.body.d8) ? req.body.d8 : "default value",
-      pickUp_way:(req.body.d7) ? req.body.d7 : 0
+      pickUp_way:(req.body.d7) ? req.body.d7 : 0,
+      pay_status:0
     });
     res.json(newClient);
   } catch (err) {
