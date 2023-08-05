@@ -205,7 +205,7 @@ router.post('/updateAllmenus', async (req, res) => {
           }
       });
     }
-    return res.status(200)
+    return res.json(newClient);
   }catch (err) {
     console.log(err)
     return res.status(400).json(err)
