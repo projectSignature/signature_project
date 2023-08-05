@@ -46,6 +46,10 @@ const Restadmins = database.define('restadmin', {
         type: Sequelize.STRING(150),
         allowNull: false
     },
+    language:{
+      type: Sequelize.INTEGER,
+      allowNull: false
+    }
 });
 
 module.exports = Restadmins;
