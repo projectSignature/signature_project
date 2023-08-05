@@ -194,7 +194,6 @@ router.post('/updateBBQmenus', async (req, res) => {
 });
 
 router.post('/updateAllmenus', async (req, res) => {
-  console.log(req.body.length)
   try{
     for(let i=0;i<req.body.length;i++){
       const newClient = await RestMenu.update({
@@ -205,7 +204,7 @@ router.post('/updateAllmenus', async (req, res) => {
           }
       });
     }
-    return res.json(newClient);
+    return res.status(200).json('OK')
   }catch (err) {
     console.log(err)
     return res.status(400).json(err)
