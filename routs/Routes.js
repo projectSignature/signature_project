@@ -195,9 +195,22 @@ router.post('/updateBBQmenus', async (req, res) => {
 
 router.post('/updateAllmenus', async (req, res) => {
   console.log(req.body.length)
+  try{
     for(let i=0;i<req.body.length;i++){
-      console.log(req.body[i].id)
+      const newClient = await RestAllMenu.update({
+        status: req.body[i].status
+      },{
+          where: {
+            bbq_kubun: req.body[i].id
+          }
+      });
     }
+    return res.status(200)
+  }catch (err) {
+    console.log(err)
+    return res.status(400).json(err)
+  }
+
 });
 
 //レストアプリの収出テーブルから取得------------------------->
