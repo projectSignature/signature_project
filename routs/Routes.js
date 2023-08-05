@@ -136,6 +136,21 @@ router.post('/updateorderHistory', async (req, res) => {
   }
 });
 
+router.get('/ordergetstatusyet', async (req, res) => {
+  try {
+  const clients = await Historyorder.findAll({
+    where: {
+      status: 0,
+    }
+  });
+    res.json({
+         clients
+    })
+} catch (err) {
+  res.json({ message: 'internal error' })
+}
+});
+
 router.post('/updateRestMenus', async (req, res) => {
   try {
     const newClient = await RestMenu.update({
