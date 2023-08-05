@@ -197,7 +197,7 @@ router.post('/updateAllmenus', async (req, res) => {
   console.log(req.body.length)
   try{
     for(let i=0;i<req.body.length;i++){
-      const newClient = await RestAllMenu.update({
+      const newClient = await RestMenu.update({
         status: req.body[i].status
       },{
           where: {
