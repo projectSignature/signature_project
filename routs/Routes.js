@@ -756,6 +756,22 @@ router.post('/updatehistoryStatus', async (req, res) => {
 }
 });
 
+router.post('/updatehistorypayed', async (req, res) => {
+  try{
+  const members = await Historyorder.update({
+    pay_status:req.body.status
+  }, {
+    where: {
+      id:req.body.d1
+    }
+  });
+  res.json(members)
+} catch(err) {
+  console.log(err)
+ return res.status(400).json(err)
+}
+});
+
 //update dos dados do membro na graduação------------------------------->
 router.post('/graduationmemberupdate', async (req, res) => {
   try{
