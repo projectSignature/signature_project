@@ -743,6 +743,22 @@ router.post('/familyupdate', async (req, res) => {
 router.post('/updatehistoryStatus', async (req, res) => {
   try{
   const members = await Historyorder.update({
+    status:req.body.status
+  }, {
+    where: {
+      id:req.body.d1
+    }
+  });
+  res.json(members)
+} catch(err) {
+  console.log(err)
+ return res.status(400).json(err)
+}
+});
+
+router.post('/updatehistoryprapareStatus', async (req, res) => {
+  try{
+  const members = await Historyorder.update({
     prepare_status:req.body.status
   }, {
     where: {
