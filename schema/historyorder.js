@@ -63,6 +63,10 @@ const Historyorders = database.define('historyorder', {
     pay_status:{
       type: Sequelize.INTEGER,
       allowNull: false
+    },
+    prepare_status:{
+      type: Sequelize.INTEGER,
+      allowNull: false
     }
 });
 
