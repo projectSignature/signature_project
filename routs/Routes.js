@@ -245,9 +245,12 @@ router.get('/costRestGet', async (req, res) => {
 
 router.get('/caixaCloseGet', async (req, res) => {
   try {
+    console.log(req.query.dt)
+    console.log(req.query.id)
   const caixa = await CloseCaixa.findAll({
     where: {
-      p_day: req.query.dt
+      p_day: req.query.dt,
+      rest_id:req.query.id
     }
   }); //findAll findByPk
   res.json(caixa)
