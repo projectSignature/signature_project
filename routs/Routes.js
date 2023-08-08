@@ -27,6 +27,7 @@ const Historyorder = require('../schema/historyorder');
 const Restadmin = require('../schema/restadmins');
 const Costrest = require('../schema/costrests');
 const Rest_maneger = require('../schema/rest_manegers')
+const CloseCaixa = require('../schema/closecaixa');
 
 
 //LIBS
@@ -236,6 +237,20 @@ router.get('/costRestGet', async (req, res) => {
     }
   }); //findAll findByPk
   res.json(members)
+} catch (err) {
+  res.json(err)
+  console.log(err)
+}
+});
+
+router.get('/caixaCloseGet', async (req, res) => {
+  try {
+  const caixa = await CloseCaixa.findAll({
+    where: {
+      p_day: req.query.dt
+    }
+  }); //findAll findByPk
+  res.json(caixa)
 } catch (err) {
   res.json(err)
   console.log(err)
