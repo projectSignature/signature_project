@@ -27,7 +27,7 @@ const Historyorder = require('../schema/historyorder');
 const Restadmin = require('../schema/restadmins');
 const Costrest = require('../schema/costrests');
 const Rest_maneger = require('../schema/rest_manegers')
-const CloseCaixa = require('../schema/closecaixa');
+const CloseCaixa = require('../schema/closecaixas');
 
 
 //LIBS
