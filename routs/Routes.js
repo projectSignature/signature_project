@@ -249,7 +249,12 @@ router.post('/createcaixadata', async (req, res) => {
       rest_id: req.body.d1,
       p_day: req.body.d2,
       start: req.body.d3,
-      crete_id:req.body.d4
+      crete_id:req.body.d4,
+      demae:0,
+      uber:0,
+      finel_id:0,
+      squere:0,
+      final:0
     });
     res.json(newClient);
   } catch (err) {
