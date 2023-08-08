@@ -243,6 +243,21 @@ router.get('/costRestGet', async (req, res) => {
 }
 });
 
+router.post('/createcaixadata', async (req, res) => {
+  try {
+    const newClient = await CloseCaixa.create({
+      rest_id: req.body.d1,
+      p_day: req.body.d2,
+      start: req.body.d3,
+      crete_id:req.body.d4
+    });
+    res.json(newClient);
+  } catch (err) {
+    console.log(err)
+    return res.status(400).json(err)
+  }
+});
+
 router.get('/caixaCloseGet', async (req, res) => {
   try {
     console.log(req.query.dt)
