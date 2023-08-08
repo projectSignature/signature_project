@@ -279,6 +279,27 @@ router.get('/caixaCloseGet', async (req, res) => {
   console.log(err)
 }
 });
+//update do caixa history------------------------------->
+router.post('/caixaupdates', async (req, res) => {
+  try{
+  const members = await CloseCaixa.update({
+    finel_id:d0,
+    uber:d1,
+    squere:d2,
+    demae:d3,
+    final:d4,
+    obs:d5
+  }, {
+    where: {
+      id: req.body.id
+    }
+  });
+  res.json(members)
+} catch(err) {
+  console.log(err)
+ return res.status(400)
+}
+});
 
 //rotas de testes------------------------------>
 router.post('/clientTest', async (req, res) => {
