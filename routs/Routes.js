@@ -1790,6 +1790,24 @@ router.post('/newOrder', async (req, res) => {
   }
 });
 
+router.get('/orderdayscheck', async (req, res) => {
+  try {
+  const { Op } = require('sequelize')
+  const clients = await Historyorder.findAll({
+    where: {
+       pickUp_day :{
+         [Op.gt]:req.query.getdat
+       } ,
+  });
+    res.json({
+         clients
+    })
+} catch (err) {
+  res.json({ message: 'internal error' })
+}
+});
+
+
 router.get('/orderget', async (req, res) => {
   try {
   const clients = await Historyorder.findAll({
