@@ -1798,6 +1798,7 @@ router.get('/orderdayscheck', async (req, res) => {
        pickUp_day :{
          [Op.gt]:req.query.getdat
        } ,
+    }
   });
     res.json({
          clients
