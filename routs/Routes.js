@@ -137,6 +137,24 @@ router.post('/updateorderHistory', async (req, res) => {
   }
 });
 
+router.post('/updatasOrderslist', async (req, res) => {
+  try {
+    const newClient = await Historyorder.update({
+      paykubun: req.body.d1,
+      pickUp_way: req.body.d0,
+    },{
+        where: {
+          id: req.body.ids
+        }
+    });
+    res.json(newClient);
+  } catch (err) {
+    console.log(err)
+    return res.status(400).json(err)
+  }
+});
+
+
 router.get('/ordergetstatusyet', async (req, res) => {
   try {
   const clients = await Historyorder.findAll({
