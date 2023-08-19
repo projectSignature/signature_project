@@ -212,7 +212,8 @@ router.post('/createCostRest', async (req, res) => {
       payday: req.body.d5,
       memo: req.body.d6,
       paykubun: req.body.d7,
-      status: req.body.d8
+      status: req.body.d8,
+      seq:req.body.d9
     });
     res.json(newClient);
   } catch (err) {
