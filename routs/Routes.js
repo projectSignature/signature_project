@@ -195,6 +195,7 @@ router.get('/gategorycostGet', async (req, res) => {
          clients
     })
 } catch (err) {
+  console.log(err)
   res.json({ message: 'internal error' })
 }
 });
