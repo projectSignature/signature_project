@@ -28,6 +28,7 @@ const Restadmin = require('../schema/restadmins');
 const Costrest = require('../schema/costrests');
 const Rest_maneger = require('../schema/rest_manegers')
 const CloseCaixa = require('../schema/closecaixas');
+const Costcategory = require('../schema/costCategory');
 
 
 //LIBS
