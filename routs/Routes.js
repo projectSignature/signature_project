@@ -187,6 +187,18 @@ router.post('/updateRestMenus', async (req, res) => {
   }
 });
 
+router.get('/gategorycostGet', async (req, res) => {
+  try {
+  const clients = await Costcategory.findAll({
+  });
+    res.json({
+         clients
+    })
+} catch (err) {
+  res.json({ message: 'internal error' })
+}
+});
+
 
 //レストアプリの支出追加ルート------------------------------>
 router.post('/createCostRest', async (req, res) => {
