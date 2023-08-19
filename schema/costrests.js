@@ -74,6 +74,15 @@ const Costrests = database.define('costrest', {
          },
         }
     },
+    seq:{
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      validate: {
+       notEmpty: {
+          msg: "Esse campo não pode está vazio.."
+       },
+      }
+    }
 });
 
 module.exports = Costrests;
