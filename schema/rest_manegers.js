@@ -40,6 +40,11 @@ const Rest_manegers = database.define('rest_maneger', {
         type: Sequelize.STRING(150),
         allowNull: false,
     },
+    cash_s: {
+        unique: false,
+        type: Sequelize.STRING(150),
+        allowNull: false,
+    }
 
 });
 
