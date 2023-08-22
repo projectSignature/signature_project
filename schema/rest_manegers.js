@@ -39,13 +39,7 @@ const Rest_manegers = database.define('rest_maneger', {
         unique: false,
         type: Sequelize.STRING(150),
         allowNull: false,
-    },
-    cash_s: {
-        unique: false,
-        type: Sequelize.STRING(150),
-        allowNull: false,
     }
-
 });
 
 module.exports = Rest_manegers;
