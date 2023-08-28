@@ -154,6 +154,22 @@ router.post('/updateorderHistory', async (req, res) => {
   }
 });
 
+router.post('/updatefinaldakoku', async (req, res) => {
+  try {
+    const newClient = await Dakoku.update({
+      fn: req.body.d2
+    },{
+        where: {
+          id: req.body.d1
+        }
+    });
+    res.json(newClient);
+  } catch (err) {
+    console.log(err)
+    return res.status(400).json(err)
+  }
+});
+
 router.post('/dakokuupdt', async (req, res) => {
   try {
     const newClient = await Dakoku.update({
