@@ -60,14 +60,13 @@ router.get('/mailer', async (req, res) => {
 
 });
 
-router.get('/dakokusget/:id', async (req, res) => {
-  console.log('paulcheck')
+router.get('/dakokusget', async (req, res) => {
   try {
   const dakokus = await Dakoku.findAll({
     where: {
-      id: req.params.id
+      id: req.query.id
     }
-  }); 
+  });
   res.json(dakokus)
 } catch (err) {
   res.json(err)
