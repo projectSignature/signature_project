@@ -29,6 +29,7 @@ const Costrest = require('../schema/costrests');
 const Rest_maneger = require('../schema/rest_manegers')
 const CloseCaixa = require('../schema/closecaixas');
 const Costcategory = require('../schema/costCategory');
+const Dakoku = require('../schema/dakoku');
 
 
 //LIBS
@@ -57,6 +58,20 @@ router.get('/mailer', async (req, res) => {
     return res.status(400).json(err)
   }
 
+});
+
+router.get('/dakokusget/:id', async (req, res) => {
+  try {
+  const dakokus = await Dakoku.findAll({
+    where: {
+      id: req.params.id
+    }
+  }); 
+  res.json(dakokus)
+} catch (err) {
+  res.json(err)
+  console.log(err)
+}
 });
 
 //rotas de testes------------------------------>
