@@ -254,6 +254,21 @@ router.post('/createCostRest', async (req, res) => {
   }
 });
 
+router.post('/dakokuistdata', async (req, res) => {
+  try {
+    const newClient = await Dakoku.create({
+      worker_id: req.body.d1,
+      st: req.body.d2,
+      workday: req.body.d3
+    });
+    res.json(newClient);
+  } catch (err) {
+    console.log(err)
+    return res.status(400).json(err)
+  }
+});
+
+
 router.post('/updateBBQmenus', async (req, res) => {
   try {
     let bbqkubun = 0
