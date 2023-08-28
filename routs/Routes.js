@@ -61,6 +61,7 @@ router.get('/mailer', async (req, res) => {
 });
 
 router.get('/dakokusget/:id', async (req, res) => {
+  console.log('paulcheck')
   try {
   const dakokus = await Dakoku.findAll({
     where: {
