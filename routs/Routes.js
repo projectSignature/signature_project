@@ -64,7 +64,8 @@ router.get('/dakokusget', async (req, res) => {
   try {
   const dakokus = await Dakoku.findAll({
     where: {
-      id: req.query.id
+      worker_id: req.query.id,
+      workday: req.query.dt
     }
   });
   res.json(dakokus)
