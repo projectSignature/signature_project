@@ -235,6 +235,28 @@ router.post('/updateRestMenus', async (req, res) => {
   }
 });
 
+router.post('/editsmenus', async (req, res) => {
+  try {
+     const newClient = await RestMenu.update({
+      menu_name_0:req.query.d0,
+      menu_name_1:req.query.d1,
+      menu_name_2:req.query.d2,
+      menu_value:req.query.d3,
+      control_name:req.query.d4,
+      bbq_kubun:req.quey.d5,
+
+    },{
+        where: {
+          id:req.quey.d6
+        }
+    });
+    res.json(newClient);
+  } catch (err) {
+    console.log(err)
+    return res.status(400).json(err)
+  }
+});
+
 router.get('/gategorycostGet', async (req, res) => {
   try {
   const clients = await Costcategory.findAll({
