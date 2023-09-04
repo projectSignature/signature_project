@@ -238,16 +238,16 @@ router.post('/updateRestMenus', async (req, res) => {
 router.post('/editsmenus', async (req, res) => {
   try {
      const newClient = await RestMenu.update({
-      menu_name_0:req.query.d0,
-      menu_name_1:req.query.d1,
-      menu_name_2:req.query.d2,
-      menu_value:req.query.d3,
-      control_name:req.query.d4,
-      bbq_kubun:req.query.d5,
+      menu_name_0:req.body.d0,
+      menu_name_1:req.body.d1,
+      menu_name_2:req.body.d2,
+      menu_value:req.body.d3,
+      control_name:req.body.d4,
+      bbq_kubun:req.body.d5,
 
     },{
         where: {
-          id:req.query.d6
+          id:req.body.d6
         }
     });
     res.json(newClient);
