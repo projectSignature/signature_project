@@ -49,6 +49,15 @@ const RestMenus = database.define('restmenu', {
     display_number:{
       type: Sequelize.INTEGER,
       allowNull: false
+    },
+    zairyo: {
+      type: Sequelize.STRING(500),
+    },
+    zairyoqt: {
+      type: Sequelize.STRING(500),
+    },
+    zairyotp: {
+      type: Sequelize.STRING(500),
     }
 });
 
