@@ -2161,5 +2161,10 @@ router.post('/openclosescahnge', async (req, res) => {
   }
 });
 
+router.post('/deletesmenus', async (req, res) => {
+  RestMenu.destroy({ where: { id: req.body.id } })
+  res.json('deletado');
+});
+
 //bae
 
