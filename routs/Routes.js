@@ -2143,5 +2143,23 @@ router.post('/delehistoryorder', async (req, res) => {
   Historyorder.destroy({ where: { id: req.body.id } })
   res.json('deletado');
 });
+
+router.post('/openclosescahnge', async (req, res) => {
+  try {
+      const newClient = await Rest_maneger.update({
+        pickup_time: req.body.d0,
+        work_status: req.body.d1,
+      },{
+          where: {
+            rest_id: 0
+          }
+      });
+      res.json(newClient);
+  } catch (err) {
+    console.log(err)
+    return res.status(400).json(err)
+  }
+});
+
 //bae
 
