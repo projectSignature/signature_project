@@ -243,11 +243,11 @@ router.post('/editsmenus', async (req, res) => {
       menu_name_2:req.query.d2,
       menu_value:req.query.d3,
       control_name:req.query.d4,
-      bbq_kubun:req.quey.d5,
+      bbq_kubun:req.query.d5,
 
     },{
         where: {
-          id:req.quey.d6
+          id:req.query.d6
         }
     });
     res.json(newClient);
