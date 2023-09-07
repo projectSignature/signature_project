@@ -2094,6 +2094,26 @@ router.post('/cachChange', async (req, res) => {
           }
       });
       res.json(newClient);
+    }else if(req.body.d0==4){
+      const newClient = await Rest_maneger.update({
+        cach2: req.body.d2,
+        bank: req.body.d3,
+      },{
+          where: {
+            rest_id: 0
+          }
+      });
+      res.json(newClient);
+    }else if(req.body.d0==5){
+      const newClient = await Rest_maneger.update({
+        caixa: req.body.d2,
+        bank: req.body.d3,
+      },{
+          where: {
+            rest_id: 0
+          }
+      });
+      res.json(newClient);
     }
 
   } catch (err) {
