@@ -44,6 +44,11 @@ const Rest_manegers = database.define('rest_maneger', {
         unique: false,
         type: Sequelize.STRING(150),
         allowNull: false,
+    },
+    caixa: {
+        unique: false,
+        type: Sequelize.STRING(150),
+        allowNull: false,
     }
 });
 
