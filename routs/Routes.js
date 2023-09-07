@@ -2186,5 +2186,51 @@ router.post('/deletesmenus', async (req, res) => {
   res.json('deletado');
 });
 
+router.post('/caixaopen', async (req, res) => {
+try {
+   let nwvalue = await getscaixas(req.body.d0)
+   let vl = nwvalue - req.body.d1
+
+   if(req.body.d0==0){
+     const newClient = await Rest_maneger.update({
+       caixa: req.body.d1,
+       cach: vl,
+     },{
+         where: {
+           rest_id: 0
+         }
+     });
+     res.json(newClient);
+   }else{
+     const newClient = await Rest_maneger.update({
+       caixa: req.body.d1,
+       cach2: vl,
+     },{
+         where: {
+           rest_id: 0
+         }
+     });
+     res.json(newClient);
+   }
+  } catch (err) {
+    console.log(err)
+    return res.status(400).json(err)
+  }
+});
+
+
+
+function getscaixas(d){
+    const members = await Rest_maneger.findAll({
+    });
+    let tgt = 0
+    if(d==0){
+      tgt = members[0].cach
+    }else if(d==1){
+      tgt = members[0].cach2
+    }
+   return tgt
+}
+
 //bae
 
