@@ -2246,10 +2246,7 @@ try {
         id: req.body.d5
       }
   });
-  res.json(newClient);
 
-
-  
    let nwvalue = await getscaixas(req.body.d6)
    let vl = nwvalue + req.body.d4
 
@@ -2259,7 +2256,7 @@ try {
        cach: vl,
      },{
          where: {
-           id: 0
+           rest_id: 0
          }
      });
      res.json(newClient);
