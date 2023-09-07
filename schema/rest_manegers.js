@@ -39,6 +39,11 @@ const Rest_manegers = database.define('rest_maneger', {
         unique: false,
         type: Sequelize.STRING(150),
         allowNull: false,
+    },
+    cach2: {
+        unique: false,
+        type: Sequelize.STRING(150),
+        allowNull: false,
     }
 });
 
