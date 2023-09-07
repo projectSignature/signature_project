@@ -2248,7 +2248,7 @@ try {
   });
 
    let nwvalue = await getscaixas(req.body.d6)
-   let vl = nwvalue + req.body.d4
+   let vl = (nwvalue-0) + (req.body.d4 -0)
 
    if(req.body.d6==0){
      const newClient = await Rest_maneger.update({
