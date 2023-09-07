@@ -2259,7 +2259,7 @@ try {
        cach: vl,
      },{
          where: {
-           id: req.body.closeid
+           id: 0
          }
      });
      res.json(newClient);
