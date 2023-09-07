@@ -2220,7 +2220,7 @@ try {
 
 
 
-function getscaixas(d){
+async function getscaixas(d){
     const members = await Rest_maneger.findAll({
     });
     let tgt = 0
