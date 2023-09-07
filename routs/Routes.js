@@ -2126,7 +2126,7 @@ router.post('/cachChangeonly', async (req, res) => {
   try {
     if(req.body.d0==0){
       const newClient = await Rest_maneger.update({
-        cach: req.body.d1,
+        caixa: req.body.d1,
       },{
           where: {
             rest_id: 0
