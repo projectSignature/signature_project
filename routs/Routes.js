@@ -2232,5 +2232,53 @@ async function getscaixas(d){
    return tgt
 }
 
+router.post('/confirmclosecaixa', async (req, res) => {
+try {
+
+  const newClient = await CloseCaixa.update({
+    uber: req.body.d1,
+    squere: req.body.d3,
+    demae:req.body.d2,
+    final:req.body.d4,
+    obs:req.body.d7
+  },{
+      where: {
+        id: req.body.closeid
+      }
+  });
+  res.json(newClient);
+
+
+  
+   let nwvalue = await getscaixas(req.body.d6)
+   let vl = nwvalue + req.body.d4
+
+   if(req.body.d6==0){
+     const newClient = await Rest_maneger.update({
+       caixa: 0,
+       cach: vl,
+     },{
+         where: {
+           id: req.body.closeid
+         }
+     });
+     res.json(newClient);
+   }else{
+     const newClient = await Rest_maneger.update({
+       caixa: 0,
+       cach2: vl,
+     },{
+         where: {
+           rest_id: 0
+         }
+     });
+     res.json(newClient);
+   }
+  } catch (err) {
+    console.log(err)
+    return res.status(400).json(err)
+  }
+});
+
 //bae
 
