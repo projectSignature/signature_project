@@ -2277,5 +2277,51 @@ try {
   }
 });
 
+router.post('/cachChangeonlykaikei', async (req, res) => {
+  try {
+    if(req.body.d0==0){
+      const newClient = await Rest_maneger.update({
+        cach: req.body.d1,
+      },{
+          where: {
+            rest_id: 0
+          }
+      });
+      res.json(newClient);
+    }else if(req.body.d0==4){
+      const newClient = await Rest_maneger.update({
+        cach2: req.body.d1,
+      },{
+          where: {
+            rest_id: 0
+          }
+      });
+      res.json(newClient);
+    }else if(req.body.d0==1){
+      const newClient = await Rest_maneger.update({
+        squere: req.body.d1,
+      },{
+          where: {
+            rest_id: 0
+          }
+      });
+      res.json(newClient);
+    }else{
+      const newClient = await Rest_maneger.update({
+        uber: req.body.d1,
+      },{
+          where: {
+            rest_id: 0
+          }
+      });
+      res.json(newClient);
+    }
+
+  } catch (err) {
+    console.log(err)
+    return res.status(400).json(err)
+  }
+});
+
 //bae
 
