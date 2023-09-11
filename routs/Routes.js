@@ -670,6 +670,20 @@ router.post('/authRestmember', async (req, res) => {
 
 });
 
+router.post('/getworkernamerest', async (req, res) => {
+  try {
+      const clients = await Restadmin.findAll({
+        where: {
+          id:req.query.id
+        }
+      });
+    res.json(clients)
+  } catch (err) {
+    res.json({ message: 'internal error' })
+  }
+
+})
+
 //autenticação de usuario------------------------>
 router.post('/auth', async (req, res) => {
   const [numbers, password] = [req.body.numbers, req.body.password];
