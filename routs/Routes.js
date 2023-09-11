@@ -670,7 +670,7 @@ router.post('/authRestmember', async (req, res) => {
 
 });
 
-router.post('/getworkernamerest', async (req, res) => {
+router.get('/getworkernamerest', async (req, res) => {
   try {
       const clients = await Restadmin.findAll({
         where: {
