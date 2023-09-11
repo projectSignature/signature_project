@@ -405,6 +405,20 @@ router.get('/serchcosts', async (req, res) => {
 }
 });
 
+router.get('/serchcostsidselects', async (req, res) => {
+  try {
+    const costs = await Costrest.findAll({
+      where: {
+        id: req.query.id
+      }
+    }); 
+    res.json(costs)      
+} catch (err) {
+  res.json(err)
+  console.log(err)
+}
+});
+
 router.post('/createcaixadata', async (req, res) => {
   try {
     const newClient = await CloseCaixa.create({
