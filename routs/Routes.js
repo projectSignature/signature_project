@@ -405,6 +405,23 @@ router.get('/serchcosts', async (req, res) => {
 }
 });
 
+router.get('/serchsyunyuu', async (req, res) => {
+  try {
+    const costs = await Historyorder.findAll({
+      where: {
+        rest_id: req.query.id,
+        pickUp_day :{
+          [Op.between]:[req.query.stdt,req.query.fndt]
+        }
+      }
+    });
+    res.json(costs)
+    } catch (err) {
+      res.json(err)
+      console.log(err)
+    }
+});
+
 router.get('/serchcostsidselects', async (req, res) => {
   try {
     const costs = await Costrest.findAll({
