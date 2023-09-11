@@ -375,6 +375,36 @@ router.get('/costRestGet', async (req, res) => {
 }
 });
 
+router.get('/serchcosts', async (req, res) => {
+  try {
+  if(req.query.costid!=0){
+    const costs = await Costrest.findAll({
+      where: {
+        rest_id: req.query.id,
+        cost_id: req.query.costid,
+        payday :{
+          [Op.between]:[req.query.stdt,req.query.fndt]
+        }
+      }
+    }); 
+    res.json(costs)    
+  }else{
+    const costs = await Costrest.findAll({
+      where: {
+        rest_id: req.query.id,
+        payday :{
+          [Op.between]:[req.query.stdt,req.query.fndt]
+        }
+      }
+    }); 
+    res.json(costs) 
+  }
+} catch (err) {
+  res.json(err)
+  console.log(err)
+}
+});
+
 router.post('/createcaixadata', async (req, res) => {
   try {
     const newClient = await CloseCaixa.create({
