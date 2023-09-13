@@ -111,6 +111,7 @@ router.get('/clientesDados/:id', async (req, res) => {
   }); //findAll findByPk
 
 router.get('/getsiventorys', async (req, res) => {
+  console.log('innnn')
   try {
   const dakokus = await Iventory.findAll({
     where: {
