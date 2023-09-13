@@ -110,18 +110,17 @@ router.get('/clientesDados/:id', async (req, res) => {
     }
   }); //findAll findByPk
 
-router.get('/getsiventorys', async (req, res) => {
-  console.log('innnn')
+router.get('/getiventorys', async (req, res) => {
   try {
-  const dakokus = await Iventory.findAll({
-    where: {
-      rest_id: req.query.id,
-    }
+    console.log('in')
+  const clients = await Iventory.findAll({
   });
-  res.json(dakokus)
+    res.json({
+         clients
+    })
 } catch (err) {
-  res.json(err)
   console.log(err)
+  res.json({ message: 'internal error' })
 }
 });
 
