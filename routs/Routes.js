@@ -110,15 +110,14 @@ router.get('/clientesDados/:id', async (req, res) => {
     }
   }); //findAll findByPk
 
-    router.get('/iventorygets', async (req, res) => {
+router.get('/getsiventorys', async (req, res) => {
   try {
-  const members = await Iventory.findAll({
+  const dakokus = await Iventory.findAll({
     where: {
-      id: req.query.id
+      rest_id: req.query.id,
     }
-  }); //findAll findByPk
-
-  res.json(members)
+  });
+  res.json(dakokus)
 } catch (err) {
   res.json(err)
   console.log(err)
