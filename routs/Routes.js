@@ -30,6 +30,7 @@ const Rest_maneger = require('../schema/rest_manegers')
 const CloseCaixa = require('../schema/closecaixas');
 const Costcategory = require('../schema/costCategory');
 const Dakoku = require('../schema/dakoku');
+const Iventory = require('../schema/inventorys');
 
 
 //LIBS
