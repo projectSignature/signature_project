@@ -110,22 +110,6 @@ router.get('/clientesDados/:id', async (req, res) => {
     }
   }); //findAll findByPk
 
-router.get('/tryszaiko', async (req, res) => {
-  try {
-     console.log('in')
-  const clients = await Costcategory.findAll({
-  });
-    res.json({
-         clients
-    })
-} catch (err) {
-  console.log(err)
-  res.json({ message: 'internal error' })
-}
-});
-
-
-
     
   res.json(members)
 } catch (err) {
@@ -277,6 +261,7 @@ router.post('/editsmenus', async (req, res) => {
 
 router.get('/gategorycostGet', async (req, res) => {
   try {
+    console.log('haiterukedo')
   const clients = await Costcategory.findAll({
   });
     res.json({
