@@ -276,7 +276,7 @@ router.get('/gategorycostGet', async (req, res) => {
 router.get('/gategorycostGet2', async (req, res) => {
   try {
     console.log('haiterukedo2')
-  const clients = await Costcategory.findAll({
+  const clients = await Iventory.findAll({
   });
     res.json({
          clients
