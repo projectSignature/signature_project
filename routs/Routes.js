@@ -112,8 +112,8 @@ router.get('/clientesDados/:id', async (req, res) => {
 
 router.get('/getiventorys', async (req, res) => {
   try {
-    console.log('in')
-  const clients = await Iventory.findAll({
+     console.log('in')
+  const clients = await Costcategory.findAll({
   });
     res.json({
          clients
@@ -123,6 +123,7 @@ router.get('/getiventorys', async (req, res) => {
   res.json({ message: 'internal error' })
 }
 });
+
 
 
     
