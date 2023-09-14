@@ -287,6 +287,22 @@ router.get('/gategorycostGet2', async (req, res) => {
 }
 });
 
+router.post('/changezaiko', async (req, res) => {
+  try {
+      const newClient = await Iventory.update({
+        quantity: req.body.d0
+      },{
+          where: {
+            id: req.body.d1
+          }
+      });
+      res.json(newClient);
+  } catch (err) {
+    console.log(err)
+    return res.status(400).json(err)
+  }
+});
+
 
 //レストアプリの支出追加ルート------------------------------>
 router.post('/createCostRest', async (req, res) => {
