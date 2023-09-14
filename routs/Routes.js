@@ -110,7 +110,7 @@ router.get('/clientesDados/:id', async (req, res) => {
     }
   }); //findAll findByPk
 
-router.get('/getiventorys', async (req, res) => {
+router.get('/tryszaiko', async (req, res) => {
   try {
      console.log('in')
   const clients = await Costcategory.findAll({
