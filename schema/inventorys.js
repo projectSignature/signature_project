@@ -27,6 +27,10 @@ const Inventorys = database.define('inventory', {
     updt: {
       type: Sequelize.STRING(45),
       unique: false,
+    },
+    categorys: {
+      type: Sequelize.STRING(45),
+      unique: false,
     }
 
 });
