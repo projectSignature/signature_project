@@ -158,22 +158,22 @@ router.post('/updateorderHistory', async (req, res) => {
 
 router.post('/addnewzaiko', async (req, res) => {
     try {
-  var d = req.body;
   let newParents = await Iventory.create({
     rest_id:0,
-    name:d.d0,
-    quantity:d.d2 ,
-    cust: d.d3,
-    updt: d.d6,
-    categorys: d.d1,
-    mercado: d.d4,
-    kijun: d.d5,
+    name:req.body.d0,
+    quantity:req.body.d2 ,
+    cust: req.body.d3,
+    updt: req.body.d6,
+    categorys: req.body.d1,
+    mercado: req.body.d4,
+    kijun: req.body.d5,
   });
    res.json(newParents);
    }
   catch (err) {
+     console.log(err)
     return res.status(400).json(err)
-    console.log(err)
+   
   }
 });
 
