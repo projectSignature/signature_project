@@ -156,6 +156,27 @@ router.post('/updateorderHistory', async (req, res) => {
   }
 });
 
+router.post('/addnewzaiko', async (req, res) => {
+    try {
+  var d = req.body;
+  let newParents = await Iventory.create({
+    rest_id:0,
+    name:d.d0,
+    quantity:d.d2 ,
+    cust: d.d3,
+    updt: d.d6,
+    categorys: d.d1,
+    mercado: d.d4,
+    kijun: d.d5,
+  });
+   res.json(newParents);
+   }
+  catch (err) {
+    return res.status(400).json(err)
+    console.log(err)
+  }
+});
+
 router.post('/updatefinaldakoku', async (req, res) => {
   try {
     const newClient = await Dakoku.update({
