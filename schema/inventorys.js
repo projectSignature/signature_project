@@ -39,6 +39,10 @@ const Inventorys = database.define('inventory', {
     kijun: {
         type: Sequelize.INTEGER,
         allowNull: false
+    },
+    tani:{
+        type: Sequelize.STRING(45),
+      unique: false
     }
 });
 
