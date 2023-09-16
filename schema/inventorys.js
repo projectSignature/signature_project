@@ -31,8 +31,15 @@ const Inventorys = database.define('inventory', {
     categorys: {
       type: Sequelize.STRING(45),
       unique: false,
+    } ,
+    mercado: {
+      type: Sequelize.STRING(45),
+      unique: false,
+    },
+    kijun: {
+        type: Sequelize.INTEGER,
+        allowNull: false
     }
-
 });
 
 module.exports = Inventorys;
