@@ -82,6 +82,10 @@ const Costrests = database.define('costrest', {
           msg: "Esse campo não pode está vazio.."
        },
       }
+    },
+    suppliers_id:{
+      type: Sequelize.INTEGER,
+      allowNull: false,
     }
 });
 

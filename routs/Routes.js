@@ -31,6 +31,7 @@ const CloseCaixa = require('../schema/closecaixas');
 const Costcategory = require('../schema/costCategory');
 const Dakoku = require('../schema/dakoku');
 const Iventory = require('../schema/inventorys');
+const Suppliers = require('../schema/m_suppliers');
 
 
 //LIBS
@@ -42,6 +43,17 @@ const { Op, Sequelize } = require('sequelize');
 router.use(function timelog(req, res, next) {
   console.log('Time: ', Date.now());
   next();
+});
+
+router.get('/getsupplires', async (req, res) => {
+  try {
+  const supplireget = await Suppliers.findAll({
+  });
+  res.json(supplireget)
+} catch (err) {
+  res.json(err)
+  console.log(err)
+}
 });
 
 //rota principal-------------------------->
@@ -110,7 +122,7 @@ router.get('/clientesDados/:id', async (req, res) => {
     }
   }); //findAll findByPk
 
-    
+
   res.json(members)
 } catch (err) {
   res.json(err)
@@ -173,7 +185,7 @@ router.post('/addnewzaiko', async (req, res) => {
   catch (err) {
      console.log(err)
     return res.status(400).json(err)
-   
+
   }
 });
 
@@ -282,7 +294,6 @@ router.post('/editsmenus', async (req, res) => {
 
 router.get('/gategorycostGet', async (req, res) => {
   try {
-    console.log('haiterukedo')
   const clients = await Costcategory.findAll({
   });
     res.json({
@@ -337,7 +348,8 @@ router.post('/createCostRest', async (req, res) => {
       memo: req.body.d6,
       paykubun: req.body.d7,
       status: req.body.d8,
-      seq:req.body.d9
+      seq:req.body.d9,
+      suppliers_id:req.body.d10
     });
     res.json(newClient);
   } catch (err) {
@@ -440,8 +452,8 @@ router.get('/serchcosts', async (req, res) => {
           [Op.between]:[req.query.stdt,req.query.fndt]
         }
       }
-    }); 
-    res.json(costs)    
+    });
+    res.json(costs)
   }else{
     const costs = await Costrest.findAll({
       where: {
@@ -450,8 +462,8 @@ router.get('/serchcosts', async (req, res) => {
           [Op.between]:[req.query.stdt,req.query.fndt]
         }
       }
-    }); 
-    res.json(costs) 
+    });
+    res.json(costs)
   }
 } catch (err) {
   res.json(err)
@@ -482,8 +494,8 @@ router.get('/serchcostsidselects', async (req, res) => {
       where: {
         id: req.query.id
       }
-    }); 
-    res.json(costs)      
+    });
+    res.json(costs)
 } catch (err) {
   res.json(err)
   console.log(err)
@@ -665,7 +677,7 @@ router.get('/membersCount', async (req, res) => {
     where: {
       GYM_ID: req.query.id
     }
-  }); 
+  });
   res.json(memberscount)
 } catch (err) {
   res.json(err)
@@ -879,7 +891,7 @@ router.get('/info', async (req, res) => {
   }); //findAll findByPk
 
   res.json(members.length)
-  
+
 });
 
 //read de dados------------------------------->
@@ -888,7 +900,7 @@ router.get('/paymentall', async (req, res) => {
     where: {
     division: 1
   }
-  });   
+  });
   res.json(members)
 });
 
@@ -1008,7 +1020,7 @@ router.get('/newfamily', async (req, res) => {
 //Rota para recuperar DADOS do calendario para o front do entrance
 router.get('/calender/gymentrance', async (req, res) => {
   const newCalender = await Calender.findAll({
-    where: { 
+    where: {
       DAY: atualDay(),
       GYM_ID:req.query.id
      }
@@ -1173,7 +1185,7 @@ router.post('/createpayment', async (req, res) => {
          plan: req.body.plans,
          GYM_ID: req.body.gymid,
          plan_value: req.body.valor
-        });  
+        });
      res.json(newPay)
 } catch(err) {
   console.log(err)
@@ -1242,7 +1254,7 @@ router.post('/clientUpdate', async (req, res) => {
     REPRESENTATIVE:req.body.name1,
     TEL:req.body.tel,
     EMAIL:req.body.email,
-    LANGUAGE:req.body.language  
+    LANGUAGE:req.body.language
   }, {
     where: {
       id: req.body.id,
@@ -1476,7 +1488,7 @@ router.get('/gymEntrancehistory', async (req, res) => {
   const members = await Entrance.findAll({
     where: {
       LESSON_DATE: {
-        [Op.gt]:req.query.entrancedate        
+        [Op.gt]:req.query.entrancedate
       },
       GYM_ID:req.query.id
     }
@@ -1581,7 +1593,7 @@ const members = await Finence_category.update({
   CATEGORY: req.body.category,
   KUBUN:'1',
   COLOR:req.body.color,
-  
+
 }, {
   where: {
     id: req.body.id,
@@ -1697,7 +1709,7 @@ try{
       id: countMax[0].id
     }
   });
-  
+
   const client = await myClient.findAll({
     where: {
       GYM_NAME: members[0].gym
@@ -1741,7 +1753,7 @@ try{
   console.log(err)
  //return status(400).json(err)
 }
- 
+
 
 });
 
@@ -1874,7 +1886,7 @@ router.post('/entrancehistory', async (req, res) => {
   const members = await Entrance.findAll({
       where: {
       LESSON_DATE: {
-        [Op.gt]:req.body.entrancedate        
+        [Op.gt]:req.body.entrancedate
       }
     }
   });
@@ -2453,4 +2465,3 @@ router.post('/cachChangeonlykaikei', async (req, res) => {
 });
 
 //bae
-
