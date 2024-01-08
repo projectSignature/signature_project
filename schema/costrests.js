@@ -86,6 +86,10 @@ const Costrests = database.define('costrest', {
     suppliers_id:{
       type: Sequelize.INTEGER,
       allowNull: false,
+    },
+    checked_kubun:{
+      type: Sequelize.INTEGER,
+      allowNull: false,
     }
 });
 
