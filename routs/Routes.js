@@ -349,7 +349,8 @@ router.post('/createCostRest', async (req, res) => {
       paykubun: req.body.d7,
       status: req.body.d8,
       seq:req.body.d9,
-      suppliers_id:req.body.d10
+      suppliers_id:req.body.d10,
+      costrests:req.body.d11
     });
     res.json(newClient);
   } catch (err) {
