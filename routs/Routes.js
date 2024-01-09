@@ -350,13 +350,65 @@ router.post('/createCostRest', async (req, res) => {
       status: req.body.d8,
       seq:req.body.d9,
       suppliers_id:req.body.d10,
-      costrests:req.body.d11
+      checked_kubun:req.body.d11
     });
     res.json(newClient);
   } catch (err) {
     console.log(err)
     return res.status(400).json(err)
   }
+});
+
+router.post('/updatecostrest', async (req, res) => {
+  try{
+      const newClient = await Costrest.update({
+        status: req.body[i].status
+      },{
+          where: {
+            id: req.body.id
+          }
+      });
+    return res.status(200).json('OK')
+  }catch (err) {
+    console.log(err)
+    return res.status(400).json(err)
+  }
+
+});
+
+router.post('/updatecostfluxo', async (req, res) => {
+  try{
+      const newClient = await Costrest.update({
+        payday: req.body.d1,
+        amount: req.body.d2,
+        cost_id:req.body.d3,
+        memo:req.body.d4,
+        paykubun:req.body.d5,
+        suppliers_id:req.body.d6
+      },{
+          where: {
+            id: req.body.id
+          }
+      });
+    return res.status(200).json('OK')
+  }catch (err) {
+    console.log(err)
+    return res.status(400).json(err)
+  }
+
+});
+
+router.post('/destroycost', async (req, res) => {
+
+  try {
+    Costrest.destroy({ where: { id: req.body.id } })
+    return res.status(200).json('OK')
+  }
+  catch (err) {
+    console.log(err)
+    return res.status(400).json(err)
+  }
+
 });
 
 router.post('/dakokuistfinaldata', async (req, res) => {
@@ -407,6 +459,10 @@ router.post('/updateBBQmenus', async (req, res) => {
     return res.status(400).json(err)
   }
 });
+
+
+
+
 
 router.post('/updateAllmenus', async (req, res) => {
   try{
