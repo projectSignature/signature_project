@@ -33,7 +33,7 @@ const RestMenus = database.define('restmenu', {
     rest_id: {
         type: Sequelize.INTEGER,
         allowNull: false
-    },    
+    },
     control_name: {
       type: Sequelize.STRING(150),
       unique: false,
@@ -58,6 +58,31 @@ const RestMenus = database.define('restmenu', {
     },
     zairyotp: {
       type: Sequelize.STRING(500),
+    },
+    option1:{
+      type:Sequelize.TINYINT,
+      allowNull:false
+    },
+    option2:{
+      type:Sequelize.TINYINT,
+      allowNull:false
+    },
+    option3:{
+      type:Sequelize.TINYINT,
+      allowNull:false
+    },
+    option4:{
+      type:Sequelize.TINYINT,
+      allowNull:false
+    },
+    detail_pt:{
+        type: Sequelize.STRING(1000),
+    },
+    detail_en:{
+        type: Sequelize.STRING(1000),
+    },
+    detail_jp:{
+        type: Sequelize.STRING(1000),
     }
 });
 
