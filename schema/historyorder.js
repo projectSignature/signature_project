@@ -67,6 +67,32 @@ const Historyorders = database.define('historyorder', {
     prepare_status:{
       type: Sequelize.INTEGER,
       allowNull: false
+    },
+    cutlery:{
+      type:Sequelize.TINYINT,
+      allowNull: false
+    },
+    opt1:{
+        type: Sequelize.STRING(300)
+    }
+    ,
+    opt2:{
+        type: Sequelize.STRING(300)
+    }
+    ,
+    opt3:{
+        type: Sequelize.STRING(300)
+    }
+    ,
+    opt4:{
+        type: Sequelize.STRING(300)
+    }
+    ,
+    opt5:{
+        type: Sequelize.STRING(300)
+    },
+    total_amount:{
+      type: Sequelize.INTEGER,
     }
 });
 
