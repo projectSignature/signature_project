@@ -2120,6 +2120,40 @@ router.post('/newOrder', async (req, res) => {
   }
 });
 
+router.post('/RegisterOrder', async (req, res) => {
+  try {
+    //const maxIdorder = maxorder()
+    console.log(req.body)
+    const newClient = await Historyorder.create({
+        rest_id:req.body.d0,
+      menu_id:req.body.d1,
+      menu_child_id:req.body.d2,
+      menu_value:req.body.d3,
+      quantity_menu:req.body.d4,
+      order_id:req.body.d5,
+      status:0,
+      client_name:(req.body.d10!="") ? req.body.d10 : 'Clients' ,
+      paykubun:(req.body.d6) ? req.body.d6 : 0,
+      obs:(req.body.d9) ? req.body.d9 : "default value",
+      pickUp_day:(req.body.d8) ? req.body.d8 : "default value",
+      pickUp_way:(req.body.d7) ? req.body.d7 : 0,
+      pay_status:0,
+      prepare_status:0,
+      opt1:req.body.d11,
+      opt2:req.body.d12,
+      opt3:req.body.d13,
+      opt4:req.body.d14,
+      cutlery:req.body.d15,
+      total_amount:req.body.d16,
+
+    });
+    res.json(newClient);
+  } catch (err) {
+    console.log(err)
+    return res.status(400).json(err)
+  }
+});
+
 router.get('/orderdayscheck', async (req, res) => {
   try {
   const { Op } = require('sequelize')
