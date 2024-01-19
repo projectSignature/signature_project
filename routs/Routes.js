@@ -1144,6 +1144,21 @@ router.post('/updatehistoryStatus', async (req, res) => {
  return res.status(400).json(err)
 }
 });
+router.post('/updatehistoryUtenStatus', async (req, res) => {
+  try{
+  const members = await Historyorder.update({
+    cutlery:req.body.status
+  }, {
+    where: {
+      id:req.body.id
+    }
+  });
+  res.json(members)
+} catch(err) {
+  console.log(err)
+ return res.status(400).json(err)
+}
+});
 
 router.post('/updatehistoryprapareStatus', async (req, res) => {
   try{
