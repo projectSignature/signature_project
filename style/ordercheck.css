@@ -1,0 +1,421 @@
+html{
+      overflow-y: hidden;
+
+      height: 100%;
+      width:100%
+}
+
+body {
+width:100% ;
+  height: 100%;
+  margin: 0;
+    overflow-y: hidden;
+}
+
+header{
+  width:100%;
+  height:6%;
+  background-color: #FF6928;
+  display: flex;
+  justify-content:space-between;
+  align-items:  center;
+}
+header div{
+  height:100%;
+
+}
+.example2-1{
+    overflow-x: auto;
+    border: 1px solid #999;
+    padding: 10px;
+    height:88%
+}
+.example2-1>div{
+    /*コレ*/width: 275%;
+    display: flex;
+    height:98%
+}
+.example2-1>div>div{
+    width: 10%;
+    border: 1px solid #999;
+    padding: 10px 20px;
+    margin: 10px;
+    background: #f2f2f2;
+}
+.header-left-div{
+  height:100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+header span{
+  font-size:4vh;
+  font-weight: bold;
+  align-items: center;
+  text-align: center;
+}
+header img{
+  width:8rem;
+  height:100% !important;
+}
+
+#manuineer{
+  height:95%;
+}
+
+.order-chek-scroll{
+  width:500px !important;
+  height:100%;
+  margin-left: 15px;
+}
+.order-chek-scroll input{
+  border-radius:15px
+}
+.order-number{
+  width: 62%;
+  background: #333333;
+  color:white;
+  height:100%;
+  font-weight: bold;
+  /*font-size: 3vh;*/
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+   font-size: clamp(15px, 1vw, 30px);
+}
+.menu-area{
+  width:100%;
+  height:52%;
+  margin-top: 5px;
+  font-size: 2vh;
+  overflow-y:auto;
+}
+.text-order-div{
+  font-size: 4vh
+}
+.text-order-div-menu{
+  padding:0;
+  font-size: 5vh;
+  font-weight: bold;
+  height:7%;
+  text-align:center;
+}
+#ammount-pay{
+  background: #7B3CFF;
+  display: flex;
+  text-align: center;
+  justify-content: center;
+}
+.text-order-div-button input{
+  cursor: pointer;
+}
+#time-div{
+  background: #888888;
+  display: flex;
+  text-align: center;
+  justify-content: center;
+}
+.menu-area div{
+
+  background: white
+}
+#paymentOption{
+  background:#D0B0FF;
+  display: flex;
+  text-align: center;
+  justify-content: center;
+}
+.text-order-div-button{
+  display: flex;
+  justify-content:  center;
+  align-items: center;
+}
+.text-order-div-button input{
+  width:80%;
+  height:3.5rem;
+  background: orange;
+  margin-top:2px;
+  font-size: 4vh;
+  font-weight: bold;
+
+}
+.order-count{
+  position: absolute;
+  top:88%;
+  left:85%;
+  width:15rem;
+  height:4rem;
+  background: red;
+  color:white;
+  font-weight: bold;
+  font-size: 4vh;
+  text-align: center;
+  justify-content: center;
+  display:  flex;
+  align-items: center;
+
+}
+.menudiv-flex{
+  display: flex;
+  width:100%;
+}
+.title-menu{
+  width:40%;
+
+}
+.pont-meet{
+  display: flex;
+  width:20%;
+}
+.menu-quantitity{
+  width:18%;
+  text-align: center;
+}
+.price-div{
+  width:22%;
+  text-align: center;
+}
+.main-menu-div{
+  width:100%;
+  height:2rem;
+  display: flex;
+  justify-content: center;
+  border-bottom: 0.1px solid gray;
+
+
+}
+.selectdate{
+  width:20%;
+  height:100%;
+  display: flex;
+  align-items: center;
+}
+.selectdate input{
+  width:100%;
+  height: 80%;
+  text-align: center;
+  border-radius: 5px;
+  font-size:4vh
+}
+.language-swal{
+  width:20%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+
+  justify-content:flex-end;
+}
+
+#pickupOption{
+  display: flex;
+  justify-content: center;
+  background-color: #FFFF77
+}
+#englishButton,
+#portugueseButton,
+#japaneseButton {
+  width: 40%;
+  height: 100%;
+  cursor: pointer;
+  background-repeat: no-repeat;
+
+}
+#englishButton {
+  background-image: url("https://static.mundoeducacao.uol.com.br/mundoeducacao/2022/05/bandeira-estados-unidos.jpg");
+  background-size: 100%;
+  background-position: center;
+}
+#portugueseButton {
+  background-image: url("https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Flag_of_Brazil.svg/275px-Flag_of_Brazil.svg.png");
+  background-size: 90%;
+  background-position: center;
+
+}
+#japaneseButton {
+  background-image: url("https://www.estudopratico.com.br/wp-content/uploads/2016/03/bandeira-japao.jpg");
+  background-size: 95%;
+  background-position: center;
+}
+.flexadd{
+  display: flex;
+  height:7%
+}
+.plusASS{
+  width:10%;
+  background-color: orange;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor:pointer;
+  color:white;
+  font-size: 3vh;
+
+}
+.plusASS:hover{
+  background-color: blue
+}
+.upload-div{
+  margin-right: 30px
+}
+.lotnumber{
+  background-color: #8a2be2;
+  display: flex;
+  justify-items: center;
+  align-items: center;
+  text-align: center;
+  color:white;
+  font-weight: bold;
+    width:28%;
+    font-size:3vh
+}
+.flex-div{
+  flex-wrap: wrap;
+  justify-content:center;
+  align-items: center;
+  height:22%;
+  background-color: #dcdcdc;
+
+}
+.flex-div input{
+  width:49%;
+  height:40%;
+  margin-top:3%;
+  font-size:3vh
+}
+.flex-div input:hover{
+  background-color: gold
+}
+.hantoumei-button{
+  color:#666666
+}
+.top-one-div{
+  width:100%;
+  height:8%;
+  font-size: 4vh
+}
+.details-orders-pays-div{
+  width:100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height:3rem;
+  background-color: #FFAD90
+}
+.details-orders-pays-div div{
+  display: flex;
+  justify-content:  center;
+  padding: 0px !important;
+  overflow: hidden;
+}
+.details-orders-pays-div span{
+  font-size: 3.5vh
+}
+.details-orders-pays-div div img{
+  width:5rem;
+  height:2.5rem;
+  border:0.5px solid gray;
+  background-color:white
+}
+.getOptinons{
+  width:100%;
+  height:1.5rem;
+  display: flex;
+  justify-content: flex-start;
+  background-color: #333333 !important;
+  color:white;
+  font-size: 1.5vh
+}
+.getOptinons div{
+  margin-left: 10px;
+    background-color: #333333 !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+@media only screen and (max-width: 800px) {
+
+
+  header span{
+    font-size:1.5vh;
+  }
+
+  .example2-1>div{
+      /*コレ*/width: 95%;
+      display: block;
+      height:98%;
+      margin-top: 40px;
+      margin-left:0px
+  }
+  .order-count{
+    position: absolute;
+    top:7%;
+    left:68%;
+    font-size: 2vh;
+    width:6rem;
+    height:2rem;
+  }
+
+  .order-chek-scroll{
+    width:90% !important;
+    height:20rem;
+    margin-left: 2px;
+  }
+  .lotnumber, .order-number{
+    font-size: 1.5vh!important
+  }
+  .text-order-div-menu{
+    font-size: 2vh;
+  }
+  .text-order-div{
+    font-size: 2vh
+  }
+  .text-order-div-menu{
+    font-size: 1vh;
+    height:4%;
+  }
+  .flex-div{
+
+    height:15%;
+
+
+  }
+  .flex-div input{
+    width:49%;
+    height:48%;
+    margin-top:1%;
+    font-size:2vh;
+    border-radius: 3px
+  }
+  .header-left-div img{
+    width:4rem
+  }
+  .selectdate{
+    width:40%;
+  }
+  .selectdate input{
+    text-align: center;
+    border-radius: 3px;
+    font-size:2vh
+  }
+  .upload-div{
+    margin-right: 0px
+
+  }
+  .upload-div img{
+    width:4rem
+  }
+  .language-divs{
+    display: none
+  }
+}

@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+
+<head>
+    <meta charset="utf-8" >
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="../style/ordercheck.css">
+    </script>
+    <title>dashboard</title>
+</head>
+
+<body  class="bg-dark">
+  <header>
+    <div class="header-left-div">
+      <img src="..\img\logo.png" width="50" class="setting-right-button"  />
+      <span>Roots Grill</span>
+    </div>
+    <div class="selectdate"><input type="date" id="todayInput" onchange="getData()"/></div>
+    <div class="language-swal">
+    <div class="upload-div" onclick="pagereload()">
+      <img src="..\img\updts.svg" width="50" class="setting-right-button"  />
+    </div>
+    <div class="language-divs" id="portugueseButton" onclick="changeLanguage('0')"></div>
+    <div class="language-divs" id="japaneseButton" onclick="changeLanguage('2')"></div>
+    </div>
+  </header>
+  <div class="order-count" id="orderCount"></div>
+
+
+  <div class="example2-1" >
+  <div id="manuineer">
+    </div>
+  </div>
+
+
+     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
+     <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js" type="text/javascript"></script>-->
+     <script src="../js/swal.js"></script>
+     <script>
+     let text1 = ["Dinheiro","cash","現金"]
+     let text2 = ["Cartão de crédito","Credit card","クレジット"]
+     let text3 = ["Paypay","Paypay","Paypay"]
+     let text4 = ["Retirar","","引き取り"]
+     let text5 = "Uber"
+     let text6 = ["Não há pedido no dia selecionado","","指定日の注文はありません"]
+     let text7 = ["pedidos","orders","つの注文"]
+     let text8 = ["pedido","order","つの注文"]
+     let text9 = ["Entregue","","完了"]
+     let tex10 = ["n.","n.","n."]
+     let text11 = ["Balcão","店頭引き取り",""]
+     const stext18 = ["Buscando dados","Processing","データ取得中"]
+     const stext19 = ["Aguarde","Wait","そのままおまちください"]
+     let restid=0
+     let language =0
+     let orderlistadd = ""
+     let menulistadd=""
+     let addOrderCount = 0
+     let pickupWay={
+       0:`<img src="../img/takeout.svg" width="30" class="imgs-icon"/>`,
+       1:`<img src="../img/uberbike.svg" width="30" class="imgs-icon"/>`,
+       2:`<img src="../img/location.svg" width="30" class="imgs-icon"/>`
+     }
+     let payway={
+       1:`<img src="../img/moneysvg.svg" width="30" class="imgs-icon"/>`,
+       2:`<img src="../img/creditsvg.svg" width="30" class="imgs-icon"/>`,
+       3:`<img src="../img/paypay.jpg" alt="paypay icon" class="imgs-icon"/>`
+     }
+     let garfinho={
+       0:0.5,
+       1:10
+     }
+     //let accessServer = `https://squid-app-ug7x6.ondigitalocean.app`
+     let accessServer = `http://localhost:3000`
+     getData()
+     window.setInterval(getData, 60000);
+
+
+     //const timer1 =  setInterval(getData(), 10000);
+     function changeLanguage(data){
+       language = data
+       getData()
+
+     }
+
+     async function newkanmaReplase(d){
+        let numberAns = d.replace(/[^0-9]/g, "");
+        kanmaAns = numberAns.replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1,');
+        return `￥${kanmaAns}`
+      }
+
+
+function pagereload(){
+  window.location.reload ()
+}
+
+
+     //APIアクセスファンクション
+     async function makerequest(url){
+       const request = await fetch(url)  //esperar aqui
+       return request.json()
+     }
+
+    let today = new Date();  //今日
+document.getElementById('todayInput').value =`${today.getFullYear()}-${("0"+(today.getMonth()+1)).slice(-2)}-${("0"+today.getDate()).slice(-2)}`
+
+     async function getData(){
+      document.getElementById('manuineer').innerHTML = ""
+       let orderCount = 0
+       const orderGet =  await makerequest(`${accessServer}/ordergetstatusyet?id=${restid}`)
+         orderlistadd = orderGet
+       const menulist = await makerequest(`${accessServer}/menuGet?id=${restid}`)//&&menuid=${data}
+         menulistadd =menulist
+       console.log(orderGet)
+       console.log(menulistadd)
+
+
+
+
+      for(let i=0;i<orderGet.clients.length;i++){
+        orderGet.clients[i].pickUp_day = new Date(orderGet.clients[i].pickUp_day)
+        const newTime = new Date(orderGet.clients[i].pickUp_day)
+      }
+      const newArr = orderGet.clients.sort(function(a, b) {
+       return a.pickUp_day - b.pickUp_day;
+      });
+    console.log(newArr)
+
+       let row = ""
+       for(let i=0;i<newArr.length;i++){
+         if(newArr[i].status!=1){
+           target = document.getElementById('todayInput').value
+           const yyyy = newArr[i].pickUp_day.getFullYear()
+           const mm = ("0"+(newArr[i].pickUp_day.getMonth()+1)).slice(-2)
+           const dd = ("0"+newArr[i].pickUp_day.getDate()).slice(-2)
+           //console.log(newArr[i].pickUp_day)
+           let t1 = new Date(newArr[i].pickUp_day)
+           let t2 = new Date();
+           let kubun = 0
+           let diff =""
+           if(t1>t2){
+             diff =t1.getTime() - t2.getTime();
+           }else{
+              diff =t2.getTime() - t1.getTime();
+              kubun = 1
+           }
+           //let diff =
+           //console.log(d)
+           let diffHour = diff / (1000 * 60 * 60);
+           let diffMinute = (diffHour - Math.floor(diffHour)) * 60;
+           let diffSecond = (diffMinute - Math.floor(diffMinute)) * 60;
+           let satimme = ('00' + Math.floor(diffHour)).slice(-2) + ':' + ('00' + Math.floor(diffMinute)).slice(-2) + ':' + ('00' + Math.round(diffSecond)).slice(-2)
+           if(target==`${yyyy}-${mm}-${dd}`){
+             row += await creatRow(newArr[i],i,satimme,kubun)
+             orderCount ++
+           }else{
+           }
+         }
+
+       }
+       if(orderCount==0){
+         //swallOpen(text6[language])
+         document.getElementById('orderCount').innerHTML = `0 pedidos`
+       }else{
+
+          document.getElementById('manuineer').innerHTML = row
+          if(orderCount==1){
+            document.getElementById('orderCount').innerHTML = `${orderCount}${text8[language]}`
+          }else{
+            document.getElementById('orderCount').innerHTML = `${orderCount}${text7[language]}`
+          }
+
+       }
+
+return
+     }
+
+     function swallOpen(data) {
+       Swal.fire({
+         showCancelButton: true,
+         showConfirmButton: true,
+         allowOutsideClick : false,
+         html: `<div>${data}</div>`,
+         timer:2000
+       })
+     }
+
+
+    async function creatRow(data,number,time,kubun){
+    await console.log(data)
+    let count = ( data.menu_id.match( /,/g ) || [] ).length
+    let divs = ""
+    let valor = 0
+    let picktime = ("0" + data.pickUp_day.getHours()).slice(-2)
+    let pickminutes = ("0" + data.pickUp_day.getMinutes()).slice(-2)
+
+
+
+
+console.log(menulistadd)
+
+
+      for(let ii=0;ii<count;ii++){
+let obs = "<div></div>"
+let tgtMenu = menulistadd.filter(name => name.id === (data.menu_id.split(",")[ii]-0))
+console.log(tgtMenu)
+          divs += `<div class="main-menu-div">
+          <div class="title-menu">${tgtMenu[0].control_name}
+          </div>
+          <div class= "pont-meet">${obs}
+          </div>
+          <div class="menu-quantitity">${data.quantity_menu.split(",")[ii]}
+          </div>
+          <div class="price-div">${await newkanmaReplase((data.menu_value.split(",")[ii]).toString())}
+          </div>
+          </div>
+          <div class="getOptinons"/>
+            ${getsOptions(data,ii,tgtMenu[0].bbq_kubun)}
+          </div>
+          `
+          valor += data.menu_value.split(",")[ii]-0
+
+      }
+     let kubuns
+     if(kubun==0){
+       kubuns = `faltam ${time}`
+     }else{
+       kubuns = `passou ${time}`
+     }
+     let row = `
+     <div class="order-chek-scroll">
+         <div class="flexadd">
+            <div class="lotnumber">№${data.id}
+            </div>
+            <div class="order-number" id="menuNUmber${number}" >${data.client_name}
+            </div>
+            <div class="plusASS" onclick="addmenu('${data.id}')">+
+            </div>
+         </div>
+         <div class="text-order-div-menu" id="time-div">${picktime}:${pickminutes}</div>
+         <div style="${await gettimecolor(time,kubun)}">${kubuns}</div>
+         <div class="menu-area">${divs}</div>
+         <div class="details-orders-pays-div">
+           <div>
+            <span>${await newkanmaReplase(valor.toString())}</span>
+           </div>
+           <div onclick="changepayment(${data.id})">
+            ${payway[data.paykubun]}
+           </div>
+            <div onclick="changepickup(${data.id})">
+             ${pickupWay[data.pickUp_way]}
+            </div>
+            <div onclick="changecutlery(${data.id})">
+             <img src="../img/Cutlery.svg" width="30" class="imgs-icon" style="opacity:${garfinho[data.cutlery]}"/>
+            </div>
+         </div>
+       <div class="flex-div">
+          <input class="hantoumei-button" type="button" value="Preparado" onclick="prepare('${data.id}')" style="${await getColorbutton(data.prepare_status)}" />
+          <input class="hantoumei-button" type="button" value="Pago" onclick="payed('${data.id}')" style="${await getColorbutton(data.pay_status)}" />
+          <input type="button" value="${text9[language]}" onclick="pickupConfirm('${data.id}',${data.paykubun},${data.pickUp_way},${valor})" style="background-color:#222222;color:white"/>
+          <input type="button" value="Cancelar" onclick="deletehistory('${data.id}')" style="background-color:#FF3333"/>
+         </div>
+      </div>`
+      console.log(data.pickUp_way)
+     return row
+    }
+
+  //  <div class="text-order-div" id="ammount-pay" onclick="sumValue(${valor})">￥${valor}</div>
+  //  <div class="text-order-div" id="paymentOption" onclick="changepayment(${data.id})">${await parTarget(data.paykubun) }</div>
+  //  <div class="text-order-div" id="pickupOption" onclick="changepickup(${data.id})">${await pickUpTarget(data.pickUp_way) }</div>
+
+
+function getsOptions(dt,nbr,bbq){
+  let htmls = ``
+  if(dt.opt1.split(",")[nbr]!=0){
+    htmls += `<div>Arroz:${dt.opt1.split(",")[nbr]}g</div>`
+  }
+  if(dt.opt2.split(",")[nbr]!=0){
+    htmls += `<div>Feijão:${dt.opt2.split(",")[nbr]}g</div>`
+  }
+  if(dt.opt3.split(",")[nbr]!=0){
+    let newqt = {50:1,100:3,150:3}
+    htmls += `<div>Ovo:${newqt[dt.opt1.split(",")[nbr]]}uni.</div>`
+  }
+  if(bbq==1){
+    console.log('in')
+    let bbqs={0:'Mal passada',1:'Ao ponto',2:'Bem passada'}
+    htmls += `<div>Ponto:${bbqs[dt.opt4.split(",")[nbr]]}</div>`
+  }
+  return htmls
+}
+
+function getColor(d){
+  if(d==3){
+    return ` bluebackground-color:#2C7CFF;color:black`
+  }else{
+    return `background-color:gray;color:black`
+  }
+}
+
+function getColorbutton(d){
+  if(d==1){
+    return `background-color:#2C7CFF;color:black`
+  }else{
+    return `background-color:silver;color:	#777777`
+
+  }
+}
+
+
+
+async function gettimecolor(d,kubun){
+  if(kubun==0){
+    return "background-color:#2C7CFF; text-align:center;font-size:2.5vh;font-weight:bold"
+  }else{
+    return "background-color:red;color:white;text-align:center;font-size:2.5vh;font-weight:bold"
+  }
+}
+async function sumValue(d){
+  console.log(d)
+  console.log((String(d)).length)
+
+  let row = ""
+  let mojisuu
+  if((String(d)).length>3){
+    mojisuu = ((String(d)).length-0) - 1
+  } else{
+    mojisuu = ((String(d)).length-0)
+  }
+ console.log(mojisuu)
+  let tgt = String(d).slice( -mojisuu );
+  console.log(tgt)
+  let tgts = `10${tgt}`-0
+  console.log(tgts)
+  let tgtsgo = `5${tgt}`-0
+  let firstmoji = String(d).slice(-2);
+  console.log(firstmoji)
+  const itimaen = 10000 - d
+  const gosenen = 5000-d
+  await console.log(d+(1000-(tgt-0)))
+  await console.log(tgts-d)
+
+  //await console.log(Roundup(d))
+   row = `<div><input class="otsuri-show" value="￥10,000　⇒　￥${itimaen}" readonly/><input class="selectchange" type="button" value="ok" onclick="valorderetorno(0,${itimaen})"/></div>`
+   row += `<div><input class="otsuri-show" value="￥${tgts}　⇒　￥${tgts-d}" readonly/><input class="selectchange" type="button" value="ok" onclick="valorderetorno(0,${tgts-d})"/></div>`
+   row += `<div><input class="otsuri-show" value="￥5,000　⇒　￥${gosenen}" readonly/><input class="selectchange" type="button" value="ok" onclick="valorderetorno(0.${gosenen})"/></div>`
+   row += `<div><input class="otsuri-show" value="￥${tgtsgo}　⇒　￥${tgtsgo-d}" readonly/><input class="selectchange" type="button" value="ok" onclick="valorderetorno(0,${tgtsgo-d})"/></div>`
+   row += `<div><input class="otsuri-show" value="￥${d+(1000-(tgt-0))}　⇒　￥${(d+(1000-(tgt-0)))-d}" readonly/><input class="selectchange" type="button" value="ok" onclick="valorderetorno(0,${(d+(1000-(tgt-0)))-d})"/></div>`
+   row += `<div><input class="otsuri-show" value="￥${d}　⇒　￥0" readonly/><input class="selectchange" type="button" value="ok" onclick="valorderetorno(0,${0})"/></div>`
+   row += `<div><input class="otsuri-show" placeholder="￥" type="text" id="value-input" oninput="kanmaReplase()"  inputmode="numeric" required/><input class="selectchange" type="button" value="ok" onclick="valorderetorno(1,${d})"/></div>`
+   const swal =  Swal.fire({
+           html: `${row}
+           <style>
+           .swal2-popup {
+               width: 80% !important;
+               height: 600px !important
+           }
+           div{
+             display:flex;
+             justify-content: center;
+             align-items: center;
+             margin-top:5px
+           }
+           .selectchange{
+             margin-left:3rem;
+             width:8rem;
+             height:3rem;
+             font-size:4vh;
+             background-color:gold
+           }
+           .otsuri-show{
+             width:30rem;
+             height:3rem;
+             font-size:4vh;
+
+           }
+           </style>`,
+           allowOutsideClick : false,
+           showConfirmButton: false,
+           showCancelButton: true,
+           background:'#EEEEEE'
+         })
+
+
+
+}
+
+async function valorderetorno(kubun,d){
+  console.log(kubun)
+  console.log(document.getElementById("value-input").value)
+  let retorno
+  if(d==999){
+
+  }else{
+
+  }
+}
+
+async function kanmaReplase(){
+  let data = document.getElementById('value-input')
+  if(data.value.length==1&&data.value!="￥"){
+    data.value = ("￥" + data.value)
+  }else{
+   let numberAns = (data.value.slice( 1 )).replace(/[^0-9]/g, "");
+   kanmaAns = numberAns.replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1,');
+   data.value = `￥${kanmaAns}`
+ }
+   //return `￥${kanmaAns}`
+};
+
+
+async function changepickup(d){
+  let row = `<div class="title-meet-point">Alterar tipo de recibo</div>
+            <div class="save-meet-tipe-select-day">
+               <input class="selectrice-type-day" type="button" id="timepickup-now" value="Balcão" onclick="changePickUp(0,${d})" style="background-color:#5D99FF"/>
+               <input class="selectrice-type-day" type="button" id="timepickup-now" value="Uber" onclick="changePickUp(1,${d})" />
+               <input class="selectrice-type-day" type="button" id="timepickup-now" value="Demaekan" onclick="changePickUp(2,${d})" style="background-color:orange"/>
+             </div>
+
+             <style>
+             .swal2-popup {
+                 width: 80% !important;
+                 height: 600px !important
+             }
+             .selectTimeNOw{
+               width:
+             }
+             .selectrice-type-day{
+               margin-top:150px;
+               width:30%;
+               height:8rem;
+               font-size:8vh;
+               margin-left:30px
+             }
+             .title-meet-point{
+               font-size:8vh
+             }
+
+             </style>`
+
+  const swal =  Swal.fire({
+          html: row,
+          allowOutsideClick : false,
+          showConfirmButton: false,
+          showCancelButton: true,
+          background:'#EEEEEE'
+        })
+}
+
+async function changecutlery(d){
+  let row = `<div class="title-meet-point">Alterar utensílos</div>
+            <div class="save-meet-tipe-select-day">
+               <input class="selectrice-type-day" type="button" id="timepickup-now" value="Sim" onclick="changeuten(1,${d})" style="background-color:#5D99FF"/>
+               <input class="selectrice-type-day" type="button" id="timepickup-now" value="Não" onclick="changeuten(0,${d})" />
+             </div>
+
+             <style>
+             .swal2-popup {
+                 width: 80% !important;
+                 height: 600px !important
+             }
+             .selectTimeNOw{
+               width:
+             }
+             .selectrice-type-day{
+               margin-top:150px;
+               width:30%;
+               height:8rem;
+               font-size:8vh;
+               margin-left:30px
+             }
+             .title-meet-point{
+               font-size:8vh
+             }
+
+             </style>`
+
+  const swal =  Swal.fire({
+          html: row,
+          allowOutsideClick : false,
+          showConfirmButton: false,
+          showCancelButton: true,
+          background:'#EEEEEE'
+        })
+}
+
+
+
+async function getfontsize(d){
+  console.log(d.length)
+  if(d.length>=25){
+    return `font-size:2vh !important`
+  }else if(d.length>15&&d.length<25){
+    return `font-size:2.5vh !important`
+  }else{
+    return `font-size:3vh !important`
+  }
+}
+async function changePickUp(d,id){
+  const swal =  Swal.fire({
+          icon:"info",
+          title: text63[language],
+          html: text64[language],
+          allowOutsideClick : false,
+          showConfirmButton: false,
+          timerProgressBar: true,
+          onBeforeOpen: () => {
+          Swal.showLoading();
+      }
+    })
+
+  let url = `${accessServer}/updatehistoryPicupStatus`
+  body = {
+    status:d,
+    id:id
+  }
+  const reqInsert = await makerequestStatus(url,body)
+  console.log(reqInsert)
+  await console.log(reqInsert.status)
+  if(reqInsert.status==200){
+    await   window.location.reload();
+  }
+  swal.close()
+}
+async function changeuten(d,id){
+  const swal =  Swal.fire({
+          icon:"info",
+          title: text63[language],
+          html: text64[language],
+          allowOutsideClick : false,
+          showConfirmButton: false,
+          timerProgressBar: true,
+          onBeforeOpen: () => {
+          Swal.showLoading();
+      }
+    })
+
+  let url = `${accessServer}/updatehistoryUtenStatus`
+  body = {
+    status:d,
+    id:id
+  }
+  const reqInsert = await makerequestStatus(url,body)
+  console.log(reqInsert)
+  await console.log(reqInsert.status)
+  if(reqInsert.status==200){
+    await   window.location.reload();
+  }
+  swal.close()
+}
+async function changepayment(d){
+  console.log(d)
+  let row = `<div class="title-meet-point">Alterar tipo de recibo</div>
+            <div class="save-meet-tipe-select-day">
+               <input class="selectrice-type-day" type="button" id="timepickup-now" value="Dinheiro" onclick="changePay(1,${d})" style="background-color:#5D99FF"/>
+               <input class="selectrice-type-day" type="button" id="timepickup-now" value="Cartão" onclick="changePay(2,${d})" style="background-color:#ornge"/>
+               <input class="selectrice-type-day" type="button" id="timepickup-now" value="Paypay" onclick="changePay(3,${d})" style="background-color:yellow"/>
+
+             </div>
+
+             <style>
+             .swal2-popup {
+                 width: 80% !important;
+                 height: 600px !important
+             }
+             .selectTimeNOw{
+               width:
+             }
+             .selectrice-type-day{
+               margin-top:150px;
+               width:30%;
+               height:8rem;
+               font-size:8vh;
+               margin-left:30px
+             }
+             .title-meet-point{
+               font-size:8vh
+             }
+             .cancelButton{
+               width:20rem
+             }
+
+             </style>`
+
+  const swal =  Swal.fire({
+          html: row,
+          allowOutsideClick : false,
+          showConfirmButton: false,
+          showCancelButton: true,
+          background:'#EEEEEE'
+        })
+}
+
+async function changePay(d,id){
+  const swal =  Swal.fire({
+          icon:"info",
+          title: text63[language],
+          html: text64[language],
+          allowOutsideClick : false,
+          showConfirmButton: false,
+          timerProgressBar: true,
+          onBeforeOpen: () => {
+          Swal.showLoading();
+      }
+    })
+  //console.log(d)
+  //console.log(id)
+  let url = `${accessServer}/updatehistoryPayStatus`
+  body = {
+    status:d,
+    id:id
+  }
+  const reqInsert = await makerequestStatus(url,body)
+  //console.log(reqInsert)
+  //await console.log(reqInsert.status)
+  if(reqInsert.status==200){
+    await   window.location.reload();
+  }
+  swal.close()
+
+}
+
+async function prepare(d){
+  //console.log(d)
+  const swal =  Swal.fire({
+          icon:"info",
+          title: stext18[language],
+          html: stext19[language],
+          allowOutsideClick : false,
+          showConfirmButton: false,
+          timerProgressBar: true,
+          onBeforeOpen: () => {
+          Swal.showLoading();
+      }
+    })
+  let url = `${accessServer}/updatehistoryprapareStatus`
+  body = {
+    d1:d,
+    status:1
+  }
+  const reqInsert = await makerequestStatus(url,body)
+  //await console.log(reqInsert.status)
+  if(reqInsert.status==200){
+    await   window.location.reload();
+  }
+  swal.close()
+}
+
+async function payed(d){
+  //console.log(d)
+  const swal =  Swal.fire({
+          icon:"info",
+          title: stext18[language],
+          html: stext19[language],
+          allowOutsideClick : false,
+          showConfirmButton: false,
+          timerProgressBar: true,
+          onBeforeOpen: () => {
+          Swal.showLoading();
+      }
+    })
+  let url = `${accessServer}/updatehistorypayed`
+  body = {
+    d1:d,
+    status:1
+  }
+  const reqInsert = await makerequestStatus(url,body)
+  //await console.log(reqInsert.status)
+  if(reqInsert.status==200){
+    await   window.location.reload();
+  }
+  swal.close()
+}
+
+
+
+async function deletehistory(d){
+  const swal =  Swal.fire({
+          icon:"info",
+          title: stext18[language],
+          html: stext19[language],
+          allowOutsideClick : false,
+          showConfirmButton: false,
+          timerProgressBar: true,
+          onBeforeOpen: () => {
+          Swal.showLoading();
+      }
+    })
+  //console.log('in')
+  let url = `${accessServer}/delehistoryorder`
+  let dd = d
+  dd = dd.split("(")[0]
+  body = {
+    id:dd,
+  }
+  //console.log(body)
+  const reqInsert = await makerequestStatus(url,body)
+  //await console.log(reqInsert.status)
+  if(reqInsert.status==200){
+    await   window.location.reload();
+  }
+  swal.close()
+}
+
+async function pickupConfirm(d,paytype,pickuptype,upvalueb){
+  //console.log(paytype)
+  //console.log(pickuptype)
+  const swal =  Swal.fire({
+          icon:"info",
+          title: stext18[language],
+          html: stext19[language],
+          allowOutsideClick : false,
+          showConfirmButton: false,
+          timerProgressBar: true,
+          onBeforeOpen: () => {
+          Swal.showLoading();
+      }
+    })
+//console.log(d)
+let url = `${accessServer}/updatehistoryStatus`
+console.log(d)
+body = {
+  d1:d,
+  status:1
+}
+const reqInsert = await makerequestStatus(url,body)
+//await console.log(reqInsert.status)
+if(reqInsert.status!=200){
+  swallErrorOpen("Ops, houve erro")
+}else{
+  const getRestStatus = await makerequest(`${accessServer}/restmanegerTimeGet`)
+    await console.log(getRestStatus)
+    //console.log(getRestStatus[0].cach)
+    let payinsert
+    let upvalue
+  if(paytype==1&&pickuptype!=1){
+    payinsert = 0
+    upvalue = (getRestStatus[0].caixa-0)+upvalueb
+  }else if(paytype==2&&pickuptype!=1||paytype==3&&pickuptype!=1){
+    payinsert = 1
+    upvalue = (getRestStatus[0].squere-0)+upvalueb
+  }else if(pickuptype==1){
+    payinsert = 2
+    upvalue = (getRestStatus[0].uber-0)+upvalueb
+  }
+    const url = `${accessServer}/cachChangeonly`;
+    const body = {
+      d0: payinsert,
+      d1: upvalue,
+    };
+    console.log(body)
+    const request = await makerequest3(url, body);
+    if(reqInsert.status!=200){
+  swallErrorOpen("Ops, houve erro")
+    }else{
+      swal.close()
+      //console.log('insucc')
+    swallSuccess()
+     getData()
+    }
+}
+
+}
+
+async function makerequest3(url,data){
+
+  try{
+    const request = await fetch(url, {//pegar todos dados do table de pagamentos //n]
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: { "Content-type": "application/json; charset=UTF-8" }
+
+    })
+    return request.status
+  }catch(e){
+
+  }
+
+
+}
+
+function pickUpTarget(d){
+  if(d==0){
+    return text11[language]
+  }else if(d==1){
+    return "Uber"
+  }else if(d==2){
+    return "Demaekan"
+  }
+}
+async function swallSuccess(){
+  const Toast = await Swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 2000,
+  timerProgressBar: true,
+  didOpen: (toast) => {
+    toast.addEventListener('mouseenter', Swal.stopTimer)
+    toast.addEventListener('mouseleave', Swal.resumeTimer)
+  }
+})
+
+Toast.fire({
+  icon: 'success',
+    title: 'Feito'
+})
+}
+   function checkemeetPoint(data,m,g){
+
+     let answer = ""
+   if(data.split(",")[m]==0){
+     answer += `<div><img src="../image/malpassada.png" width="30" class="setting-right-button"/>`
+   }else if(data.split(",")[m]==1){
+     answer += `<div><img src="../image/aoponto.png" width="30" class="setting-right-button"/>`
+   }else{
+     answer += `<div><img src="../image/bempassada.png" width="30" class="setting-right-button"/>`
+   }
+   if(data.split(",")[g]==0){
+     answer +=`<img src="../image/ninniku.png" width="30" class="setting-right-button"/></div>`
+   }else{
+     answer +=`</div>`
+   }
+   return answer
+   }
+
+
+     function parTarget(data){
+       if(data==1){
+         return text1[language]
+       }else if(data==2){
+         return text2[language]
+       }else{
+         return text3[language]
+       }
+     }
+
+     async function makerequestStatus(url,data){
+       const request = await fetch(url, {//pegar todos dados do table de pagamentos //n]
+         method: 'POST',
+         body: JSON.stringify(data),
+         headers: { "Content-type": "application/json; charset=UTF-8" }
+       })
+
+       return request
+     }
+
+     async function addmenu(d){
+   console.log(d)
+       let target = ""
+       for(let i=0;i<orderlistadd.clients.length;i++){
+         if(d==orderlistadd.clients[i].id){
+           target = orderlistadd.clients[i]
+         }
+       }
+
+       await craeteRowTOadd(target,d)
+     }
+
+
+     async function craeteRowTOadd(d,id){
+       let row=`<div class="top-one-div">Alterar o pediodo n.${id}</div>`
+        row +="<div class='nowOrderdiv' id='nowOrderdivAdd'>"
+
+       const comonCOunt = (d.menu_id.match(/,/g) || []).length
+
+       for(let i=0;i<comonCOunt;i++){
+
+         for(let ii=0;ii<menulistadd.length;ii++){
+           if(d.menu_id.split(",")[i]==menulistadd[ii].id){
+
+             row += `<div class="mainaddDiv">
+                     <div class="titleAddDiv">${menulistadd[ii].control_name}</div>
+                     <div id="menuTopid${i}"style="display:none">${menulistadd[ii].id}</div>
+                       <div class="oneqtvalue"id="backValue${i}">￥${menulistadd[ii].menu_value}</div>
+                      <div id="updateOrderQt${i}" class="titleAddDiv-quantitiy">${d.quantity_menu.split(",")[i]}</div>
+                      <div class="titleAddDiv-quantitiy-value" id="updateOrderVa${i}">￥${(menulistadd[ii].menu_value)*(d.quantity_menu.split(",")[i]-0)}</div>
+                     <input value = "+" type="button" style="background-color:orange" onclick="plusmainmenu(1,${i})"/>
+                     <input value = "-" type="button" style="background-color:blue;color:white" onclick="plusmainmenu(2,${i})"/>
+                     </div>
+                    `
+           }
+         }
+         addOrderCount ++
+       }
+       row += `</div>
+
+
+       <div class="addmenuAlldiv" id="addmenus">
+        `
+        let menuaddtoDIv = ""
+        let menuArray = []
+        row+= await resertmenus(0)
+        row += `</div>
+        <div class='button-add-div'>
+        <input class='addmainbuton' value='Confirmar' type="button" onclick="updateToOrder('${d.id}')"/>
+        <input class='addmainbuton' value='Voltar' type="button" onclick="swalclose()"/>
+        </div>`
+       const swal =  Swal.fire({
+               html: `${row}
+               <style>
+               .swal2-popup {
+               width: 90% !important;
+                height:85vh !important;
+                 overflow-y:hidden;
+               }
+               .mainaddDiv{
+                 width:100%;
+                 height:4rem;
+                 display:flex;
+                 margin-top:5px
+               }
+               .mainaddDiv input{
+                 width:30rem;
+                 margin-left:20px;
+                 font-size:4vh;
+                 font-weight:bold
+               }
+               .titleAddDiv{
+                 font-size:3vh;
+                 width:25%;
+                 display:flex;
+                justify-content: center;
+                align-items:center;
+                  text-align:center;
+
+               }
+               .titleAddDiv-quantitiy, .titleAddDiv-quantitiy-value{
+                 font-size:3vh;
+                 background-color:#333333;
+                 color:white;
+                  margin-left:20px;
+                  width:10%;
+                  display:flex;
+                 justify-content: center;
+                 align-items:center;
+                 text-align:center;
+               }
+               .titleAddDiv-quantitiy-value{
+                 width:15% !important
+               }
+               .addmainbuton{
+                 width:15rem;
+                 height:100%;
+                 font-size:4vh;
+                 background-color:orange;
+                 border-radius:50px;
+                 display:flex;
+                justify-content: center;
+                text-align:center;
+
+               }
+               .button-add-div{
+                 width:100%;
+                 height:7%;
+                 margin-top:30px;
+                 display:flex;
+                justify-content: space-around;
+                font-size:3vh
+               }
+               .oneqtvalue{
+                 background-color:yellow;
+                 width:10%;
+                 display:flex;
+                justify-content: center;
+                align-items:center;
+                text-align:center;
+                  font-size:3vh
+               }
+               .addmenuAlldiv{
+                 background-color:	#333333;
+                 margin-top:10px;
+                 width:100%;
+                 height:22%;
+                 overflow-y:auto;
+                 display:flex;
+                 justify-content:flex-start;
+                 align-items:center;
+                 flex-wrap:wrap
+
+               }
+                .addmenuAlldiv input{
+                  width:23%;
+                  height:3.5rem;
+                  margin-left:15px;
+                  margin-top:5px;
+                  font-size:4vh
+                }
+               .nowOrderdiv{
+                 width:100%;
+                 height:54%;
+                 overflow-y:auto;
+
+               }
+               .backsbutton{
+                 background-color:red;
+                 color:white;
+                 width:15% !important
+               }
+               </style>`,
+               allowOutsideClick : false,
+               showConfirmButton: false,
+               showCancelButton: false,
+             })
+
+     }
+
+     async function cretemenu(d){
+       console.log(menulistadd)
+       let menuaddtoDIv=""
+       for(let i=0;i<menulistadd.length;i++){
+         if(menulistadd[i].menu_id==d){
+           //menuArray.push(menulistadd[i].id)
+           menuaddtoDIv += `<input id="menuNo${i}"value="${menulistadd[i].control_name}" type="button" onclick="selectToadd(${menulistadd[i].id})"/>`
+         }
+        }
+        menuaddtoDIv += `<input value="Voltar" class="backsbutton" type="button" onclick="resertmenus(1)"/>`
+        document.getElementById('addmenus').innerHTML =menuaddtoDIv
+
+     }
+     function resertmenus(kubun){
+       let row=""
+       row += `<input value="Churrasco" type="button" onclick="cretemenu(1)"/>`
+       row += `<input value="Lanches" type="button" onclick="cretemenu(2)"/>`
+       row += `<input value="Saladas" type="button" onclick="cretemenu(3)"/>`
+       row += `<input value="Refri." type="button" onclick="cretemenu(4)"/>`
+       row += `<input value="Sobre." type="button" onclick="cretemenu(5)"/>`
+       row += `<input value="Prato dia" type="button" onclick="cretemenu(7)"/>`
+       row += `<input value="Expecial" type="button" onclick="cretemenu(6)"/>`
+       if(kubun==0){
+         return row
+       }else{
+         document.getElementById('addmenus').innerHTML = row
+       }
+
+     }
+
+     async function plusmainmenu(k,d){
+      let target1 = document.getElementById(`updateOrderQt${d}`)
+      let target2 = document.getElementById(`updateOrderVa${d}`)
+      let target3 = document.getElementById(`backValue${d}`)
+
+       myvalue = (target3.innerText.split('￥')[1]-0)
+       if(k==1){
+        target1.innerText = target1.innerText-0 + 1
+        target2.innerText = "￥" + ((target2.innerText.split('￥')[1]-0)+myvalue)
+       }else{
+         if(target1.innerText!=0){
+           target1.innerText = target1.innerText-0 - 1
+           target2.innerText = "￥" + ((target2.innerText.split('￥')[1]-0)-myvalue)
+         }
+       }
+
+     }
+
+     async function selectToadd(d){
+
+       let targetName =""
+       let targetValue = ""
+
+       let row = ""
+       for(let i=0;i<menulistadd.length;i++){
+         if(menulistadd[i].id==d){
+            targetName =menulistadd[i].control_name
+            targetValue = menulistadd[i].menu_value
+            row += `<div class="mainaddDiv">
+                    <div class="titleAddDiv">${menulistadd[i].control_name}</div>
+                    <div id="menuTopid${addOrderCount}" style="display:none">${menulistadd[i].id}</div>
+                      <div class="oneqtvalue"id="backValue${addOrderCount}">￥${menulistadd[i].menu_value}</div>
+                     <div id="updateOrderQt${addOrderCount}" class="titleAddDiv-quantitiy">1</div>
+                     <div class="titleAddDiv-quantitiy-value" id="updateOrderVa${addOrderCount}">￥${menulistadd[i].menu_value}</div>
+                    <input value = "+" type="button" style="background-color:orange" onclick="plusmainmenu(1,${addOrderCount})"/>
+                    <input value = "-" type="button" style="background-color:blue;color:white" onclick="plusmainmenu(2,${addOrderCount})"/>
+                    </div>
+                   `
+            break
+         }
+       }
+       document.getElementById('nowOrderdivAdd').innerHTML +=row
+       addOrderCount ++
+       //console.log(document.getElementById('nowOrderdivAdd').innerHTML)
+
+     }
+
+     function swalclose(){
+       swal.close()
+     }
+     const text63 = ["Registrando","Processing","登録中"]
+     const text64 = ["Aguarde","Wait","そのままおまちください"]
+
+     async function updateToOrder(d){
+
+      targetMenuid = ""
+      targetChild = ""
+      targetvalue = ""
+      targetQt = ""
+
+      for (let i=0;i<addOrderCount;i++){
+          targetMenuid +=  document.getElementById(`menuTopid${i}`).innerText + ","
+          targetChild += "0,"
+          targetvalue += document.getElementById(`updateOrderVa${i}`).innerText.split("￥")[1] + ","
+          targetQt += document.getElementById(`updateOrderQt${i}`).innerText + ","
+      }
+      const swal =  Swal.fire({
+              icon:"info",
+              title: text63[0],
+              html: text64[0],
+              allowOutsideClick : false,
+              showConfirmButton: false,
+              timerProgressBar: true,
+              onBeforeOpen: () => {
+              Swal.showLoading();
+          }
+        })
+      let url = `${accessServer}/updateorderHistory`
+      body = {
+        d1:targetMenuid,
+        d2:targetChild,
+        d3:targetvalue,
+        d4:targetQt,
+        d5:d
+      }
+
+      swal.close()
+    //
+      const reqInsert = await makerequestStatus(url,body)
+
+      await   window.location.reload();
+     }
+
+
+
+
+     </script>
+</body>
+
+
+</html>
