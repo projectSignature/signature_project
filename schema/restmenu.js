@@ -83,6 +83,12 @@ const RestMenus = database.define('restmenu', {
     },
     detail_jp:{
         type: Sequelize.STRING(1000),
+    },
+    use_id:{
+      type: Sequelize.STRING(1000),
+    },
+    use_qt:{
+      type: Sequelize.STRING(1000),
     }
 });
 
