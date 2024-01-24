@@ -335,6 +335,33 @@ router.post('/changezaiko', async (req, res) => {
   }
 });
 
+router.post('/changezaikobyorderFinish', async (req, res) => {
+  try {
+    const quantityChange = parseInt(req.body.d0); // req.body.dを数値に変換
+    // Iventoryの該当レコードを取得
+    const inventoryRecord = await Iventory.findOne({
+      where: {
+        id: req.body.d1
+      }
+    });
+    if (!inventoryRecord) {
+      return res.status(404).json({ error: 'Record not found' });
+    }
+    // quantityを計算して更新
+    const newQuantity = inventoryRecord.quantity + quantityChange;
+    // Iventoryを更新
+    const updatedInventory = await Iventory.update(
+      { quantity: newQuantity },
+      { where: { id: req.body.d1 } }
+    );
+
+    res.json({ success: true, newQuantity });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 
 //レストアプリの支出追加ルート------------------------------>
 router.post('/createCostRest', async (req, res) => {
