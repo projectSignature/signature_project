@@ -151,11 +151,17 @@ router.post('/ParentsCreate', async (req, res) => {
 
 router.post('/updateorderHistory', async (req, res) => {
   try {
+    console.log(req.body)
     const newClient = await Historyorder.update({
       menu_id: req.body.d1,
       menu_child_id: req.body.d2,
       menu_value: req.body.d3,
-      quantity_menu: req.body.d4
+      quantity_menu: req.body.d4,
+      opt1:req.body.d6,
+      opt2:req.body.d7,
+      opt3:req.body.d8,
+      opt4:req.body.d9,
+      total_amount:req.body.d10
     },{
         where: {
           id: req.body.d5
