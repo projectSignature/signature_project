@@ -2191,6 +2191,7 @@ router.post('/RegisterOrder', async (req, res) => {
       opt2:req.body.d12,
       opt3:req.body.d13,
       opt4:req.body.d14,
+      opt5:req.body.d17,
       cutlery:req.body.d15,
       total_amount:req.body.d16,
 
