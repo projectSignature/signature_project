@@ -2196,7 +2196,18 @@ router.post('/RegisterOrder', async (req, res) => {
       total_amount:req.body.d16,
 
     });
-    res.json(newClient);
+
+    const newOrderId = newClient.id; // これが新しいオーダーのID
+    console.log(newOrderId)
+    res.json({
+      message: 'Order registered successfully',
+      orderId: newOrderId,
+      status:200
+      // 他の必要な情報もここで返すことができます
+    });
+
+
+    // res.json(newClient);
   } catch (err) {
     console.log(err)
     return res.status(400).json(err)
@@ -2255,11 +2266,11 @@ router.post('/backend/create-payment-link', async (req, res) => {
   try {
     const crypto = require('crypto');
     const { Client, Environment } = require('square');
-
+    console.log(req.body.amount)
     // Configure as informações do seu aplicativo Square
     const client = new Client({
       environment: Environment.Production,
-      accessToken:  credentials.production.accessToken
+      accessToken: credentials.production.accessToken
     });
 
     const response = await client.checkoutApi.createPaymentLink({
@@ -2278,7 +2289,8 @@ router.post('/backend/create-payment-link', async (req, res) => {
         ]
       },
       checkoutOptions: {
-        redirectUrl: 'https://seashell-app-s8r4y.ondigitalocean.app/',
+        redirectUrl: `http://127.0.0.1:8080/pages/confirmorder.html?id=${req.body.orderId}`,
+        // redirectUrl: `https://seashell-app-s8r4y.ondigitalocean.app/pages/confirmorder.html?id=${req.body.orderId}`,
         acceptedPaymentMethods: {
           applePay: true,
           googlePay: true,
@@ -2286,8 +2298,8 @@ router.post('/backend/create-payment-link', async (req, res) => {
         }
       }
     });
-    const paymentLinkUrl = response;
-    res.json(paymentLinkUrl.result.paymentLink);
+
+    res.json(response.result.paymentLink);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to create payment link' });
