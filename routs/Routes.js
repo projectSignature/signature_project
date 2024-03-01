@@ -2289,8 +2289,8 @@ router.post('/backend/create-payment-link', async (req, res) => {
         ]
       },
       checkoutOptions: {
-        redirectUrl: `http://127.0.0.1:8080/pages/confirmorder.html?id=${req.body.orderId}`,
-        // redirectUrl: `https://seashell-app-s8r4y.ondigitalocean.app/pages/confirmorder.html?id=${req.body.orderId}`,
+        // redirectUrl: `http://127.0.0.1:8080/pages/confirmorder.html?id=${req.body.orderId}`,
+        redirectUrl: `https://seashell-app-s8r4y.ondigitalocean.app/pages/confirmorder.html?id=${req.body.orderId}`,
         acceptedPaymentMethods: {
           applePay: true,
           googlePay: true,
