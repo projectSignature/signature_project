@@ -2183,7 +2183,7 @@ router.post('/RegisterOrder', async (req, res) => {
       client_name:(req.body.d10!="") ? req.body.d10 : 'Clients' ,
       paykubun:(req.body.d6) ? req.body.d6 : 0,
       obs:(req.body.d9) ? req.body.d9 : "default value",
-      pickUp_day: req.body.d8,
+      pickUp_day: pickUp_day: req.body.d8.split(":")[0]+":"+req.body.d8.split(":")[1],,
       pickUp_way:(req.body.d7) ? req.body.d7 : 0,
       pay_status:0,
       prepare_status:0,
