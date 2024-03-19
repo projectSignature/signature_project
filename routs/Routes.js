@@ -372,6 +372,7 @@ router.post('/changezaikobyorderFinish', async (req, res) => {
 //レストアプリの支出追加ルート------------------------------>
 router.post('/createCostRest', async (req, res) => {
   try {
+    console.log(req.body.d5)//'2024-02-20'
     const newClient = await Costrest.create({
       rest_id: req.body.d1,
       worker_id: req.body.d2,
@@ -383,8 +384,10 @@ router.post('/createCostRest', async (req, res) => {
       status: req.body.d8,
       seq:req.body.d9,
       suppliers_id:req.body.d10,
-      checked_kubun:req.body.d11
+      checked_kubun:req.body.d11,
+      category:req.body.d12
     });
+    console.log(newClient.toJSON());
     res.json(newClient);
   } catch (err) {
     console.log(err)
@@ -2572,6 +2575,7 @@ try {
 
 router.post('/cachChangeonlykaikei', async (req, res) => {
   try {
+    console.log("CD is:"+ req.body.d0)
     if(req.body.d0==0){
       const newClient = await Rest_maneger.update({
         cach: req.body.d1,
@@ -2599,6 +2603,15 @@ router.post('/cachChangeonlykaikei', async (req, res) => {
           }
       });
       res.json(newClient);
+    }else if(req.body.d0==99){
+      const newClient = await Rest_maneger.update({
+        bank: req.body.d1,
+      },{
+          where: {
+            rest_id: 0
+          }
+      });
+      res.json(newClient);
     }else{
       const newClient = await Rest_maneger.update({
         uber: req.body.d1,
@@ -2615,5 +2628,6 @@ router.post('/cachChangeonlykaikei', async (req, res) => {
     return res.status(400).json(err)
   }
 });
+
 
 //bae
