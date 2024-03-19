@@ -1,5 +1,7 @@
 const Sequelize = require('sequelize');
 const database = require('../db');
+const mSuppliers = require('./m_suppliers');
+const costCategory = require('./costCategory');
 
 const Costrests = database.define('costrest', {
     id: {
@@ -90,7 +92,23 @@ const Costrests = database.define('costrest', {
     checked_kubun:{
       type: Sequelize.INTEGER,
       allowNull: false,
+    },
+    category:{
+      type: Sequelize.INTEGER,
+      allowNull: false,
     }
 });
+
+Costrests.belongsTo(mSuppliers, { foreignKey: 'suppliers_id', as: 'supplier' });
+// Costrests.belongsTo(costCategory, { foreignKey: 'cost_id', as: 'kamokus' });
+Costrests.belongsTo(costCategory, {
+  foreignKey: 'cost_id',
+  as: 'kamokus',
+  targetKey: 'control_id', // costCategory テーブルの特定のカラムを指定
+  // または
+  // targetKey: costCategory.col,
+});
+
+
 
 module.exports = Costrests;
