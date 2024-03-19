@@ -45,6 +45,35 @@ router.use(function timelog(req, res, next) {
   next();
 });
 
+router.get('/KetsugouTestcostRestGet', async (req, res) => {
+  try {
+   const costrestsWithSuppliers = await Costrest.findAll({
+     include: [
+       {
+         model: Suppliers,
+         as: 'supplier',
+         attributes: ['name_jp'], // 取得する列を指定
+       },
+       {
+         model: Costcategory,
+         as: 'kamokus',
+         attributes: ['name_jp'], // AnotherTableテーブルから取得する列を指定
+       },
+     ],
+      where: {
+        // ここに条件を追加
+        // 例: idが1のものだけ取得する場合
+        category: req.query.category,
+      },
+   });
+res.json(costrestsWithSuppliers)
+   // return costrestsWithSuppliers;
+ } catch (error) {
+   console.error('Error getting costrests with suppliers:', error);
+   throw error;
+ }
+});
+
 router.get('/getsupplires', async (req, res) => {
   try {
   const supplireget = await Suppliers.findAll({
