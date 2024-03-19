@@ -441,6 +441,23 @@ router.post('/updatecostrest', async (req, res) => {
 
 });
 
+router.post('/updatechecked_kubun', async (req, res) => {
+  try{
+      const newClient = await Costrest.update({
+        checked_kubun: req.body.kubun
+      },{
+          where: {
+            id: req.body.id
+          }
+      });
+    return res.status(200).json('OK')
+  }catch (err) {
+    console.log(err)
+    return res.status(400).json(err)
+  }
+
+});
+
 router.post('/updatecostfluxo', async (req, res) => {
   try{
       const newClient = await Costrest.update({
