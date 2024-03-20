@@ -2265,20 +2265,27 @@ router.post('/RegisterOrder', async (req, res) => {
 
 router.get('/orderdayscheck', async (req, res) => {
   try {
-  const { Op } = require('sequelize')
-  const clients = await Historyorder.findAll({
-    where: {
-       pickUp_day :{
-         [Op.gt]:req.query.getdat
-       } ,
-    }
-  });
+    const { Op } = require('sequelize');
+    const startDate = new Date(req.query.getdat);
+    const endDate = new Date(req.query.getdat);
+    endDate.setDate(endDate.getDate() + 1); // 次の日の0時に設定する
+
+    const clients = await Historyorder.findAll({
+      where: {
+        pickUp_day: {
+          [Op.gte]: startDate,
+          [Op.lt]: endDate
+        }
+      }
+    });
+
     res.json({
-         clients
-    })
-} catch (err) {
-  res.json({ message: 'internal error' })
-}
+      clients
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'internal error' });
+  }
 });
 
 
