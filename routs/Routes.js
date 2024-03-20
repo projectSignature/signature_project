@@ -214,6 +214,8 @@ router.post('/addnewzaiko', async (req, res) => {
     categorys: req.body.d1,
     mercado: req.body.d4,
     kijun: req.body.d5,
+    tani:req.body.d7,
+    suplires_id:req.body.d8
   });
    res.json(newParents);
    }
