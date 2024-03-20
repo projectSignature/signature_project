@@ -43,6 +43,10 @@ const Inventorys = database.define('inventory', {
     tani:{
         type: Sequelize.STRING(45),
       unique: false
+    },
+    suplires_id:{
+      type: Sequelize.INTEGER,
+      allowNull: false
     }
 });
 
