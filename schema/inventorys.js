@@ -47,6 +47,9 @@ const Inventorys = database.define('inventory', {
     suplires_id:{
       type: Sequelize.INTEGER,
       allowNull: false
+    },
+    tana_number: {
+        type: Sequelize.INTEGER
     }
 });
 
