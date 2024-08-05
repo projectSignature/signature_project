@@ -32,6 +32,7 @@ const Costcategory = require('../schema/costCategory');
 const Dakoku = require('../schema/dakoku');
 const Iventory = require('../schema/inventorys');
 const Suppliers = require('../schema/m_suppliers');
+const PosMenu = require('../schema/pos/menu')
 
 
 //LIBS
@@ -2686,3 +2687,16 @@ router.post('/cachChangeonlykaikei', async (req, res) => {
 
 
 //bae
+
+
+//PosMenu
+router.get('/pos/getmenu', async (req, res) => {
+  try {
+  const supplireget = await PosMenu.findAll({
+  });
+  res.json(supplireget)
+} catch (err) {
+  res.json(err)
+  console.log(err)
+}
+});
