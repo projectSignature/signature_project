@@ -18,6 +18,7 @@ const server = http.createServer(app); // Expressアプリを使ってHTTPサー
 // WebSocketサーバーの設定
 const wss = new WebSocket.Server({ server });
 const Message = require('./schema/chat/Message');
+const { Op } = require('sequelize');
 
 // WebSocketのイベントハンドリング
 wss.on('connection', ws => {
