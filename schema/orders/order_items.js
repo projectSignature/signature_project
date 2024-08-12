@@ -1,3 +1,4 @@
+// order_items.js
 const Sequelize = require('sequelize');
 const { DataTypes } = require('sequelize');
 const database = require('../../order_db');  // データベース接続をインポート
