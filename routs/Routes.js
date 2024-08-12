@@ -2700,3 +2700,184 @@ router.get('/pos/getmenu', async (req, res) => {
   console.log(err)
 }
 });
+
+//order App
+
+const OrdersUser = require('../schema/orders/user')
+const OrdersMenu = require('../schema/orders/menu')
+const OrdersCategory = require('../schema/orders/category')
+const OrdersOption = require('../schema/orders/option')
+const Orders = require('../schema/orders/orders');
+const OrderItems = require('../schema/orders/order_items');
+
+router.get('/orders/getBasedata', async (req, res) => {
+  try {
+    const userId = req.query.user_id; // クエリパラメータからuser_idを取得
+    console.log(userId)
+
+    // Category, Menu, Option のデータをそれぞれ取得
+    const categories = await OrdersCategory.findAll({
+      where: { user_id: userId }
+    });
+
+    const menus = await OrdersMenu.findAll({
+      where: { user_id: userId }
+    });
+
+    const options = await OrdersOption.findAll({
+      where: { user_id: userId }
+    });
+
+    // 取得したデータをまとめてJSONで返す
+    const getData = {
+      categories: categories,
+      menus: menus,
+      options: options
+    };
+
+    res.json(getData); // 結果をJSONとして返す
+  } catch (err) {
+    res.json({ error: err.message }); // エラー時のレスポンス
+    console.log(err);
+  }
+});
+
+
+
+
+router.get('/orders/getmenu', async (req, res) => {
+  try {
+    const userId = req.query.user_id; // クエリパラメータからuser_idを取得
+    const getData = await OrdersMenu.findAll({
+      where: {
+        user_id: userId // user_idを条件にデータを取得
+      }
+    });
+    res.json(getData);
+  } catch (err) {
+    res.json(err);
+    console.log(err);
+  }
+});
+
+router.get('/orders/getuser', async (req, res) => {
+  try {
+    const userId = req.query.email; // クエリパラメータからuser_idを取得
+    const getData = await OrdersUser.findAll({
+      where: {
+        email: userId // user_idを条件にデータを取得（この場合、OrdersUserの主キーと一致することが想定されます）
+      }
+    });
+    res.json(getData);
+  } catch (err) {
+    res.json(err);
+    console.log(err);
+  }
+});
+
+router.get('/orders/getcategory', async (req, res) => {
+  try {
+    const userId = req.query.user_id; // クエリパラメータからuser_idを取得
+    console.log('id is' + userId)
+    const getData = await OrdersCategory.findAll({
+      where: {
+        user_id: userId // user_idを条件にデータを取得
+      }
+    });
+    res.json(getData);
+  } catch (err) {
+    console.log(err)
+    res.json(err);
+    console.log(err);
+  }
+});
+
+router.get('/orders/getoption', async (req, res) => {
+  try {
+    const userId = req.query.user_id; // クエリパラメータからuser_idを取得
+    const getData = await OrdersOption.findAll({
+      where: {
+        user_id: userId // user_idを条件にデータを取得
+      }
+    });
+    res.json(getData);
+  } catch (err) {
+    res.json(err);
+    console.log(err);
+  }
+});
+
+router.post('/orders/confirm', async (req, res) => {
+    const { order_name, user_id, table_no, items } = req.body;
+
+    try {
+        // 既存の注文を確認
+        let existingOrder = await Orders.findOne({
+            where: {
+                user_id: user_id,
+                table_no: table_no,
+                order_name: order_name,
+                order_status: 'pending'
+            },
+            order: [['id', 'DESC']]
+        });
+
+        if (existingOrder) {
+            // 既存の注文が存在する場合、その注文IDにアイテムを追加
+            const existingOrderId = existingOrder.id;
+
+            const orderItems = items.map(item => ({
+                order_id: existingOrderId,
+                menu_id: item.id,
+                quantity: item.quantity,
+                options: JSON.stringify(item.options),
+                item_price: item.amount,
+                total_price: item.amount * item.quantity,
+                created_at: new Date(),
+                updated_at: new Date()
+            }));
+
+            await OrderItems.bulkCreate(orderItems);
+
+            // 総額を更新
+            const additionalAmount = items.reduce((acc, item) => acc + (item.amount * item.quantity), 0);
+            existingOrder.total_amount = parseFloat(existingOrder.total_amount) + parseFloat(additionalAmount);
+            existingOrder.updated_at = new Date();
+
+            // データベースに保存
+            await existingOrder.save();
+
+            res.status(200).json({ message: 'Order updated successfully' });
+        } else {
+            // 新規注文を作成
+            const newOrder = await Orders.create({
+                user_id: user_id,
+                table_no: table_no,
+                order_name: order_name,
+                total_amount: items.reduce((acc, item) => acc + item.amount * item.quantity, 0),
+                order_status: 'pending',
+                created_at: new Date(),
+                updated_at: new Date()
+            });
+
+            // 各アイテムを OrderItems テーブルに追加
+            const orderItems = items.map(item => ({
+                order_id: newOrder.id,
+                menu_id: item.id,
+                quantity: item.quantity,
+                options: JSON.stringify(item.options),
+                item_price: item.amount,
+                total_price: item.amount * item.quantity,
+                created_at: new Date(),
+                updated_at: new Date()
+            }));
+
+            await OrderItems.bulkCreate(orderItems);
+
+            res.status(200).json({ message: 'Order confirmed successfully' });
+        }
+    } catch (error) {
+        console.error('Error confirming order:', error);
+        res.status(500).json({ error: 'Failed to confirm order' });
+    }
+});
