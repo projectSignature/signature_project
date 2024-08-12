@@ -1,6 +1,8 @@
+// orders.js
 const Sequelize = require('sequelize');
 const { DataTypes } = require('sequelize');
 const database = require('../../order_db');  // データベース接続をインポート
+const OrderItems = require('./order_items'); // OrderItemsモデルをインポート
 
 const Orders = database.define('Orders', {
     id: {
@@ -21,14 +23,14 @@ const Orders = database.define('Orders', {
         type: DataTypes.STRING(10),
         allowNull: false
     },
-    order_name: {  // ここで新しい order_name カラムを追加
+    order_name: {
         type: DataTypes.STRING(255),
         allowNull: false
     },
     total_amount: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
-    defaultValue: 0.00
+        defaultValue: 0.00
     },
     order_status: {
         type: DataTypes.ENUM('pending', 'confirmed', 'cancelled'),
@@ -47,5 +49,7 @@ const Orders = database.define('Orders', {
     timestamps: false
 });
 
+Orders.hasMany(OrderItems, { foreignKey: 'order_id' });
+OrderItems.belongsTo(Orders, { foreignKey: 'order_id' });
 
 module.exports = Orders;
