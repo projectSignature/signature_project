@@ -2809,7 +2809,6 @@ router.get('/orders/getoption', async (req, res) => {
 
 router.post('/orders/confirm', async (req, res) => {
     const { order_name, user_id, table_no, items } = req.body;
-
     try {
         // 既存の注文を確認
         let existingOrder = await Orders.findOne({
@@ -2821,7 +2820,6 @@ router.post('/orders/confirm', async (req, res) => {
             },
             order: [['id', 'DESC']]
         });
-
         if (existingOrder) {
             // 既存の注文が存在する場合、その注文IDにアイテムを追加
             const existingOrderId = existingOrder.id;
@@ -2836,9 +2834,7 @@ router.post('/orders/confirm', async (req, res) => {
                 created_at: new Date(),
                 updated_at: new Date()
             }));
-
             await OrderItems.bulkCreate(orderItems);
-
             // 総額を更新
             const additionalAmount = items.reduce((acc, item) => acc + (item.amount * item.quantity), 0);
             existingOrder.total_amount = parseFloat(existingOrder.total_amount) + parseFloat(additionalAmount);
@@ -2876,11 +2872,80 @@ router.post('/orders/confirm', async (req, res) => {
 
             res.status(200).json({ message: 'Order confirmed successfully' });
         }
+        //プリンターにデータを転送
+        const printerDt = await  groupItemsByPrinter(items)
+        sendToPrinters(printerDt)
+
     } catch (error) {
         console.error('Error confirming order:', error);
         res.status(500).json({ error: 'Failed to confirm order' });
     }
 });
+
+sendToPrinters({ '172.16.41.1': [ { name: 'R/gigante de coxinha', quantity: 1 } ] })
+
+async function sendToPrinters(groupedItems) {
+  console.log(groupedItems)
+    for (const printerIp in groupedItems) {
+        const items = groupedItems[printerIp];
+
+        // ネットワークプリンターを設定
+        const device = new escpos.Network(printerIp);
+        const printer = new escpos.Printer(device);
+
+        // プリンター接続
+        device.open(function(error){
+            if (error) {
+                console.error(`Error connecting to printer ${printerIp}:`, error);
+                return;
+            }
+
+            // クーポンのヘッダー
+            printer
+              .align('CT')
+              .text(`Printer IP: ${printerIp}`)
+              .text(`Order Items:`)
+              .newline();
+
+            // アイテムをプリント
+            items.forEach(item => {
+                printer
+                  .align('LT')
+                  .text(`- ${item.name}  x${item.quantity}`)
+                  .newline();
+            });
+
+            // クーポンのフッター
+            printer
+              .newline()
+              .text('Thank you for your order!')
+              .cut();
+
+            // プリント完了
+            printer.close();
+        });
+    }
+}
+
+function groupItemsByPrinter(items) {
+    const groupedItems = {};
+
+    items.forEach(item => {
+        const printer = item.printer;
+
+        if (!groupedItems[printer]) {
+            groupedItems[printer] = [];
+        }
+
+        groupedItems[printer].push({
+            name: item.name,
+            quantity: item.quantity
+        });
+    });
+
+    return groupedItems;
+}
+
 
 // オーダー履歴を取得するエンドポイント
 router.get('/orders/history', async (req, res) => {
@@ -2943,6 +3008,58 @@ router.post('/orders/getOrder', async (req, res) => {
     } catch (error) {
         console.error('Error fetching order:', error);
         res.status(500).json({ error: 'Failed to fetch order' });
+    }
+});
+
+
+const escpos = require('escpos');
+escpos.Network = require('escpos-network');
+
+const device  = new escpos.Network('192.168.0.100'); // プリンターのIPアドレス
+const printer = new escpos.Printer(device);
+
+device.open(function(){
+  printer
+    .text('Hello World')
+    .cut()
+    .close();
+});
+
+
+router.post('/orders/pending', async (req, res) => {
+    const { client_id } = req.body;
+    try {
+        const orders = await Orders.findAll({
+            where: {
+                user_id: client_id,
+                order_status: 'pending'
+            },
+            include: [{ model: OrderItems }] // OrderItemsを含めて取得
+
+        });
+        res.json(orders);
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        res.status(500).json({ error: 'Failed to fetch orders' });
+    }
+});
+
+router.post('/orders/updatePayment', async (req, res) => {
+    const { order_id, payment_method, order_status } = req.body;
+
+    try {
+        const order = await Orders.findByPk(order_id);
+        if (order) {
+            order.payment_method = payment_method;
+            order.order_status = order_status;
+            await order.save();
+            res.status(200).json({ message: 'Order updated successfully' });
+        } else {
+            res.status(404).json({ error: 'Order not found' });
+        }
+    } catch (error) {
+        console.error('Error updating order:', error);
+        res.status(500).json({ error: 'Failed to update order' });
     }
 });
 
