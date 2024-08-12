@@ -2881,3 +2881,68 @@ router.post('/orders/confirm', async (req, res) => {
         res.status(500).json({ error: 'Failed to confirm order' });
     }
 });
+
+// オーダー履歴を取得するエンドポイント
+router.get('/orders/history', async (req, res) => {
+    try {
+        const orders = await Orders.findAll({
+            where: { order_status: 'confirmed' }, // もしくは適切な条件で絞り込む
+            attributes: ['id', 'order_name']
+        });
+        res.json(orders);
+    } catch (error) {
+        console.error('Error fetching order history:', error);
+        res.status(500).json({ error: 'Failed to fetch order history' });
+    }
+});
+
+// 特定のオーダー詳細を取得するエンドポイント
+router.get('/orders/:id', async (req, res) => {
+    const orderId = req.params.id;
+    try {
+        const order = await Orders.findOne({
+            where: { id: orderId },
+            include: [{ model: OrderItems }] // OrderItemsを含めて取得
+        });
+
+        if (!order) {
+            return res.status(404).json({ error: 'Order not found' });
+        }
+
+        res.json(order);
+    } catch (error) {
+        console.error('Error fetching order details:', error);
+        res.status(500).json({ error: 'Failed to fetch order details' });
+    }
+});
+
+// ルートの設定例
+router.post('/orders/getOrder', async (req, res) => {
+    const { user_id, table_no, order_name } = req.body;
+
+    try {
+        // データベースからオーダー情報を取得
+        const order = await Orders.findOne({
+            where: {
+                user_id: user_id,
+                table_no: table_no,
+                order_name: order_name,
+                order_status: 'pending', // 'pending'のオーダーを取得
+            },
+            include: [{ model: OrderItems }] // 関連するOrderItemsも一緒に取得
+        });
+
+        console.log(req.body)
+        console.log(order)
+
+        if (order) {
+            res.status(200).json(order);
+        } else {
+            res.status(404).json({ message: 'Order not found' });
+        }
+    } catch (error) {
+        console.error('Error fetching order:', error);
+        res.status(500).json({ error: 'Failed to fetch order' });
+    }
+});
+
