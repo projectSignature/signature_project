@@ -3063,8 +3063,8 @@ router.post('/orders/updatePayment', async (req, res) => {
     }
 });
 
-const express = require('express');
-const router = express.Router();
+//const express = require('express');
+//const router = express.Router();
 const Orders = require('../models/orders');  // Ordersモデルのインポート
 const OrderItems = require('../models/order_items'); // OrderItemsモデルのインポート
 
