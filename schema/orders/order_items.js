@@ -41,6 +41,11 @@ const OrderItems = database.define('OrderItems', {
     total_price: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false
+    },
+    coupon_printed: {  // 追加
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
     }
 }, {
     tableName: 'order_items',
