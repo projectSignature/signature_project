@@ -3063,3 +3063,43 @@ router.post('/orders/updatePayment', async (req, res) => {
     }
 });
 
+const express = require('express');
+const router = express.Router();
+const Orders = require('../models/orders');  // Ordersモデルのインポート
+const OrderItems = require('../models/order_items'); // OrderItemsモデルのインポート
+
+// プリンターしていない注文を取得するエンドポイント
+router.get('/orders/unprinted', async (req, res) => {
+    try {
+        const unprintedOrders = await Orders.findAll({
+            where: { coupon_printed: false },
+            include: [{
+                model: OrderItems,
+                as: 'orderItems'
+            }]
+        });
+
+        res.json(unprintedOrders);
+    } catch (error) {
+        res.status(500).json({ error: 'データの取得に失敗しました。' });
+    }
+});
+
+const updateCouponPrintedStatus = async (orderId) => {
+    try {
+        const result = await Orders.update(
+            { coupon_printed: true },
+            { where: { id: orderId } }
+        );
+        
+        if (result[0] > 0) {
+            console.log(`Order ID ${orderId} のクーポンプリントステータスが更新されました。`);
+        } else {
+            console.log(`Order ID ${orderId} が見つかりませんでした。`);
+        }
+    } catch (error) {
+        console.error(`Order ID ${orderId} の更新に失敗しました。`, error);
+    }
+};
+
+
