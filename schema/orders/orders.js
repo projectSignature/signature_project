@@ -1,4 +1,3 @@
-// orders.js
 const Sequelize = require('sequelize');
 const { DataTypes } = require('sequelize');
 const database = require('../../order_db');  // データベース接続をインポート
@@ -33,8 +32,16 @@ const Orders = database.define('Orders', {
         defaultValue: 0.00
     },
     order_status: {
-        type: DataTypes.ENUM('pending', 'confirmed', 'cancelled'),
+        type: DataTypes.ENUM('yet', 'pending', 'confirmed', 'cancelled'),
         defaultValue: 'pending'
+    },
+    payment_method: {
+        type: DataTypes.ENUM('cash', 'credit', 'other', 'yet'),
+        defaultValue: 'yet'
+    },
+    coupon_printed: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     },
     created_at: {
         type: DataTypes.DATE,
