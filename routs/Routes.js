@@ -2873,8 +2873,8 @@ router.post('/orders/confirm', async (req, res) => {
             res.status(200).json({ message: 'Order confirmed successfully' });
         }
         //プリンターにデータを転送
-        const printerDt = await  groupItemsByPrinter(items)
-        sendToPrinters(printerDt)
+        //const printerDt = await  groupItemsByPrinter(items)
+        //sendToPrinters(printerDt)
 
     } catch (error) {
         console.error('Error confirming order:', error);
