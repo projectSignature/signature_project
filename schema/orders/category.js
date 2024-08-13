@@ -36,8 +36,13 @@ const Category = database.define('Category', {
     display_order: {
         type: DataTypes.INTEGER,
         allowNull: true
+    },
+    printer_ip: {
+        type: DataTypes.STRING(15),  // IPアドレスの文字列形式
+        allowNull: true  // プリンターIPが設定されない場合もあるため、NULLを許可
     }
-}, {
+},
+{
     tableName: 'category',
     timestamps: false,
     indexes: [
