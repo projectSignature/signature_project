@@ -2882,7 +2882,7 @@ router.post('/orders/confirm', async (req, res) => {
     }
 });
 
-sendToPrinters({ '172.16.41.1': [ { name: 'R/gigante de coxinha', quantity: 1 } ] })
+//sendToPrinters({ '172.16.41.1': [ { name: 'R/gigante de coxinha', quantity: 1 } ] })
 
 async function sendToPrinters(groupedItems) {
   console.log(groupedItems)
@@ -3012,18 +3012,18 @@ router.post('/orders/getOrder', async (req, res) => {
 });
 
 
-const escpos = require('escpos');
-escpos.Network = require('escpos-network');
+//const escpos = require('escpos');
+//escpos.Network = require('escpos-network');
 
-const device  = new escpos.Network('192.168.0.100'); // プリンターのIPアドレス
-const printer = new escpos.Printer(device);
+//const device  = new escpos.Network('192.168.0.100'); // プリンターのIPアドレス
+//const printer = new escpos.Printer(device);
 
-device.open(function(){
-  printer
-    .text('Hello World')
-    .cut()
-    .close();
-});
+//device.open(function(){
+ // printer
+    //.text('Hello World')
+   // .cut()
+   // .close();
+//});
 
 
 router.post('/orders/pending', async (req, res) => {
@@ -3065,8 +3065,8 @@ router.post('/orders/updatePayment', async (req, res) => {
 
 //const express = require('express');
 //const router = express.Router();
-const Orders = require('../models/orders');  // Ordersモデルのインポート
-const OrderItems = require('../models/order_items'); // OrderItemsモデルのインポート
+//const Orders = require('../models/orders');  // Ordersモデルのインポート
+//const OrderItems = require('../models/order_items'); // OrderItemsモデルのインポート
 
 // プリンターしていない注文を取得するエンドポイント
 router.get('/orders/unprinted', async (req, res) => {
