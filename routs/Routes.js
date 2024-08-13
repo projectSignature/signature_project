@@ -2831,6 +2831,7 @@ router.post('/orders/confirm', async (req, res) => {
                 options: JSON.stringify(item.options),
                 item_price: item.amount,
                 total_price: item.amount * item.quantity,
+                coupon_printed:false,
                 created_at: new Date(),
                 updated_at: new Date()
             }));
