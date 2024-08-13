@@ -2824,6 +2824,11 @@ router.post('/orders/confirm', async (req, res) => {
             // 既存の注文が存在する場合、その注文IDにアイテムを追加
             const existingOrderId = existingOrder.id;
 
+           await Orders.update(
+        { coupon_printed: false },
+        { where: { id: existingOrderId } }
+    );
+
             const orderItems = items.map(item => ({
                 order_id: existingOrderId,
                 menu_id: item.id,
