@@ -2823,11 +2823,10 @@ router.post('/orders/confirm', async (req, res) => {
         if (existingOrder) {
             // 既存の注文が存在する場合、その注文IDにアイテムを追加
             const existingOrderId = existingOrder.id;
-
-           await Orders.update(
-        { coupon_printed: false },
-        { where: { id: existingOrderId } }
-    );
+            await Orders.update(
+                   { coupon_printed: false },
+                   { where: { id: existingOrderId } }
+               );
 
             const orderItems = items.map(item => ({
                 order_id: existingOrderId,
@@ -2842,7 +2841,7 @@ router.post('/orders/confirm', async (req, res) => {
             }));
             await OrderItems.bulkCreate(orderItems);
             // 総額を更新
-            const additionalAmount = items.reduce((acc, item) => acc + (item.amount * item.quantity), 0);
+            const additionalAmount = items.reduce((acc, item) => acc + (item.amount), 0);//ここかも
             existingOrder.total_amount = parseFloat(existingOrder.total_amount) + parseFloat(additionalAmount);
             existingOrder.updated_at = new Date();
 
@@ -2856,8 +2855,9 @@ router.post('/orders/confirm', async (req, res) => {
                 user_id: user_id,
                 table_no: table_no,
                 order_name: order_name,
-                total_amount: items.reduce((acc, item) => acc + item.amount * item.quantity, 0),
+                total_amount: items.reduce((acc, item) => acc + item.amount, 0),
                 order_status: 'pending',
+                coupon_printed:false,
                 created_at: new Date(),
                 updated_at: new Date()
             });
@@ -2879,8 +2879,8 @@ router.post('/orders/confirm', async (req, res) => {
             res.status(200).json({ message: 'Order confirmed successfully' });
         }
         //プリンターにデータを転送
-        //const printerDt = await  groupItemsByPrinter(items)
-        //sendToPrinters(printerDt)
+        const printerDt = await  groupItemsByPrinter(items)
+        sendToPrinters(printerDt)
 
     } catch (error) {
         console.error('Error confirming order:', error);
