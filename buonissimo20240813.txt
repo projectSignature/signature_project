@@ -1,25 +1,920 @@
-app.post('/print', async (req, res) => {
-    const htmlContent = req.body;
-    const printerIp = '192.168.1.100'; // プリンターのIPアドレスを指定
+//CONFIGS
+const express = require('express');
+const router = express.Router();
+const database = require('../db');
+const axios = require('axios');
+const credentials = require('./credentials');
+const WebSocket = require('ws');
+module.exports = router;
+
+//LIBS
+const pdf = require('html-pdf');
+const ejs = require('ejs');
+const { Op, Sequelize } = require('sequelize');
+
+//middleware
+router.use(function timelog(req, res, next) {
+  console.log('Time: ', Date.now());
+  next();
+});
+
+
+
+const OrdersUser = require('../schema/orders/user')
+const OrdersMenu = require('../schema/orders/menu')
+const OrdersCategory = require('../schema/orders/category')
+const OrdersOption = require('../schema/orders/option')
+const Orders = require('../schema/orders/orders');
+const OrderItems = require('../schema/orders/order_items');
+
+const escpos = require('escpos');
+escpos.Network = require('escpos-network');
+const puppeteer = require('puppeteer');
+// const escpos = require('escpos');
+escpos.Image = require('escpos/image');  // 正しいパス
+const fs = require('fs');
+const path = require('path');
+
+
+
+
+//プリントのロジックはここから
+
+const processOrder = async (order) => {
+    // console.log(`Processing Order ID: ${order.id}`);
+    const categorizedItems = {};
+    // OrderItemsをループ
+    for (let item of order.OrderItems) {
+        const menuId = item.dataValues.menu_id;
+        // menu_id から Menu を取得して category_id と menu_name_pt を取得
+        const menu = await OrdersMenu.findOne({
+            where: { id: menuId,
+            user_id:1 },
+            attributes: ['category_id', 'menu_name_pt']  // category_id と menu_name_pt を取得
+        });
+
+        if (menu) {
+            const categoryId = menu.dataValues.category_id;
+            const menuNamePt = menu.dataValues.menu_name_pt;
+
+            // category_id から Category を取得して printer_ip を取得
+            const category = await OrdersCategory.findOne({
+                where: { id: categoryId,
+                user_id:1 }
+            });
+
+            if (category) {
+                const printerIp = category.dataValues.printer_ip;
+                  // IPごとにアイテムを分類
+                if (!categorizedItems[printerIp]) {
+                    categorizedItems[printerIp] = [];
+                }
+                // item.dataValues に menu_name_pt を追加して分類
+                categorizedItems[printerIp].push({
+                    ...item.dataValues,
+                    menu_name_pt: menuNamePt
+                });
+            } else {
+                console.error(`Category not found for category_id: ${categoryId}`);
+            }
+        } else {
+            console.error(`Menu not found for menu_id: ${menuId}`);
+        }
+    }
+
+    // // 各プリンターIPに対応するアイテムを表示
+    // for (let printerIp in categorizedItems) {
+    //     console.log(`Printer IP: ${printerIp}`);
+    //     console.log(`Items:`, categorizedItems[printerIp]);
+    // }
+
+    return categorizedItems;
+};
+
+checkAndPrintOrders()
+function checkAndPrintOrders() {
+  setInterval(async () => {
+    try {
+      const unprintedOrders = await Orders.findAll({
+          where: { coupon_printed: false },
+          include: [{ model: OrderItems,
+          where: { coupon_printed: false }
+         }]
+      });
+
+      const results = [];
+
+      for (let order of unprintedOrders) {
+          const categorizedItems = await processOrder(order.dataValues);
+          results.push({
+              order_id: order.dataValues.id,
+              table_no: order.dataValues.table_no,
+              order_name: order.dataValues.order_name,
+              categorizedItems
+          });
+
+          // sendToPrinters関数にオーダー情報を送信
+          await sendToPrinters(
+              order.dataValues.id,
+              order.dataValues.table_no,
+              order.dataValues.order_name,
+              categorizedItems
+          );
+
+          await Orders.update(
+            { coupon_printed: true },
+            { where: { id: order.dataValues.id } }
+          );
+
+          await OrderItems.update(
+            { coupon_printed: true },
+            { where: { order_id: order.dataValues.id } }
+          );
+
+
+      }
+    } catch (error) {
+      console.error('Error fetching unprinted orders:', error);
+    }
+  }, 10000); // 60秒ごとにチェック
+}
+
+// sendToPrinters(15,11,`Paulo`,{ '192.168.244.41': [ { name: 'Pizaa de queijo', quantity: 1 } ] })
+
+
+async function sendToPrinters(id, tableNo, orderName, contents) {
+     console.log(contents)
+    const currentDate = new Date().toLocaleString();
+    for (let printerIp in contents) {
+        const items = contents[printerIp];
+        const device = new escpos.Network(printerIp);
+        const printer = new escpos.Printer(device);
+        device.open(function (error) {
+            if (error) {
+                console.error(`Erro ao conectar na impressora ${printerIp}:`, error);
+                return;
+            }
+            // 現在の日付を印刷
+            // 外部機器1の駆動（音を鳴らす）
+            printer.raw(Buffer.from([0x07])); // BELコマンド
+            // フォントを標準サイズにリセット
+            printer.raw(Buffer.from([0x1B, 0x1E, 0x46, 0x00])); // ESC RS F n (n=0, Font-A)
+
+            // 縦・横2倍に拡大
+            printer.raw(Buffer.from([0x1B, 0x69, 0x01, 0x01])); // ESC i 1 1 (縦2倍, 横2倍)
+
+            printer.text(`${currentDate}`);
+
+            // 白黒反転印刷を設定 (背景が黒、文字が白)
+            printer.raw(Buffer.from([0x1B, 0x34])); // ESC 4 (白黒反転)
+
+            // 文字の高さを2倍に設定 (縦拡大)
+            printer.raw(Buffer.from([0x1B, 0x68, 0x05])); // ESC h n (縦拡大)
+
+            // 題目を印刷
+            printer.text(`Numero da mesa: ${tableNo}`);
+            printer.text(`Nome: ${orderName}`);
+
+            // 縦の拡大をリセット
+            printer.raw(Buffer.from([0x1B, 0x68, 0x00])); // ESC h n (縦拡大 なし)
+
+            // 白黒反転を解除
+            printer.raw(Buffer.from([0x1B, 0x35])); // ESC 5 (白黒反転解除)
+
+            printer.text(`--------pedido---------`);
+            printer.text(``);
+
+            // アイテムを印刷
+            items.forEach(item => {
+                printer.text(`${item.menu_name_pt} x ${item.quantity}`);
+            });
+
+            printer.text(``);
+            printer.text(`---------fim----------`);
+            printer.text(``);
+            // 行間隔を調整 (必要に応じて設定)
+            printer.raw(Buffer.from([0x1B, 0x33, 0x20])); // ESC 3 n (行間隔設定)
+            // ページをカット
+            const n = 2; // Define o valor de n (0 para corte total, ou conforme necessário)
+            printer.raw(Buffer.from([0x1B, 0x64, n]));
+            printer.close();
+        });
+    }
+}
+const receiptData = {
+    date: '2024-08-15',
+    orderNumber: '123456',
+    items: [
+        { name: 'Item A', quantity: 2, price: '10.00' },
+        { name: 'Item B', quantity: 1, price: '20.00' }
+    ],
+    total: '40.00'
+};
+
+// レシートと領収書を印刷
+printReceiptAndInvoice('192.168.244.41', receiptData);
+
+async function printReceiptAndInvoice(printerIp, data) {
+  console.log('IN')
+    const device = new escpos.Network(printerIp);
+    const printer = new escpos.Printer(device);
+
+    device.open(function (error) {
+        if (error) {
+            console.error(`Erro ao conectar na impressora ${printerIp}:`, error);
+            return;
+        }
+
+        const currentDate = new Date().toLocaleDateString('ja-JP', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+});
+console.log(currentDate)
+// 漢字モードの開始
+// 漢字モードを開始
+// UTF-8でエンコードして送信
+// Shift_JISでエンコードして送信
+const iconv = require('iconv-lite'); // iconv-liteパッケージを使用
+
+
+
+
+ // ESC T (漢字モード終了)
+
+          // 縦・横2倍に拡大
+          printer.raw(Buffer.from([0x1B, 0x35])); // ESC 5
+
+          printer.raw(Buffer.from([0x1B, 0x1D, 0x61, 0x01])); // ESC GS a
+
+          // さらに大きく、太字に設定
+          printer.raw(Buffer.from([0x1B, 0x45, 0x01])); // ESC E 1 (太字 ON)
+          printer.raw(Buffer.from([0x1B, 0x69, 0x03, 0x03])); // ESC i 3 3 (縦3倍, 横3倍)
+
+          // テキストを印刷
+          printer.text(`Buonissimo`);
+
+          // 太字を解除
+          printer.raw(Buffer.from([0x1B, 0x45, 0x00])); // ESC E 0 (太字 OFF)
+
+          // 左揃えに設定
+          printer.raw(Buffer.from([0x1B, 0x1D, 0x61, 0x00])); // ESC GS a 0 (左揃え)
+
+            printer.raw(Buffer.from([0x1B, 0x69, 0x00, 0x01])); // ESC i 3 3 (縦3倍, 横3倍)
+            const buffer0 = iconv.encode('〒444-0515', 'Shift_JIS');
+            printer.raw(buffer0);
+          printer.text('')
+          const buffer1 = iconv.encode('愛知県西尾市吉良町富好新田井戸東39-1', 'Shift_JIS');
+          printer.raw(buffer1);
+
+            printer.text('')
+            printer.text('090-1749-2810')
+            printer.text('')
+            // const text = '2024年8月15日';
+            printer.raw(Buffer.from([0x1B, 0x1D, 0x61, 0x02])); // ESC GS a 2 (右寄せ)
+            const buffer = iconv.encode(currentDate, 'Shift_JIS');
+            printer.raw(buffer);
+
+          printer.text('')
+          printer.text('')
+            // 中央揃え
+
+            printer.raw(Buffer.from([0x1B, 0x1D, 0x61, 0x00])); // ESC GS a 0 (左揃え)
+
+
+            // printer.text('*** RECEIPT ***');
+            // printer.text(`Date: ${data.date}`);
+            // printer.text(`Order No: ${data.orderNumber}`);
+            // printer.text('------------------------------');
+            //
+            data.items.forEach(item => {
+                printer.align('LT');
+                printer.text(`${item.name}  x ${item.quantity}`);
+                // printer.text(`￥${item.price}`);
+                let buffer4 = iconv.encode(`￥${item.price}`, 'Shift_JIS');
+
+                // プリンターに送信
+                printer.raw(buffer4);
+
+    printer.text('')
+            });
+            //
+            // printer.text('------------------------------');
+            // printer.align('RT');
+            // printer.text(`Total: ${data.total} USD`);
+            printer.text('------------------------');
+
+            // const iconv = require('iconv-lite');
+
+            // 左側のテキスト
+            let leftText = '小計';
+            // 右側のテキスト
+            let rightText = '￥1,980';
+            // 行の最大文字数（プリンターによる）
+            let maxLineLength = 19;
+
+            // 左右のテキストを揃えるためにスペースを計算
+            let spaces = ' '.repeat(maxLineLength - leftText.length - rightText.length);
+            // 左と右のテキストを結合して1行にする
+            let line = leftText + spaces + rightText;
+
+            // Shift_JISにエンコード
+            let buffer3 = iconv.encode(line, 'Shift_JIS');
+
+            // プリンターに送信
+            printer.raw(buffer3);
+
+printer.text('')
+let invoice = '8%'
+ leftText = `消費税(${invoice})`;
+// 右側のテキスト
+ rightText = '￥450';
+// 行の最大文字数（プリンターによる）
+ maxLineLength = 16;
+
+// 左右のテキストを揃えるためにスペースを計算
+spaces = ' '.repeat(maxLineLength - leftText.length - rightText.length);
+// 左と右のテキストを結合して1行にする
+ line = leftText + spaces + rightText;
+
+// Shift_JISにエンコード
+ buffer3 = iconv.encode(line, 'Shift_JIS');
+
+// プリンターに送信
+printer.raw(buffer3);
+printer.text('')
+printer.text('------------------------');
+leftText = `合計`;
+// 右側のテキスト
+rightText = '￥2,000';
+// 行の最大文字数（プリンターによる）
+maxLineLength = 19;
+
+// 左右のテキストを揃えるためにスペースを計算
+spaces = ' '.repeat(maxLineLength - leftText.length - rightText.length);
+// 左と右のテキストを結合して1行にする
+line = leftText + spaces + rightText;
+
+// Shift_JISにエンコード
+buffer3 = iconv.encode(line, 'Shift_JIS');
+
+// プリンターに送信
+printer.raw(buffer3);
+printer.text('')
+leftText = `お預かり`;
+// 右側のテキスト
+rightText = '￥2,000';
+// 行の最大文字数（プリンターによる）
+maxLineLength = 17;
+
+// 左右のテキストを揃えるためにスペースを計算
+spaces = ' '.repeat(maxLineLength - leftText.length - rightText.length);
+// 左と右のテキストを結合して1行にする
+line = leftText + spaces + rightText;
+
+// Shift_JISにエンコード
+buffer3 = iconv.encode(line, 'Shift_JIS');
+
+// プリンターに送信
+printer.raw(buffer3);
+printer.text('')
+leftText = `お釣り`;
+// 右側のテキスト
+rightText = '￥0';
+// 行の最大文字数（プリンターによる）
+maxLineLength = 16;
+
+// 左右のテキストを揃えるためにスペースを計算
+spaces = ' '.repeat(maxLineLength - leftText.length - rightText.length);
+// 左と右のテキストを結合して1行にする
+line = leftText + spaces + rightText;
+
+// Shift_JISにエンコード
+buffer3 = iconv.encode(line, 'Shift_JIS');
+
+// プリンターに送信
+printer.raw(buffer3);
+printer.text('')
+
+printer.text('')
+printer.text('')
+printer.text('')
+printer.text('')
+printer.raw(Buffer.from([0x1B, 0x1D, 0x61, 0x01])); // ESC GS a
+printer.raw(Buffer.from([0x1B, 0x69, 0x00, 0x00])); // ESC i 3 3 (縦3倍, 横3倍)
+
+            printer.text('Thank you for your purchase!');
+            printer.text('');
+            const n = 2; // Define o valor de n (0 para corte total, ou conforme necessário)
+            printer.raw(Buffer.from([0x1B, 0x64, n]));
+            printer.close();
+    });
+}
+
+function printReceipt(printer, data) {
+const currentDate = new Date().toLocaleString();
+  // 縦・横2倍に拡大
+  printer.raw(Buffer.from([0x1B, 0x35])); // ESC 5 (白黒反転解除)
+  printer.raw(Buffer.from([0x1B, 0x69, 0x01, 0x01])); // ESC i 1 1 (縦2倍, 横2倍)
+  printer.raw(Buffer.from([0x1B, 0x1D, 0x61, 0x01])); // ESC GS a 1
+  // printer.text('Buonissimo');
+
+
+
+    printer.text(`${currentDate}`);
+    // 中央揃え
+
+
+    printer.text('*** RECEIPT ***');
+    printer.text(`Date: ${data.date}`);
+    printer.text(`Order No: ${data.orderNumber}`);
+    printer.text('------------------------------');
+
+    data.items.forEach(item => {
+        printer.align('LT');
+        printer.text(`${item.name}  x ${item.quantity}`);
+        printer.text(`   ${item.price} USD`);
+    });
+
+    printer.text('------------------------------');
+    printer.align('RT');
+    printer.text(`Total: ${data.total} USD`);
+    printer.text('------------------------------');
+    printer.text('Thank you for your purchase!');
+    printer.text('');
+}
+
+function printInvoice(printer, data) {
+    printer.align('CT');
+    printer.text('*** INVOICE ***');
+    printer.text(`Date: ${data.date}`);
+    printer.text(`Invoice No: ${data.invoiceNumber}`);
+    printer.text('------------------------------');
+
+    data.items.forEach(item => {
+        printer.align('LT');
+        printer.text(`${item.name}  x ${item.quantity}`);
+        printer.text(`   ${item.price} USD`);
+    });
+
+    printer.text('------------------------------');
+    printer.align('RT');
+    printer.text(`Subtotal: ${data.subtotal} USD`);
+    printer.text(`Tax: ${data.tax} USD`);
+    printer.text(`Total: ${data.total} USD`);
+    printer.text('------------------------------');
+    printer.text('Thank you for your business!');
+    printer.text('');
+}
+
+// サンプルデータ
+
+
+const invoiceData = {
+    date: '2024-08-15',
+    invoiceNumber: 'INV-7890',
+    items: [
+        { name: 'Item A', quantity: 2, price: '10.00' },
+        { name: 'Item B', quantity: 1, price: '20.00' }
+    ],
+    subtotal: '30.00',
+    tax: '3.00',
+    total: '33.00'
+};
+
+
+
+
+
+
+
+router.post('/printRecite', async (req, res) => {
+    const htmlContent = req.body.htmlContent || '';
+
+    console.log('Received request to print, printer IP:', '192.168.244.41');
+    const printerIp = '192.168.244.41'; // プリンターのIPアドレスを指定
 
     try {
+        console.log('Launching Puppeteer to generate image...');
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+        await page.setContent(htmlContent);
+        const imageBuffer = await page.screenshot({ type: 'png' }); // PNG形式で画像取得
+        await browser.close();
+        console.log('Image generated successfully.');
+
+        // 画像を一時ファイルに保存
+        const tempImagePath = path.join(__dirname, 'temp.png');
+        fs.writeFileSync(tempImagePath, imageBuffer);
+        console.log('Image saved to temporary path:', tempImagePath);
+
+        // 画像を読み込んで印刷
         const device = new escpos.Network(printerIp);
         const printer = new escpos.Printer(device);
 
-        // HTMLをテキストに変換して印刷するか、画像として印刷
-        // サンプルとして、ここでは一部HTMLをテキストとして処理
-        const textToPrint = htmlContent.replace(/<[^>]*>?/gm, ''); // シンプルなHTMLタグを除去した例
-
-        device.open(() => {
-            printer
-                .text(textToPrint)
-                .cut()
-                .close();
+        escpos.Image.load(tempImagePath, (image) => {
+            console.log('Image loaded, attempting to print...');
+            device.open(() => {
+                printer
+                    .raster(image)
+                    .cut()
+                    .close(() => {
+                        console.log('Printing completed successfully.');
+                        // 一時ファイルを削除
+                        fs.unlinkSync(tempImagePath);
+                        console.log('Temporary image file deleted.');
+                        res.send('印刷が完了しました');
+                    });
+            });
         });
-
-        res.send('印刷が完了しました');
     } catch (error) {
         console.error('Error printing:', error);
         res.status(500).send('印刷に失敗しました');
     }
+});
+
+
+
+
+
+
+
+router.get('/orders/getBasedata', async (req, res) => {
+  try {
+    const userId = req.query.user_id; // クエリパラメータからuser_idを取得
+    console.log(userId)
+
+    // Category, Menu, Option のデータをそれぞれ取得
+    const categories = await OrdersCategory.findAll({
+      where: { user_id: userId }
+    });
+
+    const menus = await OrdersMenu.findAll({
+      where: { user_id: userId }
+    });
+
+    const options = await OrdersOption.findAll({
+      where: { user_id: userId }
+    });
+
+    // 取得したデータをまとめてJSONで返す
+    const getData = {
+      categories: categories,
+      menus: menus,
+      options: options
+    };
+
+    res.json(getData); // 結果をJSONとして返す
+  } catch (err) {
+    res.json({ error: err.message }); // エラー時のレスポンス
+    console.log(err);
+  }
+});
+
+
+
+
+router.get('/orders/getmenu', async (req, res) => {
+  try {
+    const userId = req.query.user_id; // クエリパラメータからuser_idを取得
+    const getData = await OrdersMenu.findAll({
+      where: {
+        user_id: userId // user_idを条件にデータを取得
+      }
+    });
+    res.json(getData);
+  } catch (err) {
+    res.json(err);
+    console.log(err);
+  }
+});
+
+router.get('/orders/getuser', async (req, res) => {
+  try {
+    const userId = req.query.email; // クエリパラメータからuser_idを取得
+    const getData = await OrdersUser.findAll({
+      where: {
+        email: userId // user_idを条件にデータを取得（この場合、OrdersUserの主キーと一致することが想定されます）
+      }
+    });
+    res.json(getData);
+  } catch (err) {
+    res.json(err);
+    console.log(err);
+  }
+});
+
+router.get('/orders/getcategory', async (req, res) => {
+  try {
+    const userId = req.query.user_id; // クエリパラメータからuser_idを取得
+    console.log('id is' + userId)
+    const getData = await OrdersCategory.findAll({
+      where: {
+        user_id: userId // user_idを条件にデータを取得
+      }
+    });
+    res.json(getData);
+  } catch (err) {
+    console.log(err)
+    res.json(err);
+    console.log(err);
+  }
+});
+
+router.get('/orders/getoption', async (req, res) => {
+  try {
+    const userId = req.query.user_id; // クエリパラメータからuser_idを取得
+    const getData = await OrdersOption.findAll({
+      where: {
+        user_id: userId // user_idを条件にデータを取得
+      }
+    });
+    res.json(getData);
+  } catch (err) {
+    res.json(err);
+    console.log(err);
+  }
+});
+
+router.post('/orders/confirm', async (req, res) => {
+    const { order_name, user_id, table_no, items } = req.body;
+    try {
+        // 既存の注文を確認
+        let existingOrder = await Orders.findOne({
+            where: {
+                user_id: user_id,
+                table_no: table_no,
+                order_name: order_name,
+                order_status: 'pending'
+            },
+            order: [['id', 'DESC']]
+        });
+        if (existingOrder) {
+            // 既存の注文が存在する場合、その注文IDにアイテムを追加
+            const existingOrderId = existingOrder.id;
+
+            const orderItems = items.map(item => ({
+                order_id: existingOrderId,
+                menu_id: item.id,
+                quantity: item.quantity,
+                options: JSON.stringify(item.options),
+                item_price: item.amount,
+                total_price: item.amount * item.quantity,
+                created_at: new Date(),
+                updated_at: new Date()
+            }));
+            await OrderItems.bulkCreate(orderItems);
+            // 総額を更新
+            const additionalAmount = items.reduce((acc, item) => acc + (item.amount * item.quantity), 0);
+            existingOrder.total_amount = parseFloat(existingOrder.total_amount) + parseFloat(additionalAmount);
+            existingOrder.updated_at = new Date();
+
+            // データベースに保存
+            await existingOrder.save();
+
+            res.status(200).json({ message: 'Order updated successfully' });
+        } else {
+            // 新規注文を作成
+            const newOrder = await Orders.create({
+                user_id: user_id,
+                table_no: table_no,
+                order_name: order_name,
+                total_amount: items.reduce((acc, item) => acc + item.amount * item.quantity, 0),
+                order_status: 'pending',
+                created_at: new Date(),
+                updated_at: new Date()
+            });
+
+            // 各アイテムを OrderItems テーブルに追加
+            const orderItems = items.map(item => ({
+                order_id: newOrder.id,
+                menu_id: item.id,
+                quantity: item.quantity,
+                options: JSON.stringify(item.options),
+                item_price: item.amount,
+                total_price: item.amount * item.quantity,
+                created_at: new Date(),
+                updated_at: new Date()
+            }));
+
+            await OrderItems.bulkCreate(orderItems);
+
+            res.status(200).json({ message: 'Order confirmed successfully' });
+        }
+        //プリンターにデータを転送
+        const printerDt = await  groupItemsByPrinter(items)
+        sendToPrinters(printerDt)
+
+    } catch (error) {
+        console.error('Error confirming order:', error);
+        res.status(500).json({ error: 'Failed to confirm order' });
+    }
+});
+
+
+
+
+// const device  = new escpos.Network('192.168.0.100'); // プリンターのIPアドレス
+// const printer = new escpos.Printer(device);
+//
+// device.open(function(){
+//   printer
+//     .text('Hello World')
+//     .cut()
+//     .close();
+// });
+// sendToPrinters({ '172.16.41.1': [ { name: 'R/gigante de coxinha', quantity: 1 } ] })
+
+// sendToPrinters()
+
+
+
+
+
+
+function groupItemsByPrinter(items) {
+    const groupedItems = {};
+
+    items.forEach(item => {
+        const printer = item.printer;
+
+        if (!groupedItems[printer]) {
+            groupedItems[printer] = [];
+        }
+
+        groupedItems[printer].push({
+            name: item.name,
+            quantity: item.quantity
+        });
+    });
+
+    return groupedItems;
+}
+
+
+// オーダー履歴を取得するエンドポイント
+router.get('/orders/history', async (req, res) => {
+    try {
+        const orders = await Orders.findAll({
+            where: { order_status: 'confirmed' }, // もしくは適切な条件で絞り込む
+            attributes: ['id', 'order_name']
+        });
+        res.json(orders);
+    } catch (error) {
+        console.error('Error fetching order history:', error);
+        res.status(500).json({ error: 'Failed to fetch order history' });
+    }
+});
+
+// 特定のオーダー詳細を取得するエンドポイント
+router.get('/orders/:id', async (req, res) => {
+    const orderId = req.params.id;
+    try {
+        const order = await Orders.findOne({
+            where: { id: orderId },
+            include: [{ model: OrderItems }] // OrderItemsを含めて取得
+        });
+
+        if (!order) {
+            return res.status(404).json({ error: 'Order not found' });
+        }
+
+        res.json(order);
+    } catch (error) {
+        console.error('Error fetching order details:', error);
+        res.status(500).json({ error: 'Failed to fetch order details' });
+    }
+});
+
+// ルートの設定例
+router.post('/orders/getOrder', async (req, res) => {
+    const { user_id, table_no, order_name } = req.body;
+
+    try {
+        // データベースからオーダー情報を取得
+        const order = await Orders.findOne({
+            where: {
+                user_id: user_id,
+                table_no: table_no,
+                order_name: order_name,
+                order_status: 'pending', // 'pending'のオーダーを取得
+            },
+            include: [{ model: OrderItems }] // 関連するOrderItemsも一緒に取得
+        });
+
+        console.log(req.body)
+        console.log(order)
+
+        if (order) {
+            res.status(200).json(order);
+        } else {
+            res.status(404).json({ message: 'Order not found' });
+        }
+    } catch (error) {
+        console.error('Error fetching order:', error);
+        res.status(500).json({ error: 'Failed to fetch order' });
+    }
+});
+
+
+
+
+
+router.post('/orders/pending', async (req, res) => {
+    const { client_id } = req.body;
+    try {
+        const orders = await Orders.findAll({
+            where: {
+                user_id: client_id,
+                order_status: 'pending'
+            },
+            include: [{ model: OrderItems }] // OrderItemsを含めて取得
+
+        });
+        res.json(orders);
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        res.status(500).json({ error: 'Failed to fetch orders' });
+    }
+});
+
+router.post('/orders/updatePayment', async (req, res) => {
+    const { order_id, payment_method, order_status } = req.body;
+
+    try {
+        const order = await Orders.findByPk(order_id);
+        if (order) {
+            order.payment_method = payment_method;
+            order.order_status = order_status;
+            await order.save();
+            res.status(200).json({ message: 'Order updated successfully' });
+        } else {
+            res.status(404).json({ error: 'Order not found' });
+        }
+    } catch (error) {
+        console.error('Error updating order:', error);
+        res.status(500).json({ error: 'Failed to update order' });
+    }
+});
+
+
+//ｗｓソケットの設定
+
+const wss = new WebSocket.Server({ port: 8080 });
+
+// WebSocket接続が確立されたときの処理
+// const wss = new WebSocket.Server({ port: 8080 });
+
+// WebSocket接続が確立されたときの処理
+wss.on('connection', (ws) => {
+  console.log('クライアントが接続されました');
+
+  ws.on('message', (data) => {
+    const order = JSON.parse(data);
+    printOrder(order);
+  });
+});
+
+// 印刷関数
+function printOrder(order) {
+  const device = new escpos.Network('192.168.244.41');
+  const printer = new escpos.Printer(device);
+
+  device.open((error) => {
+    if (error) {
+      console.error('プリンターに接続できませんでした:', error);
+      return;
+    }
+
+    printer.align('CT');
+    printer.text('新しい注文が入りました');
+    printer.text(`注文ID: ${order.id}`);
+    printer.text(`商品: ${order.item_name}`);
+    printer.text(`数量: ${order.quantity}`);
+    printer.cut();
+    printer.close();
+  });
+}
+
+// 別のサーバーから注文データを取得
+router.post('/fetch-orders', async (req, res) => {
+  const { client_id } = req.body;
+  try {
+    const response = await axios.post('http://other-server.com/orders/pending', { client_id });
+    const orders = response.data;
+
+    // 取得した注文をWebSocketでクライアントに送信
+    orders.forEach(order => {
+      wss.clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(JSON.stringify(order));
+        }
+      });
+    });
+
+    res.json(orders);
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    res.status(500).json({ error: 'Failed to fetch orders' });
+  }
 });
