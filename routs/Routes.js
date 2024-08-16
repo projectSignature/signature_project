@@ -3108,4 +3108,119 @@ const updateCouponPrintedStatus = async (orderId) => {
     }
 };
 
+router.post('/orders/delete/option', async (req, res) => {
+    try {
+        const deletedOption = await OrdersOption.destroy({
+            where: { id: req.body.id }
+        });
+        if (deletedOption) {
+            res.status(200).json({ message: 'Option deleted successfully' });
+        } else {
+            res.status(404).json({ message: 'Option not found' });
+        }
+    } catch (error) {
+        console.error('Failed to delete option:', error);
+        res.status(500).json({ message: 'Failed to delete option' });
+    }
+});
+
+router.post('/orders/delete/menu', async (req, res) => {
+    try {
+        const deletedOption = await OrdersMenu.destroy({
+            where: { id: req.body.id }
+        });
+        if (deletedOption) {
+            res.status(200).json({ message: 'Option deleted successfully' });
+        } else {
+            res.status(404).json({ message: 'Option not found' });
+        }
+    } catch (error) {
+        console.error('Failed to delete option:', error);
+        res.status(500).json({ message: 'Failed to delete option' });
+    }
+});
+
+router.post('/orders/add/option', async (req, res) => {
+    const { user_id, menu_id, option_name_en, option_name_pt, option_name_ja, additional_price } = req.body;
+    // 必須フィールドのバリデーション
+    if (!user_id || !menu_id || !option_name_en || !additional_price) {
+        return res.status(400).json({ error: 'User ID, Menu ID, Option name (EN), and Additional price are required.' });
+    }
+    try {
+      // 新しいオプションを作成
+              const newOption = await OrdersOption.create({
+                  user_id: user_id,
+                  menu_id: menu_id,
+                  option_name_en: option_name_en,
+                  option_name_pt: option_name_pt,
+                  option_name_ja: option_name_ja,
+                  additional_price: additional_price
+              });
+              res.status(201).json(newOption);
+    } catch (error) {
+        console.error('Error adding option:', error);
+        res.status(500).json({ error: 'Failed to add option' });
+    }
+});
+
+router.post('/orders/updates/menu', async (req, res) => {
+    const menuData = req.body;
+    console.log(menuData)
+    console.log('haiteruyone')
+    try {
+        let menuItem;
+        if (menuData.id) {
+            // 既存のメニューを更新
+            menuItem = await OrdersMenu.update(menuData, {
+                where: { id: menuData.id }
+            });
+
+            if (menuItem[0] === 0) {
+                return res.status(404).json({ error: 'Menu item not found' });
+            }
+
+            // 更新されたメニューアイテムを取得
+            menuItem = await OrdersMenu.findAll({ where: { user_id: menuData.user_id } });
+            res.status(200).json(menuItem);
+        } else {
+            // 新しいメニューを作成
+            menuItem = await OrdersMenu.create(menuData);
+            res.status(201).json(menuItem);
+        }
+    } catch (error) {
+        console.error('Error saving menu item:', error);
+        res.status(500).json({ error: 'Failed to save menu item' });
+    }
+});
+
+router.post('/orders/create/menu', async (req, res) => {
+    const { user_id, category_id, ...menuData } = req.body;
+
+    try {
+        // 現在のカテゴリー内の最大 display_order を取得
+        const maxDisplayOrder = await OrdersMenu.max('display_order', {
+            where: {
+                user_id: user_id,
+                category_id: category_id
+            }
+        });
+
+        // 新しい display_order を設定
+        const newDisplayOrder = (maxDisplayOrder || 0) + 1;
+
+        // メニューアイテムを作成
+        const newMenuItem = await OrdersMenu.create({
+            ...menuData,
+            user_id: user_id,
+            category_id: category_id,
+            display_order: newDisplayOrder
+        });
+
+        res.status(201).json(newMenuItem);
+    } catch (error) {
+        console.error('Error saving menu item:', error);
+        res.status(500).json({ error: 'Failed to save menu item' });
+    }
+});
+
 
