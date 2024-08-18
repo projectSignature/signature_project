@@ -2781,6 +2781,49 @@ router.post('/pos/register_open_close', async (req, res) => {
     }
 });
 
+router.post('/pos/register_open_close/close', async (req, res) => {
+    try {
+        const {
+            register_open_close_id,
+            close_time,
+            cash_opening_balance,
+            other_opening_balance,
+            cash_closing_balance,
+            other_closing_balance
+        } = req.body;
+
+        // 指定されたIDのレコードを更新
+        const updatedRecord = await RegisterOpenClose.update({
+            close_time,
+            cash_opening_balance,
+            other_opening_balance,
+            cash_closing_balance,
+            other_closing_balance
+        }, {
+            where: { register_open_close_id }
+        });
+
+        if (updatedRecord[0] > 0) { // 更新された行があるかどうかをチェック
+            res.json({
+                success: true,
+                message: 'レジが正常にクローズされました'
+            });
+        } else {
+            res.status(404).json({
+                success: false,
+                message: '指定されたIDのレコードが見つかりません'
+            });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            message: 'サーバーエラー',
+            error: err
+        });
+    }
+});
+
 //order App
 
 const OrdersUser = require('../schema/orders/user')
