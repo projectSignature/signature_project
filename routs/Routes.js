@@ -32,7 +32,7 @@ const Costcategory = require('../schema/costCategory');
 const Dakoku = require('../schema/dakoku');
 const Iventory = require('../schema/inventorys');
 const Suppliers = require('../schema/m_suppliers');
-const PosMenu = require('../schema/pos/menu')
+
 
 
 //LIBS
@@ -2689,6 +2689,9 @@ router.post('/cachChangeonlykaikei', async (req, res) => {
 //bae
 
 
+//Pos System------------------------------>
+const PosMenu = require('../schema/pos/menu')
+const PosUser = require('../schema/pos/user')
 //PosMenu
 router.get('/pos/getmenu', async (req, res) => {
   try {
@@ -2699,6 +2702,49 @@ router.get('/pos/getmenu', async (req, res) => {
   res.json(err)
   console.log(err)
 }
+});
+router.post('/pos/login', async (req, res) => {
+    try {
+        const { username, password_hash } = req.body;
+        console.log(req.body);
+
+        // ユーザーの存在を確認
+        const user = await PosUser.findOne({
+            where: {
+                username: username,
+                password_hash: password_hash
+            }
+        });
+
+        console.log(user);
+
+        if (user) {
+            if (user.status === 'active') {
+                res.json({
+                    success: true,
+                    message: 'ログイン成功',
+                    user: user
+                });
+            } else {
+                res.status(403).json({
+                    success: false,
+                    message: 'アカウントがアクティブではありません'
+                });
+            }
+        } else {
+            res.status(401).json({
+                success: false,
+                message: 'ユーザー名またはパスワードが間違っています'
+            });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            message: 'サーバーエラー',
+            error: err
+        });
+    }
 });
 
 //order App
