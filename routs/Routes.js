@@ -3223,4 +3223,23 @@ router.post('/orders/create/menu', async (req, res) => {
     }
 });
 
+router.post('/orders/updateMenuOrder', async (req, res) => {
+    const updatedOrder = req.body; // フロントエンドから送信された順序
+
+    try {
+        for (let item of updatedOrder) {
+            await OrdersMenu.update(
+                { display_order: item.display_order }, // 新しい順序を設定
+                { where: { id: item.id } } // 対象メニューを指定
+            );
+        }
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error updating order:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+////////////////////////////////////////////////////////////////////////////////
+
 
