@@ -2692,6 +2692,8 @@ router.post('/cachChangeonlykaikei', async (req, res) => {
 //Pos System------------------------------>
 const PosMenu = require('../schema/pos/menu')
 const PosUser = require('../schema/pos/user')
+const RegisterOpenClose = require('../schema/pos/RegisterOpenClose');
+
 //PosMenu
 router.get('/pos/getmenu', async (req, res) => {
   try {
@@ -2737,6 +2739,38 @@ router.post('/pos/login', async (req, res) => {
                 message: 'ユーザー名またはパスワードが間違っています'
             });
         }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            message: 'サーバーエラー',
+            error: err
+        });
+    }
+});
+
+router.post('/pos/register_open_close', async (req, res) => {
+    try {
+        const {
+            register_id,
+            cashier_id,
+            open_time,
+            cash_opening_balance
+        } = req.body;
+
+        // 新しいレコードを挿入
+        const newRecord = await RegisterOpenClose.create({
+            register_id,
+            cashier_id,
+            open_time,
+            cash_opening_balance
+        });
+
+        res.json({
+            success: true,
+            message: 'レコードが正常に挿入されました',
+            record: newRecord
+        });
     } catch (err) {
         console.error(err);
         res.status(500).json({
