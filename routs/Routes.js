@@ -2693,6 +2693,7 @@ router.post('/cachChangeonlykaikei', async (req, res) => {
 const PosMenu = require('../schema/pos/menu')
 const PosUser = require('../schema/pos/user')
 const RegisterOpenClose = require('../schema/pos/RegisterOpenClose');
+const Sale = require('../schema/pos/Sales');
 
 //PosMenu
 router.get('/pos/getmenu', async (req, res) => {
@@ -2814,6 +2815,42 @@ router.post('/pos/register_open_close/close', async (req, res) => {
                 message: '指定されたIDのレコードが見つかりません'
             });
         }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            message: 'サーバーエラー',
+            error: err
+        });
+    }
+});
+
+router.post('/pos/sales', async (req, res) => {
+    try {
+        const {
+            register_id,
+            cashier_id,
+            menu_id,
+            quantity,
+            total_price,
+            pay_type
+        } = req.body;
+
+        // 新しい販売記録を作成
+        const newSale = await Sale.create({
+            register_id,
+            cashier_id,
+            menu_id,
+            quantity,
+            total_price,
+            pay_type
+        });
+
+        res.json({
+            success: true,
+            message: '販売記録が正常に作成されました',
+            sale: newSale
+        });
     } catch (err) {
         console.error(err);
         res.status(500).json({
