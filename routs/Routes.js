@@ -2833,7 +2833,8 @@ router.post('/pos/sales', async (req, res) => {
             menu_id,
             quantity,
             total_price,
-            pay_type
+            pay_type,
+            tax_rate  // tax_rate をリクエストボディから取得
         } = req.body;
 
         // 新しい販売記録を作成
@@ -2843,7 +2844,8 @@ router.post('/pos/sales', async (req, res) => {
             menu_id,
             quantity,
             total_price,
-            pay_type
+            pay_type,
+            tax_rate  // tax_rate をデータベースに保存
         });
 
         res.json({
