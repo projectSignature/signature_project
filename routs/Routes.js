@@ -2835,40 +2835,36 @@ router.post('/pos/register_open_close/close', async (req, res) => {
 
 router.post('/pos/sales', async (req, res) => {
     try {
-        const {
-            register_id,
-            cashier_id,
-            menu_id,
-            quantity,
-            total_price,
-            pay_type,
-            tax_rate  // tax_rate をリクエストボディから取得
-        } = req.body;
+      const data = req.body;  // クライアントから送信されたデータ
 
-        // 新しい販売記録を作成
-        const newSale = await Sale.create({
-            register_id,
-            cashier_id,
-            menu_id,
-            quantity,
-            total_price,
-            pay_type,
-            tax_rate  // tax_rate をデータベースに保存
-        });
+     // total_priceの計算
+     let totalPrice = 0;
+     for (let key in data) {
+         totalPrice += parseFloat(data[key].total_price);
+     }
 
-        res.json({
-            success: true,
-            message: '販売記録が正常に作成されました',
-            sale: newSale
-        });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({
-            success: false,
-            message: 'サーバーエラー',
-            error: err
-        });
-    }
+     // item_detailsに含めるアイテムの詳細
+     const itemDetails = JSON.stringify(data);
+
+     // 最初のアイテムのcashier_idとpay_typeを取得
+     const cashierId = data[Object.keys(data)[0]].cashier_id;
+     const payType = data[Object.keys(data)[0]].pay_type;
+
+     // Saleモデルに新しいレコードを作成
+     const newSale = await Sale.create({
+         total_price: totalPrice,
+         item_details: itemDetails,
+         cashier_id: cashierId,
+         pay_type: payType,
+         transaction_time: new Date()  // 現在の日時を使用
+     });
+
+     // 成功レスポンスを返す
+     res.status(201).json({ success: true, sale: newSale });
+ } catch (error) {
+     console.error('エラーが発生しました:', error);
+     res.status(500).json({ success: false, message: 'サーバーエラーが発生しました。' });
+ }
 });
 
 //order App
