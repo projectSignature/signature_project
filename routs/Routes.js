@@ -2835,40 +2835,42 @@ router.post('/pos/register_open_close/close', async (req, res) => {
 
 router.post('/pos/sales', async (req, res) => {
     try {
-     const data = req.body;  // クライアントから送信されたデータ
+      console.log(req.body)
+      const data = req.body;  // クライアントから送信されたデータ
+     // console.log(data)
+     // total_priceの計算
+     let totalPrice = 0;
+     for (let key in data) {
+         totalPrice += parseFloat(data[key].total_price);
+     }
 
-        // total_priceの計算
-        let totalPrice = 0;
-        for (let key in data) {
-            totalPrice += parseFloat(data[key].total_price);
-        }
+     const transactionTime = new Date();
+transactionTime.setHours(transactionTime.getHours() + 9);  // UTC+9に設定
 
-        // item_detailsに含めるアイテムの詳細（cashier_idとpay_typeを除外）
-        const itemDetails = {};
-        for (let key in data) {
-            const { cashier_id, pay_type, ...itemWithoutCashierAndPayType } = data[key];
-            itemDetails[key] = itemWithoutCashierAndPayType;
-        }
+     // item_detailsに含めるアイテムの詳細
+     const itemDetails = JSON.stringify(data);
 
-        // 最初のアイテムのcashier_idとpay_typeを取得
-        const cashierId = data[Object.keys(data)[0]].cashier_id;
-        const payType = data[Object.keys(data)[0]].pay_type;
+     // 最初のアイテムのcashier_idとpay_typeを取得
+     const cashierId = data[Object.keys(data)[0]].cashier_id;
+     const payType = data[Object.keys(data)[0]].pay_type;
+     const  registerId= data[Object.keys(data)[0]].register_id;
 
-        // Saleモデルに新しいレコードを作成
-        const newSale = await Sale.create({
-            total_price: totalPrice,
-            item_details: JSON.stringify(itemDetails),  // JSON文字列に変換して保存
-            cashier_id: cashierId,
-            pay_type: payType,
-            transaction_time: new Date()  // 現在の日時を使用
-        });
+     // Saleモデルに新しいレコードを作成
+     const newSale = await Sale.create({
+         total_price: totalPrice,
+         register_id:registerId,
+         item_details: itemDetails,
+         cashier_id: cashierId,
+         pay_type: payType,
+         transaction_time: transactionTime  // 現在の日時を使用
+     });
 
-        // 成功レスポンスを返す
-        res.status(201).json({ success: true, sale: newSale });
-    } catch (error) {
-        console.error('エラーが発生しました:', error);
-        res.status(500).json({ success: false, message: 'サーバーエラーが発生しました。' });
-    }
+     // 成功レスポンスを返す
+     res.status(201).json({ success: true, sale: newSale });
+ } catch (error) {
+     console.error('エラーが発生しました:', error);
+     res.status(500).json({ success: false, message: 'サーバーエラーが発生しました。' });
+ }
 });
 
 //order App
