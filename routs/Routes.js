@@ -2821,64 +2821,7 @@ transactionTime.setHours(transactionTime.getHours() + 9);  // UTC+9に設定
  }
 });
 //Salesのデータを取得するエンドポイント-------------------->
-router.get('/pos/total-sales', authenticateToken, async (req, res) => {
-  try {
-     const { user_id } = req.query;
 
-     if (!user_id) {
-         return res.status(400).json({ error: 'user_id は必須です' });
-     }
-
-     // 30日前の日付を計算
-     const startDate = new Date();
-     startDate.setDate(startDate.getDate() - 30);
-
-     // 今日の日付を設定（時刻を23:59:59に設定して、今日のデータを含める）
-     const endDate = new Date();
-     endDate.setHours(23, 59, 59, 999);
-
-     // 総売上を計算
-     const totalSales = await Sale.sum('total_price', {
-         where: {
-             transaction_time: {
-                 [Op.between]: [startDate, endDate]
-             },
-             register_id: user_id
-         }
-     });
-
-     // 日別の売上を計算
-     const dailySales = await Sale.findAll({
-         attributes: [
-             [Sequelize.fn('DATE', Sequelize.col('transaction_time')), 'date'],
-             [Sequelize.fn('SUM', Sequelize.col('total_price')), 'total_sales']
-         ],
-         where: {
-             transaction_time: {
-                 [Op.between]: [startDate, endDate]
-             },
-             register_id: user_id
-         },
-         group: [Sequelize.fn('DATE', Sequelize.col('transaction_time'))],
-         order: [[Sequelize.fn('DATE', Sequelize.col('transaction_time')), 'ASC']]
-     });
-
-     // 日ごとのtotal_priceを配列として集計
-     const dailyTotals = dailySales.map(sale => ({
-         date: sale.get('date'),
-         total_sales: parseFloat(sale.get('total_sales'))
-     }));
-
-     // データを返す
-     res.json({
-         totalSales: totalSales || 0,
-         dailySales: dailyTotals
-     });
- } catch (error) {
-     console.error('Error fetching sales data:', error);
-     res.status(500).json({ error: '売上データを取得中にエラーが発生しました' });
- }
-});
 
 
 
@@ -3215,49 +3158,7 @@ router.get('/pos/register-history', async (req, res) => {
     }
 });
 
-router.get('/pos/masterdata/get', authenticateToken, async (req, res) => {
-  try {
-    const userId = req.user.expenses_id; // トークンから取得
-    console.log('User ID:', userId); // ユーザーIDの内容をログ出力
-    if (!userId) {
-      return res.status(400).json({ success: false, message: 'User ID is required' });
-    }
 
-    // サプライヤーデータの取得
-    const suppliers = await SuppliresKeiri.findAll({
-      where: { user_id: userId }
-    });
-
-    // ユーザーカテゴリデータの取得
-    const userCategories = await UserCategory.findAll({
-      where: { user_id: userId },
-      include: [{
-        model: Category,
-        required: true
-      }]
-    });
-
-    const clients = await Client.findAll({
-    where: { user_id: userId }
-  });
-
-    res.status(200).json({
-      success: true,
-      data: {
-        suppliers,
-        userCategories,
-        clients
-      }
-    });
-  } catch (err) {
-    console.error('Error fetching master data:', err);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch master data',
-      error: err.message
-    });
-  }
-});
 
 
 
