@@ -2735,14 +2735,16 @@ router.post('/pos/menu/delete', async (req, res) => {
     }
 });
 //POS/MENU/更新
-router.put('/pos/menu/update', async (req, res) => {
+router.post('/pos/menu/update', async (req, res) => {
     try {
         const { id, menu_id, item_name, category, price, description, available } = req.body;
+        
         // メニューアイテムを検索して更新
         const updated = await PosMenu.update(
             { menu_id, item_name, category, price, description, available },
             { where: { id: id } }
         );
+        
         if (updated[0] === 1) {  // updateメソッドは[更新された行数]を返すので、それをチェック
             res.status(200).json({ message: 'メニューアイテムが更新されました' });
         } else {
@@ -2752,6 +2754,7 @@ router.put('/pos/menu/update', async (req, res) => {
         res.status(500).json({ message: 'メニューアイテムの更新に失敗しました', error: error.message });
     }
 });
+
 router.post('/pos/createmenu', async (req, res) => {
     try {
         const { menu_id, item_name, category, price, description, available } = req.body;
