@@ -2696,14 +2696,15 @@ router.post('/cachChangeonlykaikei', async (req, res) => {
 
 //bae
 
+//PosMenu
 
-//Pos System------------------------------>
 const PosMenu = require('../schema/pos/menu')
 const PosUser = require('../schema/pos/user')
 const RegisterOpenClose = require('../schema/pos/RegisterOpenClose');
 const Sale = require('../schema/pos/Sales');
 
-//PosMenu
+//POS/MENU----------->
+//PO/MENU/取得
 router.get('/pos/getmenu', async (req, res) => {
   try {
   const supplireget = await PosMenu.findAll({
@@ -2714,6 +2715,297 @@ router.get('/pos/getmenu', async (req, res) => {
   console.log(err)
 }
 });
+//POS/MENU/削除
+router.post('/pos/menu/delete', async (req, res) => {
+    try {
+        const id = req.body.id;  // リクエストボディからIDを取得
+
+        // メニューアイテムを検索して削除
+        const deleted = await PosMenu.destroy({
+            where: { id: id }
+        });
+
+        if (deleted) {
+            res.status(200).json({ message: 'メニューアイテムが削除されました' });
+        } else {
+            res.status(404).json({ message: 'メニューアイテムが見つかりませんでした' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'メニューアイテムの削除に失敗しました', error: error.message });
+    }
+});
+//POS/MENU/更新
+router.put('/pos/menu/update', async (req, res) => {
+    try {
+        const { id, menu_id, item_name, category, price, description, available } = req.body;
+        // メニューアイテムを検索して更新
+        const updated = await PosMenu.update(
+            { menu_id, item_name, category, price, description, available },
+            { where: { id: id } }
+        );
+        if (updated[0] === 1) {  // updateメソッドは[更新された行数]を返すので、それをチェック
+            res.status(200).json({ message: 'メニューアイテムが更新されました' });
+        } else {
+            res.status(404).json({ message: 'メニューアイテムが見つかりませんでした' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'メニューアイテムの更新に失敗しました', error: error.message });
+    }
+});
+router.post('/pos/createmenu', async (req, res) => {
+    try {
+        const { menu_id, item_name, category, price, description, available } = req.body;
+        // メニューアイテムを新規作成
+        const newItem = await PosMenu.create({
+            menu_id,
+            item_name,
+            category,
+            price,
+            description,
+            available
+        });
+
+        res.status(201).json({
+            message: 'Successfully updated',
+            data: newItem
+        });
+    } catch (error) {
+      console.log(error)
+        res.status(500).json({
+            message: 'Failed to update',
+            error: error.message
+        });
+    }
+});
+//POS/MENU/Finish
+
+//POS/SALES/---->
+//Salesの登録エンドポイント-------------------------------->
+router.post('/pos/sales', async (req, res) => {
+    try {
+      console.log(req.body)
+      const data = req.body;  // クライアントから送信されたデータ
+     // console.log(data)
+     // total_priceの計算
+     let totalPrice = 0;
+     for (let key in data) {
+         totalPrice += parseFloat(data[key].total_price);
+     }
+
+     const transactionTime = new Date();
+transactionTime.setHours(transactionTime.getHours() + 9);  // UTC+9に設定
+
+     // item_detailsに含めるアイテムの詳細
+     const itemDetails = JSON.stringify(data);
+
+     // 最初のアイテムのcashier_idとpay_typeを取得
+     const cashierId = data[Object.keys(data)[0]].cashier_id;
+     const payType = data[Object.keys(data)[0]].pay_type;
+     const  registerId= data[Object.keys(data)[0]].register_id;
+
+     // Saleモデルに新しいレコードを作成
+     const newSale = await Sale.create({
+         total_price: totalPrice,
+         register_id:registerId,
+         item_details: itemDetails,
+         cashier_id: cashierId,
+         pay_type: payType,
+         transaction_time: transactionTime  // 現在の日時を使用
+     });
+
+     // 成功レスポンスを返す
+     res.status(201).json({ success: true, sale: newSale });
+ } catch (error) {
+     console.error('エラーが発生しました:', error);
+     res.status(500).json({ success: false, message: 'サーバーエラーが発生しました。' });
+ }
+});
+//Salesのデータを取得するエンドポイント-------------------->
+router.get('/pos/total-sales', authenticateToken, async (req, res) => {
+  try {
+     const { user_id } = req.query;
+
+     if (!user_id) {
+         return res.status(400).json({ error: 'user_id は必須です' });
+     }
+
+     // 30日前の日付を計算
+     const startDate = new Date();
+     startDate.setDate(startDate.getDate() - 30);
+
+     // 今日の日付を設定（時刻を23:59:59に設定して、今日のデータを含める）
+     const endDate = new Date();
+     endDate.setHours(23, 59, 59, 999);
+
+     // 総売上を計算
+     const totalSales = await Sale.sum('total_price', {
+         where: {
+             transaction_time: {
+                 [Op.between]: [startDate, endDate]
+             },
+             register_id: user_id
+         }
+     });
+
+     // 日別の売上を計算
+     const dailySales = await Sale.findAll({
+         attributes: [
+             [Sequelize.fn('DATE', Sequelize.col('transaction_time')), 'date'],
+             [Sequelize.fn('SUM', Sequelize.col('total_price')), 'total_sales']
+         ],
+         where: {
+             transaction_time: {
+                 [Op.between]: [startDate, endDate]
+             },
+             register_id: user_id
+         },
+         group: [Sequelize.fn('DATE', Sequelize.col('transaction_time'))],
+         order: [[Sequelize.fn('DATE', Sequelize.col('transaction_time')), 'ASC']]
+     });
+
+     // 日ごとのtotal_priceを配列として集計
+     const dailyTotals = dailySales.map(sale => ({
+         date: sale.get('date'),
+         total_sales: parseFloat(sale.get('total_sales'))
+     }));
+
+     // データを返す
+     res.json({
+         totalSales: totalSales || 0,
+         dailySales: dailyTotals
+     });
+ } catch (error) {
+     console.error('Error fetching sales data:', error);
+     res.status(500).json({ error: '売上データを取得中にエラーが発生しました' });
+ }
+});
+
+
+
+
+router.get('/pos/get/sales', async (req, res) => {
+    try {
+        const { start_date, end_date } = req.query;
+        // クエリパラメータを基に検索条件を作成
+        const whereCondition = {};
+        if (start_date && end_date) {
+            whereCondition.transaction_time = {
+                [Op.between]: [
+                    new Date(start_date + ' 00:00:00'),
+                    new Date(end_date + ' 23:59:59')
+                ]
+            };
+        } else if (start_date) {
+            whereCondition.transaction_time = {
+                [Op.gte]: new Date(start_date + ' 00:00:00')
+            };
+        } else if (end_date) {
+            whereCondition.transaction_time = {
+                [Op.lte]: new Date(end_date + ' 23:59:59')
+            };
+        }
+        // Sale テーブルから条件に一致するレコードを取得
+        const sales = await Sale.findAll({ where: whereCondition });
+        res.status(200).json({
+            data: sales
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: 'Failed to get data',
+            error: error.message
+        });
+    }
+});
+
+// POSTエンドポイントで特定のIDのSaleデータを削除
+router.post('/pos/delete/sale', async (req, res) => {
+    try {
+        const { sale_id } = req.body;
+
+        // sale_idが提供されているかチェック
+        if (!sale_id) {
+            return res.status(400).json({ error: 'sale_id は必須です' });
+        }
+
+        // Sale テーブルから該当するレコードを削除
+        const deleted = await Sale.destroy({
+            where: { sale_id: sale_id }
+        });
+
+        if (deleted) {
+            res.status(200).json({ message: '販売データが削除されました' });
+        } else {
+            res.status(404).json({ message: '指定されたIDの販売データが見つかりませんでした' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: '販売データの削除に失敗しました', message: error.message });
+    }
+});
+
+// POSTエンドポイントで特定のIDのSaleデータを更新
+router.post('/pos/update/sale', async (req, res) => {
+    try {
+        const { sale_id, register_id, cashier_id, menu_id, quantity, total_price, transaction_time, pay_type, tax_rate } = req.body;
+        // sale_idが提供されているかチェック
+        if (!sale_id) {
+            return res.status(400).json({ error: 'sale_id は必須です' });
+        }
+        // 更新フィールドを準備
+        const updateFields = {};
+        if (register_id !== undefined) updateFields.register_id = register_id;
+        if (cashier_id !== undefined) updateFields.cashier_id = cashier_id;
+        if (menu_id !== undefined) updateFields.menu_id = menu_id;
+        if (quantity !== undefined) updateFields.quantity = quantity;
+        if (total_price !== undefined) updateFields.total_price = total_price;
+        if (transaction_time !== undefined) updateFields.transaction_time = transaction_time;
+        if (pay_type !== undefined) updateFields.pay_type = pay_type;
+        if (tax_rate !== undefined) updateFields.tax_rate = tax_rate;
+
+        // Sale テーブルで該当するレコードを更新
+        const updated = await Sale.update(updateFields, {
+            where: { sale_id: sale_id }
+        });
+
+        if (updated[0] === 1) {  // 更新された行が1件の場合
+            res.status(200).json({ message: '販売データが更新されました' });
+        } else {
+            res.status(404).json({ message: '指定されたIDの販売データが見つかりませんでした' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: '販売データの更新に失敗しました', message: error.message });
+    }
+});
+
+router.get('/pos/sales-history', async (req, res) => {
+    const { start_date, end_date } = req.query;
+
+    if (!start_date || !end_date) {
+        return res.status(400).json({ error: '開始日と終了日は必須です。' });
+    }
+
+    try {
+        const registerHistory = await Sale.findAll({
+            where: {
+                transaction_time: {
+                    [Op.between]: [new Date(start_date), new Date(end_date)]
+                }
+            },
+            order: [['transaction_time', 'ASC']]
+        });
+
+        console.log(registerHistory);
+        res.json(registerHistory);
+    } catch (error) {
+        console.error('Error fetching sales history:', error);
+        res.status(500).json({ error: '売上履歴の取得中にエラーが発生しました' });
+    }
+});
+
+//POS/SALE Finish
+
+
+
+
 router.post('/pos/login', async (req, res) => {
     try {
         const { username, password_hash } = req.body;
@@ -2758,6 +3050,7 @@ router.post('/pos/login', async (req, res) => {
     }
 });
 
+// POSTエンドポイント - レコードの挿入
 router.post('/pos/register_open_close', async (req, res) => {
     try {
         const {
@@ -2792,6 +3085,7 @@ router.post('/pos/register_open_close', async (req, res) => {
 
 router.post('/pos/register_open_close/close', async (req, res) => {
     try {
+      console.log('close star')
         const {
             register_open_close_id,
             close_time,
@@ -2800,6 +3094,8 @@ router.post('/pos/register_open_close/close', async (req, res) => {
             cash_closing_balance,
             other_closing_balance
         } = req.body;
+
+        console.log(req.body)
 
         // 指定されたIDのレコードを更新
         const updatedRecord = await RegisterOpenClose.update({
@@ -2833,45 +3129,174 @@ router.post('/pos/register_open_close/close', async (req, res) => {
     }
 });
 
-router.post('/pos/sales', async (req, res) => {
+
+
+
+
+// 当月の支出データと日別の支出合計を取得するエンドポイント
+router.get('/pos/monthly-expenses', async (req, res) => {
     try {
-      console.log(req.body)
-      const data = req.body;  // クライアントから送信されたデータ
-     // console.log(data)
-     // total_priceの計算
-     let totalPrice = 0;
-     for (let key in data) {
-         totalPrice += parseFloat(data[key].total_price);
-     }
+        const { user_id } = req.query;
 
-     const transactionTime = new Date();
-transactionTime.setHours(transactionTime.getHours() + 9);  // UTC+9に設定
+        if (!user_id) {
+            return res.status(400).json({ error: 'user_id は必須です' });
+        }
 
-     // item_detailsに含めるアイテムの詳細
-     const itemDetails = JSON.stringify(data);
+        // 当月の開始日と終了日を取得
+        const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+        const endOfMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
 
-     // 最初のアイテムのcashier_idとpay_typeを取得
-     const cashierId = data[Object.keys(data)[0]].cashier_id;
-     const payType = data[Object.keys(data)[0]].pay_type;
-     const  registerId= data[Object.keys(data)[0]].register_id;
+        // 当月の支出合計を計算
+        const totalExpenses = await FinancialRecord.sum('expense', {
+            where: {
+                user_id: user_id,
+                expense: {
+                    [Op.ne]: null  // expense が NULL でないレコードを取得
+                },
+                record_date: {
+                    [Op.between]: [startOfMonth, endOfMonth]  // 当月のレコードに限定
+                }
+            }
+        });
 
-     // Saleモデルに新しいレコードを作成
-     const newSale = await Sale.create({
-         total_price: totalPrice,
-         register_id:registerId,
-         item_details: itemDetails,
-         cashier_id: cashierId,
-         pay_type: payType,
-         transaction_time: transactionTime  // 現在の日時を使用
-     });
+        // 日別の支出合計を計算
+        const dailyExpenses = await FinancialRecord.findAll({
+        attributes: [
+            [Sequelize.fn('DATE', Sequelize.col('record_date')), 'date'],
+            'expense'  // 各レコードの支出額をそのまま取得
+        ],
+        where: {
+            user_id: user_id,
+            expense: {
+                [Op.ne]: null
+            },
+            record_date: {
+                [Op.between]: [startOfMonth, endOfMonth]
+            }
+        },
+        order: [[Sequelize.fn('DATE', Sequelize.col('record_date')), 'ASC']]
+    });
 
-     // 成功レスポンスを返す
-     res.status(201).json({ success: true, sale: newSale });
- } catch (error) {
-     console.error('エラーが発生しました:', error);
-     res.status(500).json({ success: false, message: 'サーバーエラーが発生しました。' });
- }
+    // データをクライアントに返す
+    res.json({
+        totalExpenses: totalExpenses || 0,
+        dailyExpenses: dailyExpenses
+    });
+
+    } catch (error) {
+        console.error('Error fetching monthly expenses:', error);
+        res.status(500).json({ error: '当月の支出データを取得中にエラーが発生しました' });
+    }
 });
+
+router.get('/pos/register-history', async (req, res) => {
+    const { start_date, end_date } = req.query;
+
+    if (!start_date || !end_date) {
+        return res.status(400).json({ error: '開始日と終了日は必須です。' });
+    }
+    try {
+        const registerHistory = await RegisterOpenClose.findAll({
+            where: {
+                open_time: {
+                    [Op.gte]: new Date(start_date)
+                },
+                close_time: {
+                    [Op.lte]: new Date(end_date)
+                }
+            },
+            order: [['open_time', 'ASC']]
+        });
+        console.log(registerHistory)
+        res.json(registerHistory);
+    } catch (error) {
+        console.error('Error fetching register history:', error);
+        res.status(500).json({ error: 'レジ履歴の取得中にエラーが発生しました' });
+    }
+});
+
+router.get('/pos/masterdata/get', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.expenses_id; // トークンから取得
+    console.log('User ID:', userId); // ユーザーIDの内容をログ出力
+    if (!userId) {
+      return res.status(400).json({ success: false, message: 'User ID is required' });
+    }
+
+    // サプライヤーデータの取得
+    const suppliers = await SuppliresKeiri.findAll({
+      where: { user_id: userId }
+    });
+
+    // ユーザーカテゴリデータの取得
+    const userCategories = await UserCategory.findAll({
+      where: { user_id: userId },
+      include: [{
+        model: Category,
+        required: true
+      }]
+    });
+
+    const clients = await Client.findAll({
+    where: { user_id: userId }
+  });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        suppliers,
+        userCategories,
+        clients
+      }
+    });
+  } catch (err) {
+    console.error('Error fetching master data:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch master data',
+      error: err.message
+    });
+  }
+});
+
+
+
+router.get('/pos/register-open-close', async (req, res) => {
+    try {
+        const records = await RegisterOpenClose.findAll();
+        res.status(200).json({
+            message: 'データの取得に成功しました。',
+            data: records
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: 'データの取得に失敗しました。',
+            error: error.message
+        });
+    }
+});
+
+
+
+router.delete('/menu/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        // メニューアイテムを検索して削除
+        const deleted = await Menu.destroy({
+            where: { id: id }
+        });
+
+        if (deleted) {
+            res.status(200).json({ message: 'メニューアイテムが削除されました' });
+        } else {
+            res.status(404).json({ message: 'メニューアイテムが見つかりませんでした' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'メニューアイテムの削除に失敗しました', error: error.message });
+    }
+});
+//POS Finish
 
 //order App
 
