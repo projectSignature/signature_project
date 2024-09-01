@@ -2726,12 +2726,12 @@ router.post('/pos/menu/delete', async (req, res) => {
         });
 
         if (deleted) {
-            res.status(200).json({ message: 'メニューアイテムが削除されました' });
+            res.status(200).json({ success: true,message: 'メニューアイテムが削除されました' });
         } else {
-            res.status(404).json({ message: 'メニューアイテムが見つかりませんでした' });
+            res.status(404).json({ success: false,message: 'メニューアイテムが見つかりませんでした' });
         }
     } catch (error) {
-        res.status(500).json({ message: 'メニューアイテムの削除に失敗しました', error: error.message });
+        res.status(500).json({ success: false,message: 'メニューアイテムの削除に失敗しました', error: error.message });
     }
 });
 //POS/MENU/更新
@@ -2746,12 +2746,12 @@ router.post('/pos/menu/update', async (req, res) => {
         );
         
         if (updated[0] === 1) {  // updateメソッドは[更新された行数]を返すので、それをチェック
-            res.status(200).json({ message: 'メニューアイテムが更新されました' });
+            res.status(200).json({ success: true,message: 'メニューアイテムが更新されました' });
         } else {
-            res.status(404).json({ message: 'メニューアイテムが見つかりませんでした' });
+            res.status(404).json({ success: false,message: 'メニューアイテムが見つかりませんでした' });
         }
     } catch (error) {
-        res.status(500).json({ message: 'メニューアイテムの更新に失敗しました', error: error.message });
+        res.status(500).json({ success: false,message: 'メニューアイテムの更新に失敗しました', error: error.message });
     }
 });
 
@@ -2769,12 +2769,14 @@ router.post('/pos/createmenu', async (req, res) => {
         });
 
         res.status(201).json({
+          success: true,
             message: 'Successfully updated',
             data: newItem
         });
     } catch (error) {
       console.log(error)
         res.status(500).json({
+          success: false,
             message: 'Failed to update',
             error: error.message
         });
