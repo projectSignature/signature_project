@@ -2932,7 +2932,8 @@ router.get('/pos/sales-history', async (req, res) => {
     }
 
     try {
-        const registerHistory = await Sale.findAll({
+        // 売上履歴を取得
+        const salesHistory = await Sale.findAll({
             where: {
                 transaction_time: {
                     [Op.between]: [new Date(start_date), new Date(end_date)]
@@ -2941,8 +2942,28 @@ router.get('/pos/sales-history', async (req, res) => {
             order: [['transaction_time', 'ASC']]
         });
 
-        console.log(registerHistory);
-        res.json(registerHistory);
+        // 各Saleのitem_detailsをパースしてメニューIDを取得
+        const detailedSales = await Promise.all(salesHistory.map(async (sale) => {
+            const itemDetails = JSON.parse(sale.item_details);
+            const parsedItems = Object.values(itemDetails);
+
+            // メニューIDを取得して、Menuテーブルからメニュー名を取得
+            const menuDetails = await Promise.all(parsedItems.map(async (item) => {
+                const menu = await PosMenu.findOne({ where: { menu_id: item.menu_id } });
+                return {
+                    ...item,
+                    item_name: menu ? menu.item_name : '不明なメニュー'
+                };
+            }));
+
+            return {
+                ...sale.toJSON(),
+                item_details: menuDetails
+            };
+        }));
+
+        res.json(detailedSales);
+
     } catch (error) {
         console.error('Error fetching sales history:', error);
         res.status(500).json({ error: '売上履歴の取得中にエラーが発生しました' });
