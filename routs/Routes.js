@@ -2930,7 +2930,7 @@ router.post('/pos/update/sale', async (req, res) => {
         });
 
         if (updated[0] === 1) {  // 更新された行が1件の場合
-            res.status(200).json({ message: '販売データが更新されました' });
+             res.status(200).json({ success: true,  message: '販売データが更新されました' });
         } else {
             res.status(404).json({ message: '指定されたIDの販売データが見つかりませんでした' });
         }
