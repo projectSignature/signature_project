@@ -2912,7 +2912,7 @@ router.post('/pos/update/sale', async (req, res) => {
             }
         }
         // item_detailsをJSON文字列に変換
-        //const itemDetails = JSON.stringify(item_details);
+        const itemDetails = JSON.stringify(item_details);
       const itemDetails = item_details;
         // 現在の日時を使用 (UTC+9に設定)
         transactionTime = new Date();
