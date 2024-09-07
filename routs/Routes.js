@@ -2893,23 +2893,38 @@ router.post('/pos/delete/sale', async (req, res) => {
 // POSTエンドポイントで特定のIDのSaleデータを更新
 router.post('/pos/update/sale', async (req, res) => {
     try {
-        const { sale_id, register_id, cashier_id, menu_id, quantity, total_price, transaction_time, pay_type, tax_rate } = req.body;
+        const { sale_id, item_details } = req.body;
         // sale_idが提供されているかチェック
         if (!sale_id) {
             return res.status(400).json({ error: 'sale_id は必須です' });
         }
         // 更新フィールドを準備
-        const updateFields = {};
-        if (register_id !== undefined) updateFields.register_id = register_id;
-        if (cashier_id !== undefined) updateFields.cashier_id = cashier_id;
-        if (menu_id !== undefined) updateFields.menu_id = menu_id;
-        if (quantity !== undefined) updateFields.quantity = quantity;
-        if (total_price !== undefined) updateFields.total_price = total_price;
-        if (transaction_time !== undefined) updateFields.transaction_time = transaction_time;
-        if (pay_type !== undefined) updateFields.pay_type = pay_type;
-        if (tax_rate !== undefined) updateFields.tax_rate = tax_rate;
-
-        // Sale テーブルで該当するレコードを更新
+        let totalPrice = 0;
+        let registerId, cashierId, payType, transactionTime;
+        // item_detailsから各フィールドを取り出す
+        for (let key in item_details) {
+            const item = item_details[key];
+            totalPrice += parseFloat(item.total_price);
+            if (key === '0') {
+                registerId = item.register_id;
+                cashierId = item.cashier_id;
+                payType = item.pay_type;
+            }
+        }
+        // item_detailsをJSON文字列に変換
+        const itemDetails = JSON.stringify(item_details);
+        // 現在の日時を使用 (UTC+9に設定)
+        transactionTime = new Date();
+        transactionTime.setHours(transactionTime.getHours() + 9);
+        // Saleテーブルで該当するレコードを更新
+        const updateFields = {
+            total_price: totalPrice,
+            register_id: registerId,
+            item_details: itemDetails,
+            cashier_id: cashierId,
+            pay_type: payType,
+            transaction_time: transactionTime
+        };
         const updated = await Sale.update(updateFields, {
             where: { sale_id: sale_id }
         });
