@@ -3250,6 +3250,32 @@ const OrdersOption = require('../schema/orders/option')
 const Orders = require('../schema/orders/orders');
 const OrderItems = require('../schema/orders/order_items');
 
+router.delete('/orders/delete/:orderId', async (req, res) => {
+  const orderId = req.params.orderId; // パラメータから orderId を取得
+
+  try {
+    // まず、該当する order_id を持つアイテムを削除
+    await OrderItems.destroy({
+      where: { order_id: orderId } // order_id を条件にアイテムを削除
+    });
+
+    // 次に、該当するオーダー自体を削除
+    const result = await Orders.destroy({
+      where: { id: orderId }
+    });
+
+    if (result === 0) {
+      return res.status(404).json({ message: '注文が見つかりません' });
+    }
+
+    res.status(200).json({ message: '注文と関連アイテムが削除されました' });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: '注文の削除中にエラーが発生しました' });
+  }
+});
+
 router.get('/orders/getBasedata', async (req, res) => {
   try {
     const userId = req.query.user_id; // クエリパラメータからuser_idを取得
