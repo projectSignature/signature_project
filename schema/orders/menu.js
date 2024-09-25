@@ -61,7 +61,15 @@ const Menu = database.define('Menu', {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: true
-    }
+    },
+    image: { // Campo para armazenar a imagem como BLOB
+        type: DataTypes.BLOB('long'), // 'long' é uma opção para armazenar BLOBs maiores
+        allowNull: true
+    },
+    image_type: {
+        type: DataTypes.STRING(50),
+        allowNull: true
+    },
 }, {
     tableName: 'menu',
     timestamps: false
