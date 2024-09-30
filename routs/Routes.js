@@ -3239,6 +3239,108 @@ router.delete('/menu/:id', async (req, res) => {
         res.status(500).json({ message: 'メニューアイテムの削除に失敗しました', error: error.message });
     }
 });
+
+router.get('/pos/total-sales', async (req, res) => {
+  try {
+     const { user_id } = req.query;
+
+     if (!user_id) {
+         return res.status(400).json({ error: 'user_id は必須です' });
+     }
+     // 30日前の日付を計算
+     const startDate = new Date();
+     startDate.setDate(startDate.getDate() - 30);
+
+     // 今日の日付を設定（時刻を23:59:59に設定して、今日のデータを含める）
+     const endDate = new Date();
+     // endDate.setHours(23, 59, 59, 999);
+
+     // 総売上を計算
+     const totalSales = await Sale.sum('total_price', {
+         where: {
+             transaction_time: {
+                 [Op.between]: [startDate, endDate]
+             },
+             register_id: user_id
+         }
+     });
+
+     // 日別の売上を計算
+     const dailySales = await Sale.findAll({
+         attributes: [
+             [Sequelize.fn('DATE', Sequelize.col('transaction_time')), 'date'],
+             [Sequelize.fn('SUM', Sequelize.col('total_price')), 'total_sales']
+         ],
+         where: {
+             transaction_time: {
+                 [Op.between]: [startDate, endDate]
+             },
+             register_id: user_id
+         },
+         group: [Sequelize.fn('DATE', Sequelize.col('transaction_time'))],
+         order: [[Sequelize.fn('DATE', Sequelize.col('transaction_time')), 'ASC']]
+     });
+
+     // 日ごとのtotal_priceを配列として集計
+     const dailyTotals = dailySales.map(sale => ({
+         date: sale.get('date'),
+         total_sales: parseFloat(sale.get('total_sales'))
+     }));
+
+     // データを返す
+     res.json({
+         totalSales: totalSales || 0,
+         dailySales: dailyTotals
+     });
+ } catch (error) {
+     console.error('Error fetching sales data:', error);
+     res.status(500).json({ error: '売上データを取得中にエラーが発生しました' });
+ }
+});
+
+router.post('/pos/updateSettings', async (req, res) => {
+
+    try {
+      const { user_id,current_password,representativeName,language,confirm_password,password,email } = req.body;
+      console.log(req.body)
+        // ユーザーをDBから検索
+        const user = await PosUser.findOne({ where: { user_id } });
+        if (!user) {
+            return res.status(404).json({ message: 'ユーザーが見つかりません' });
+        }
+        if(current_password){
+          console.log('pass来たから変更するぜ')
+          if (current_password !== user.password_hash) {
+              return res.status(401).json({ message: '現在のパスワードが正しくありません' });
+          }else{
+            user.password_hash = confirm_password;
+          }
+        }
+        if(email){
+          user.username = email
+        }
+        if(representativeName){
+          user.representative_name = representativeName;
+        }
+        if(language){
+          user.language = language
+        }
+
+        const result = await user.save();
+        res.json({
+            message: '設定が正常に更新されました',
+            user: {
+                user_id: user.user_id,
+                username: user.username,
+                language: user.language
+            }
+        });
+    } catch (error) {
+        console.error('エラー発生:', error);
+        res.status(500).json({ message: '設定の更新に失敗しました', error: error.message });
+    }
+});
+
 //POS Finish
 
 //order App
