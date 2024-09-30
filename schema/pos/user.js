@@ -32,6 +32,19 @@ const PosUser = database.define('PosUser', {
         allowNull: false,
         defaultValue: 'active'
     },
+    language: {
+        type: DataTypes.ENUM('pt', 'en', 'ja'),
+        allowNull: false,
+        defaultValue: 'pt'  // デフォルト値を設定
+    },
+    representative_name: {
+        type: DataTypes.STRING(255),
+        allowNull: true,  // 代表名は必須ではないので allowNull: true とする
+    },
+    expenses_get_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,  // このフィールドはNULLを許可する
+    },
     created_at: {
         type: DataTypes.DATE,
         allowNull: false,
