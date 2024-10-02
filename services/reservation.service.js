@@ -1,4 +1,4 @@
-const Reservation = require('../schema/orders/Reservation');  // 予約モデルをインポート
+const Reservation = require('../schema/orders/reservation');  // 予約モデルをインポート
 
 const reservationService = {
     // 全ての予約を取得
@@ -23,7 +23,19 @@ const reservationService = {
        return await Reservation.destroy({
            where: { id }
        });
-   }
+   },
+
+   // 新しい予約を作成
+    create: async (reservationData) => {
+        return await Reservation.create(reservationData);
+    },
+
+    // IDで予約を更新
+    updateById: async (id, updateData) => {
+        return await Reservation.update(updateData, {
+            where: { id }
+        });
+    }
 };
 
 module.exports = reservationService;
