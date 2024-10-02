@@ -3359,6 +3359,9 @@ router.get('/reservations', ReservationController.getAllReservations);
 // 特定の予約を取得するエンドポイント
 router.get('/reservations/:id', ReservationController.getReservationById);
 
+// 予約をIDで削除するエンドポイント
+router.delete('/reservations/delete/:id', ReservationController.deleteReservation);
+
 router.delete('/orders/delete/:orderId', async (req, res) => {
   const orderId = req.params.orderId; // パラメータから orderId を取得
 
