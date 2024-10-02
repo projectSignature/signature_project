@@ -5,8 +5,8 @@ const ReservationController = {
     getAllReservations: async (req, res) => {
         try {
           console.log( req.query)
-            const { user_id } = req.query;  // クエリパラメータから user_id を取得
-            const reservations = await reservationService.getAll(user_id);
+            const { user_id, reservation_date } = req.query;  // クエリパラメータから user_id を取得
+            const reservations = await reservationService.getAll(user_id, reservation_date );
             return res.status(200).send({ success: true, data: reservations });
         } catch (error) {
             console.error(error);
