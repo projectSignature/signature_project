@@ -3352,6 +3352,12 @@ const OrdersOption = require('../schema/orders/option')
 const Orders = require('../schema/orders/orders');
 const OrderItems = require('../schema/orders/order_items');
 
+// 全ての予約を取得するエンドポイント
+router.get('/reservations', ReservationController.getAllReservations);
+
+// 特定の予約を取得するエンドポイント
+router.get('/reservations/:id', ReservationController.getReservationById);
+
 router.delete('/orders/delete/:orderId', async (req, res) => {
   const orderId = req.params.orderId; // パラメータから orderId を取得
 
