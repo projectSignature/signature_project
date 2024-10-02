@@ -1,4 +1,4 @@
-const Reservation = require('../schema/orders/reservation');  // 予約モデルをインポート
+const Reservation = require('../schema/orders/Reservation');  // 予約モデルをインポート
 
 const reservationService = {
     // 全ての予約を取得
