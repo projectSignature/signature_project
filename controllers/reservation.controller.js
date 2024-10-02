@@ -29,6 +29,27 @@ const ReservationController = {
             console.error(error);
             return response.status(500).send({ success: false, message: 'Internal server error.' });
         }
+    },
+
+    // 予約をIDで削除
+    deleteReservation: async (req, res) => {
+        try {
+            const { id } = req.params;  // パラメータから予約IDを取得
+
+            // 予約が存在するか確認
+            const reservation = await reservationService.getById(id);
+
+            if (!reservation) {
+                return res.status(404).send({ success: false, message: 'Reservation not found.' });
+            }
+
+            // 予約を削除
+            await reservationService.deleteById(id);
+            return res.status(200).send({ success: true, message: 'Reservation deleted successfully.' });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).send({ success: false, message: 'Internal server error.' });
+        }
     }
 };
 
