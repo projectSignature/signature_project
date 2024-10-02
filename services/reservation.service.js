@@ -16,7 +16,14 @@ const reservationService = {
         return await Reservation.findOne({
             where: { id }
         });
-    }
+    },
+
+    // IDで予約を削除
+   deleteById: async (id) => {
+       return await Reservation.destroy({
+           where: { id }
+       });
+   }
 };
 
 module.exports = reservationService;
