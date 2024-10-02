@@ -3351,6 +3351,7 @@ const OrdersCategory = require('../schema/orders/category')
 const OrdersOption = require('../schema/orders/option')
 const Orders = require('../schema/orders/orders');
 const OrderItems = require('../schema/orders/order_items');
+const ReservationController = require('../controllers/reservation.controller')
 
 // 全ての予約を取得するエンドポイント
 router.get('/reservations', ReservationController.getAllReservations);
