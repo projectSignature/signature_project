@@ -1,4 +1,5 @@
 const Reservation = require('../schema/orders/Reservation');  // 予約モデルをインポート
+const { Op } = require('sequelize');
 
 const reservationService = {
     // 全ての予約を取得
@@ -35,7 +36,18 @@ const reservationService = {
         return await Reservation.update(updateData, {
             where: { id }
         });
-    }
+    },
+    // ユーザーIDと日付範囲で予約を取得
+getReservationsByDateRange: async (user_id, startDate, endDate) => {
+    return await Reservation.findAll({
+        where: {
+            user_id: user_id,  // ユーザーIDを条件に追加
+            reservation_date: {
+                [Op.between]: [startDate, endDate]  // 日付範囲のクエリ
+            }
+        }
+    });
+}
 };
 
 module.exports = reservationService;
