@@ -117,7 +117,27 @@ updateReservation: async (req, res) => {
         console.error(error);
         return res.status(500).send({ success: false, message: 'Internal server error.' });
     }
+},
+
+// 日付範囲で予約を取得
+getReservationsByDateRange: async (req, res) => {
+    try {
+        const { startDate, endDate, user_id } = req.query;
+
+        // クエリパラメータが正しく渡されているか確認
+        if (!startDate || !endDate || !user_id) {
+            return res.status(400).send({ success: false, message: '開始日、終了日、およびユーザーIDが必要です。' });
+        }
+
+        // サービスを使って予約データを取得
+        const reservations = await reservationService.getReservationsByDateRange(user_id, startDate, endDate);
+        return res.status(200).send({ success: true, data: reservations });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ success: false, message: 'Internal server error.' });
+    }
 }
+    
 };
 
 
