@@ -3356,6 +3356,9 @@ const ReservationController = require('../controllers/reservation.controller')
 // 全ての予約を取得するエンドポイント
 router.get('/reservations', ReservationController.getAllReservations);
 
+// 予約を日付範囲を指定してエンドポイント
+router.get('/reservations/daterange', ReservationController.getReservationsByDateRange);
+
 // 特定の予約を取得するエンドポイント
 router.get('/reservations/:id', ReservationController.getReservationById);
 
@@ -3367,6 +3370,7 @@ router.post('/reservations/create', ReservationController.addReservation);
 
 // 予約をIDで更新するエンドポイント
 router.put('/reservations/update/:id', ReservationController.updateReservation);
+
 
 router.delete('/orders/delete/:orderId', async (req, res) => {
   const orderId = req.params.orderId; // パラメータから orderId を取得
