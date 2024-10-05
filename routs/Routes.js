@@ -3352,6 +3352,7 @@ const OrdersOption = require('../schema/orders/option')
 const Orders = require('../schema/orders/orders');
 const OrderItems = require('../schema/orders/order_items');
 const ReservationController = require('../controllers/reservation.controller')
+const orderController = require('../controllers/orderskun.order.controller');
 
 // 全ての予約を取得するエンドポイント
 router.get('/reservations', ReservationController.getAllReservations);
@@ -3370,6 +3371,16 @@ router.post('/reservations/create', ReservationController.addReservation);
 
 // 予約をIDで更新するエンドポイント
 router.put('/reservations/update/:id', ReservationController.updateReservation);
+// 注文確認エンドポイント
+router.post('/orderskun/confirm', orderController.confirmOrder)
+// 未支払いのオーダーを取得
+router.post('/orderskun/pending', orderController.getPendingOrders);
+// 新しいルート: 注文アイテムのステータスを更新
+router.post('/orderskun/update-status', orderController.updateOrderStatus);
+// alarm_enabledをfalseにする
+router.post('/orderskun/update-alarm', orderController.updateAlarmStatus);
+//オーダーを完全削除
+router.delete('/orderskun/delete/:orderId', orderController.deleteOrder);
 
 
 router.delete('/orders/delete/:orderId', async (req, res) => {
