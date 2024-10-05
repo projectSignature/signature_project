@@ -1,5 +1,6 @@
 const Users = require('../schema/orders/user')
 
+
 const ordersUserService = {
     create: async (user) => {
         return await Users.create(user)
