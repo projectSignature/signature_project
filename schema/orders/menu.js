@@ -57,10 +57,19 @@ const Menu = database.define('Menu', {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    stock_status: {  // 新しいカラムを追加
+    stock_status: {  // 在庫状況を管理
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: true
+    },
+    is_takeout: {  // テイクアウト専用かどうかを管理
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    },
+    admin_item_name: {  // 管理用のアイテム名を追加
+        type: DataTypes.STRING(255),  // 文字列フィールド
+        allowNull: true  // 管理用の名前は任意
     }
 }, {
     tableName: 'menu',

@@ -38,8 +38,13 @@ const Category = database.define('Category', {
         allowNull: true
     },
     printer_ip: {
-        type: DataTypes.STRING(15),  // IPアドレスの文字列形式
-        allowNull: true  // プリンターIPが設定されない場合もあるため、NULLを許可
+        type: DataTypes.STRING(15),
+        allowNull: true
+    },
+    is_takeout: {  // テイクアウトの区別
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false  // デフォルトは「false」（テイクアウトではない）
     }
 },
 {

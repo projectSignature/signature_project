@@ -26,6 +26,11 @@ const User = database.define('User', {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: Sequelize.NOW
+    },
+    table_count: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0  // レストランのテーブル数
     }
 }, {
     tableName: 'users',
