@@ -55,6 +55,7 @@ const ReservationController = {
     // 新しい予約を追加
    addReservation: async (req, res) => {
        try {
+         console.log('nee resarvision creats')
            const { user_id, reservation_date, reservation_start_time, reservation_end_time, table_number, reservation_name, phone_number, num_people, remarks } = req.body;
 
            // 必要なフィールドの簡単なバリデーション
@@ -137,7 +138,7 @@ getReservationsByDateRange: async (req, res) => {
         return res.status(500).send({ success: false, message: 'Internal server error.' });
     }
 }
-    
+
 };
 
 
