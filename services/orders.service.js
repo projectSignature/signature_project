@@ -14,7 +14,7 @@ const orderService = {
             },
             order: [['id', 'DESC']]
         });
-
+        console.log(existingOrder)
         if (existingOrder) {
             const existingOrderId = existingOrder.id;
 
