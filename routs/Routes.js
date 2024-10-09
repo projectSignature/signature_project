@@ -2782,6 +2782,60 @@ router.post('/pos/createmenu', async (req, res) => {
         });
     }
 });
+
+router.post('/pos/createmenuaddcolomun', async (req, res) => {
+    try {
+        const {
+            menu_id,
+            item_name,
+            item_name_jp,
+            category,
+            category_jp,
+            price,
+            unit,
+            description,
+            available,
+            isVisible
+        } = req.body;
+
+        // メニューアイテムを新規作成
+        const newItem = await PosMenu.create({
+            menu_id,
+            item_name,
+            item_name_jp,
+            category,
+            category_jp,
+            price,
+            unit,
+            description,
+            available,
+            isVisible
+        });
+
+        res.status(201).json({
+            success: true,
+            message: 'Successfully created',
+            data: newItem
+        });
+    } catch (error) {
+        if (error.code === 'ER_DUP_ENTRY') {
+            // 重複エラーの場合
+            return res.status(400).json({
+                message: 'Menu ID is already in use. Please choose a different ID.',
+                error: error.message
+            });
+        }
+
+        // その他のエラー
+        console.log(error);
+        res.status(500).json({
+            message: 'Failed to create',
+            error: error.message
+        });
+    }
+});
+
+
 //POS/MENU/Finish
 
 //POS/SALES/---->
