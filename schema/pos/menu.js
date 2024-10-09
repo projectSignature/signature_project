@@ -33,6 +33,11 @@ const Menu = database.define('Menu', {
         type: DataTypes.FLOAT,
         allowNull: false
     },
+    unit: {  // 新しく単位を管理するカラムを追加
+        type: DataTypes.STRING(50),
+        allowNull: false,
+        defaultValue: 'kg'  // デフォルトの単位を 'peça' に設定
+    },
     description: {
         type: DataTypes.TEXT,
         allowNull: true
