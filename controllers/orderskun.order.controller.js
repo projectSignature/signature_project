@@ -70,7 +70,19 @@ const orderController = {
       console.error(error);
       res.status(500).json({ message: '注文の削除中にエラーが発生しました' });
     }
-  }
+  },
+  updatePayment: async (req, res) => {
+        const { order_id, payment_method, order_status } = req.body;
+
+        const result = await orderService.updateOrderPayment(order_id, payment_method, order_status);
+        if (result.success) {
+            res.status(200).json({ message: result.message });
+        } else if (result.error === 'Order not found') {
+            res.status(404).json({ error: result.error });
+        } else {
+            res.status(500).json({ error: result.error });
+        }
+    }
 };
 
 module.exports = orderController;
