@@ -14,7 +14,7 @@ const orderService = {
             },
             order: [['id', 'DESC']]
         });
-        console.log(existingOrder)
+
         if (existingOrder) {
             const existingOrderId = existingOrder.id;
 
@@ -22,7 +22,6 @@ const orderService = {
                 { coupon_printed: false },
                 { where: { id: existingOrderId } }
             );
-
             const orderItems = items.map(item => ({
                 order_id: existingOrderId,
                 menu_id: item.id,
@@ -73,7 +72,7 @@ const orderService = {
 
         await OrderItems.bulkCreate(orderItems);
 
-        return { message: 'Order confirmed successfully', success: true };
+         return { message: 'Order confirmed successfully', success: true, order: newOrder, orderItems: orderItems };
     },
     getPendingOrders: async (client_id, table_no) => {
       console.log(client_id, table_no)
