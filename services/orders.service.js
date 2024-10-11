@@ -176,7 +176,25 @@ const orderService = {
    } catch (error) {
      throw new Error('注文の削除中にエラーが発生しました');
    }
- }
+ },
+ // 注文の支払い情報を更新するメソッドを追加
+    updateOrderPayment: async (order_id, payment_method, order_status) => {
+        try {
+            const order = await Orders.findByPk(order_id);
+            if (!order) {
+                return { success: false, error: 'Order not found' };
+            }
+
+            order.payment_method = payment_method;
+            order.order_status = order_status;
+            await order.save();
+
+            return { success: true, message: 'Order updated successfully' };
+        } catch (error) {
+            console.error('Error updating order:', error);
+            return { success: false, error: 'Failed to update order' };
+        }
+    }
 };
 
 module.exports = orderService;
