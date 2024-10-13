@@ -52,7 +52,7 @@ const orderService = {
             user_id: user_id,
             table_no: table_no,
             order_name: order_name,
-            total_amount: items.reduce((acc, item) => acc + (item.amount * item.quantity), 0),
+            total_amount: items.reduce((acc, item) => acc + (item.amount ), 0),//* item.quantity
             order_status: 'pending',
             coupon_printed: false,
             created_at: new Date(),
