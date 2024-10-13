@@ -186,7 +186,7 @@ const orderService = {
             }
 
             order.payment_method = payment_method;
-            order.order_status = order_status;
+            //order.order_status = order_status;
             await order.save();
 
             return { success: true, message: 'Order updated successfully' };
