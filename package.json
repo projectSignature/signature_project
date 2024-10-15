@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+     "preinstall": "npm install --legacy-peer-deps"
   },
   "author": "kledisom oliveira",
   "license": "ISC",
@@ -32,12 +33,5 @@
     "sequelize": "^6.24.0",
     "square": "^27.0.0",
     "ws": "^8.18.0"
-  },
-
-  "engines": {
-    "node": ">=18.17",
-    "npm": ">=8"
-
-}
-
+  }
 }
