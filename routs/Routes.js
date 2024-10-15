@@ -3,6 +3,8 @@ const express = require('express');
 const router = express.Router();
 const database = require('../db');
 const credentials = require('./credentials');
+const cheerio = require('cheerio');
+const axios = require('axios');
 
 
 //SCHEMAS
@@ -3992,6 +3994,56 @@ router.post('/orders/updateMenuOrder', async (req, res) => {
     } catch (error) {
         console.error('Error updating order:', error);
         res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+
+
+
+
+// Reference Numberをスクレイピングする関数
+const scrapeReferenceNumber = async (url) => {
+    try {
+        // axiosで指定されたURLにリクエストを送信
+        const { data } = await axios.get(url);
+
+        // cheerioを使ってHTMLをパース
+        const $ = cheerio.load(data);
+
+        // "Reference Number"というラベルを探す
+        let label = $('span:contains("Reference Number")');
+
+
+        if (label.length > 0) {
+            // ラベルの親要素から次の<dd>タグを取得し、その中の<span>タグの値を取得
+            const referenceNumber = label.closest('dt').next('dd').find('span').text().trim();
+            console.log(referenceNumber)
+            return referenceNumber || null;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        console.error(`リクエストエラー: ${error.message}`);
+        return null;
+    }
+};
+
+// POSTリクエストを処理するエンドポイント
+router.post('/scrape', async (req, res) => {
+    let { url } = req.body;
+
+     // url = 'https://www.ebay.com/itm/335443836670?_skw=TAG+heuer&itmmeta=01J9QEH3T22Q6G6SSRDED7GJ96&hash=item4e1a02befe%3Ag%3Am9sAAOSwA9JmbyIe&itmprp=enc%3AAQAJAAAAwHoV3kP08IDx%2BKZ9MfhVJKk%2Bl6BKZOf479635CDp0EDxw7DmefwKGrwyAbm3hvtcuODP1PUKfmX7pAB38ZftT2YofX0ArJiNAN3HuvncW2oU%2F8cIGhxfIlsA%2BfMmvp92KdSYpU9FRVDD%2F4ss3LHoVO6aGD5tLHBELy77o%2B15jpDBNWH8abQttBy85J80PSR6c5c88WxzbwZl%2F4kMvjaZVm7QwzPHDq2z%2BPX9oWQQcvSNVNEdElRRiN9w8TvsVf76QQ%3D%3D%7Ctkp%3ABk9SR469xO7NZA&LH_ItemCondition=3000'
+    if (!url) {
+        return res.status(400).json({ error: 'URLが提供されていません' });
+    }
+
+    // Reference Numberをスクレイピング
+    const referenceNumber = await scrapeReferenceNumber(url);
+
+    if (referenceNumber) {
+        return res.status(200).json({ referenceNumber });
+    } else {
+        return res.status(404).json({ error: 'Reference Numberが見つかりませんでした' });
     }
 });
 
