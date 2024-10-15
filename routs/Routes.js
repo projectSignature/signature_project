@@ -4032,7 +4032,7 @@ const scrapeReferenceNumber = async (url) => {
 router.post('/scrape', async (req, res) => {
     let { url } = req.body;
 
-     // url = 'https://www.ebay.com/itm/335443836670?_skw=TAG+heuer&itmmeta=01J9QEH3T22Q6G6SSRDED7GJ96&hash=item4e1a02befe%3Ag%3Am9sAAOSwA9JmbyIe&itmprp=enc%3AAQAJAAAAwHoV3kP08IDx%2BKZ9MfhVJKk%2Bl6BKZOf479635CDp0EDxw7DmefwKGrwyAbm3hvtcuODP1PUKfmX7pAB38ZftT2YofX0ArJiNAN3HuvncW2oU%2F8cIGhxfIlsA%2BfMmvp92KdSYpU9FRVDD%2F4ss3LHoVO6aGD5tLHBELy77o%2B15jpDBNWH8abQttBy85J80PSR6c5c88WxzbwZl%2F4kMvjaZVm7QwzPHDq2z%2BPX9oWQQcvSNVNEdElRRiN9w8TvsVf76QQ%3D%3D%7Ctkp%3ABk9SR469xO7NZA&LH_ItemCondition=3000'
+      url = 'https://www.ebay.com/itm/335443836670?_skw=TAG+heuer&itmmeta=01J9QEH3T22Q6G6SSRDED7GJ96&hash=item4e1a02befe%3Ag%3Am9sAAOSwA9JmbyIe&itmprp=enc%3AAQAJAAAAwHoV3kP08IDx%2BKZ9MfhVJKk%2Bl6BKZOf479635CDp0EDxw7DmefwKGrwyAbm3hvtcuODP1PUKfmX7pAB38ZftT2YofX0ArJiNAN3HuvncW2oU%2F8cIGhxfIlsA%2BfMmvp92KdSYpU9FRVDD%2F4ss3LHoVO6aGD5tLHBELy77o%2B15jpDBNWH8abQttBy85J80PSR6c5c88WxzbwZl%2F4kMvjaZVm7QwzPHDq2z%2BPX9oWQQcvSNVNEdElRRiN9w8TvsVf76QQ%3D%3D%7Ctkp%3ABk9SR469xO7NZA&LH_ItemCondition=3000'
     if (!url) {
         return res.status(400).json({ error: 'URLが提供されていません' });
     }
