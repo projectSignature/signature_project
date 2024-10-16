@@ -35,7 +35,6 @@
     "ws": "^8.18.0"
   },
   "devDependencies": {
-    "grunt-node-gyp": "^5.0.0",
     "node-gyp": "^10.2.0"
   }
 }
