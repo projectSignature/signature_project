@@ -23,6 +23,7 @@
     "html-pdf": "^3.0.1",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
+    "moment-timezone": "^0.5.45",
     "mysql2": "^2.3.3",
     "nodemailer": "^6.8.0",
     "nodemon": "^2.0.20",
