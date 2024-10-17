@@ -3439,6 +3439,8 @@ router.post('/orderskun/update-alarm', orderController.updateAlarmStatus);
 router.delete('/orderskun/delete/:orderId', orderController.deleteOrder);
 //支払い完了とする
 router.post('/orderskun/updatePayment', orderController.updatePayment);
+//提供完了とする
+router.post('/orderskun/updateConfirmd', orderController.updateConfirmd);
 
 
 router.delete('/orders/delete/:orderId', async (req, res) => {
