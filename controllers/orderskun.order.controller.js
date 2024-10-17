@@ -3,13 +3,13 @@ const orderService = require('../services/orders.service');
 
 const orderController = {
     confirmOrder: async (req, res) => {
-        const { order_name, user_id, table_no, items, orderId } = req.body;
+        const { order_name, user_id, table_no, items, orderId,pickup_time } = req.body;
         try {
             // 既存の注文を確認
             let result = await orderService.updateExistingOrder(user_id, table_no, order_name, items, orderId);
             if (!result.success) {
                 // 新規注文を作成
-                result = await orderService.createNewOrder(user_id, table_no, order_name, items);
+                result = await orderService.createNewOrder(user_id, table_no, order_name, items,pickup_time);
                   res.status(200).json({ message: result.message,newflug: true, order: result.order, orderItems:result.orderItems});
             }else{
               res.status(200).json({ message: result.message,newflug: false});
@@ -23,6 +23,16 @@ const orderController = {
         const { client_id, table_no } = req.body; // table_no を追加で取得
         try {
             const orders = await orderService.getPendingOrders(client_id, table_no); // table_no をサービスに渡す
+            res.json(orders);
+        } catch (error) {
+            console.error('Error fetching orders:', error);
+            res.status(500).json({ error: 'Failed to fetch orders' });
+        }
+    },
+    getOrdersByStatus: async (req, res) => {
+        const { client_id, table_no,status } = req.body; // table_no を追加で取得
+        try {
+            const orders = await orderService.getOrdersByStatus(client_id, table_no,status); // table_no をサービスに渡す
             res.json(orders);
         } catch (error) {
             console.error('Error fetching orders:', error);
