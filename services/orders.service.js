@@ -1,8 +1,8 @@
 const Orders = require('../schema/orders/orders_ver2');
 const OrderItems = require('../schema/orders/order_items_ver2');
+const { Op } = require('sequelize');
 
 const orderService = {
-    // 既存の注文を確認して更新する
     updateExistingOrder: async (user_id, table_no, order_name, items, orderID) => {
         let existingOrder = await Orders.findOne({
             where: {
@@ -14,10 +14,8 @@ const orderService = {
             },
             order: [['id', 'DESC']]
         });
-
         if (existingOrder) {
             const existingOrderId = existingOrder.id;
-
             await Orders.update(
                 { coupon_printed: false },
                 { where: { id: existingOrderId } }
@@ -28,17 +26,15 @@ const orderService = {
                 quantity: item.quantity,
                 options: JSON.stringify(item.options),
                 item_price: item.amount,
-                total_price: item.amount * item.quantity,
+                total_price: item.amount ,//* item.quantity
                 coupon_printed: false,
                 created_at: new Date(),
                 updated_at: new Date()
             }));
             await OrderItems.bulkCreate(orderItems);
-
             const additionalAmount = items.reduce((acc, item) => acc + (item.amount * item.quantity), 0);
             existingOrder.total_amount = parseFloat(existingOrder.total_amount) + parseFloat(additionalAmount);
             existingOrder.updated_at = new Date();
-
             await existingOrder.save();
 
             return { message: 'Order updated successfully', success: true };
@@ -47,7 +43,7 @@ const orderService = {
     },
 
     // 新規注文を作成する
-    createNewOrder: async (user_id, table_no, order_name, items) => {
+    createNewOrder: async (user_id, table_no, order_name, items,pickup_time) => {
         const newOrder = await Orders.create({
             user_id: user_id,
             table_no: table_no,
@@ -56,7 +52,8 @@ const orderService = {
             order_status: 'pending',
             coupon_printed: false,
             created_at: new Date(),
-            updated_at: new Date()
+            updated_at: new Date(),
+            pickup_time:pickup_time
         });
 
         const orderItems = items.map(item => ({
@@ -65,7 +62,7 @@ const orderService = {
             quantity: item.quantity,
             options: JSON.stringify(item.options),
             item_price: item.amount,
-            total_price: item.amount * item.quantity,
+            total_price: item.amount ,//* item.quantity
             created_at: new Date(),
             updated_at: new Date()
         }));
@@ -95,9 +92,31 @@ const orderService = {
           throw new Error('Failed to fetch pending orders');
       }
   },
+      getOrdersByStatus: async (client_id, table_no,status) => {//get data by status
+        try {
+            const whereCondition = {
+                  user_id: client_id,
+                  order_status: {
+                      [Op.ne]: status  // confirmed以外
+                  }
+              };
+            if (table_no) {
+                whereCondition.table_no = table_no;
+            }
+            const orders = await Orders.findAll({
+                where: whereCondition,
+                include: [{ model: OrderItems }]
+            });
+            return orders;
+        } catch (error) {
+          console.log(error)
+            throw new Error('Failed to fetch pending orders');
+        }
+    },
   // 注文アイテムのステータスを更新するサービス
    updateOrderItemStatus: async (orderItemId, newStatus) => {
        try {
+         console.log('newStatus:'+newStatus)
            const orderItem = await OrderItems.findOne({
                where: { id: orderItemId }
            });
@@ -117,6 +136,7 @@ const orderService = {
                      serve_status: 'pending'  // まだ提供されていないものを取得
                  }
              });
+             console.log('pendingItems:'+pendingItems)
 
              if (pendingItems.length === 0) {
                  // 全てのアイテムが提供済みなら、Orders の order_status を confirmed に更新
@@ -125,7 +145,7 @@ const orderService = {
                  });
 
                  if (order) {
-                     order.order_status = 'confirmed';
+                     order.order_status = 'prepared';
                      await order.save();
                  }
 
@@ -184,8 +204,26 @@ const orderService = {
             if (!order) {
                 return { success: false, error: 'Order not found' };
             }
+            console.log(order_id, payment_method, order_status)
 
             order.payment_method = payment_method;
+            //order.order_status = order_status;
+            await order.save();
+
+            return { success: true, message: 'Order updated successfully' };
+        } catch (error) {
+            console.error('Error updating order:', error);
+            return { success: false, error: 'Failed to update order' };
+        }
+    },
+    updateConfirmd:async (order_id, order_status) => {
+        try {
+            const order = await Orders.findByPk(order_id);
+            if (!order) {
+                return { success: false, error: 'Order not found' };
+            }
+
+            order.order_status = order_status;
             //order.order_status = order_status;
             await order.save();
 
