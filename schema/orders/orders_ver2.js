@@ -32,7 +32,7 @@ const Orders = database.define('Orders', {
         defaultValue: 0.00
     },
     order_status: {
-        type: DataTypes.ENUM('yet', 'pending', 'confirmed', 'cancelled'),
+        type: DataTypes.ENUM('yet', 'pending', 'prepared', 'confirmed', 'cancelled'), // 'prepared'を追加
         defaultValue: 'pending'
     },
     payment_method: {
@@ -46,7 +46,7 @@ const Orders = database.define('Orders', {
     alarm_enabled: {  // アラームON/OFFカラムを追加
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: true  // デフォルトではOFF
+        defaultValue: true  // デフォルトではON
     },
     created_at: {
         type: DataTypes.DATE,
@@ -55,6 +55,10 @@ const Orders = database.define('Orders', {
     updated_at: {
         type: DataTypes.DATE,
         defaultValue: Sequelize.NOW
+    },
+    pickup_time: {  // 引き取り時間カラムを追加
+        type: DataTypes.DATE,
+        allowNull: true  // デフォルト値なし
     }
 }, {
     tableName: 'orders_ver2',
