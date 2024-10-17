@@ -82,7 +82,19 @@ const orderController = {
         } else {
             res.status(500).json({ error: result.error });
         }
-    }
+    },
+    updateConfirmd: async (req, res) => {
+          const { order_id, order_status } = req.body;
+
+          const result = await orderService.updateConfirmd(order_id, order_status);
+          if (result.success) {
+              res.status(200).json({ message: result.message });
+          } else if (result.error === 'Order not found') {
+              res.status(404).json({ error: result.error });
+          } else {
+              res.status(500).json({ error: result.error });
+          }
+      }
 };
 
 module.exports = orderController;
