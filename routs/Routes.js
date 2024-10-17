@@ -3412,25 +3412,22 @@ const orderController = require('../controllers/orderskun.order.controller');
 
 // 全ての予約を取得するエンドポイント
 router.get('/reservations', ReservationController.getAllReservations);
-
 // 予約を日付範囲を指定してエンドポイント
 router.get('/reservations/daterange', ReservationController.getReservationsByDateRange);
-
 // 特定の予約を取得するエンドポイント
 router.get('/reservations/:id', ReservationController.getReservationById);
-
 // 予約をIDで削除するエンドポイント
 router.delete('/reservations/delete/:id', ReservationController.deleteReservation);
-
 // 新しい予約を追加するエンドポイント
 router.post('/reservations/create', ReservationController.addReservation);
-
 // 予約をIDで更新するエンドポイント
 router.put('/reservations/update/:id', ReservationController.updateReservation);
 // 注文確認エンドポイント
 router.post('/orderskun/confirm', orderController.confirmOrder)
-// 未支払いのオーダーを取得
+// 準備中オーダーを取得
 router.post('/orderskun/pending', orderController.getPendingOrders);
+// フロントから受け取ったステータス
+router.post('/orderskun/get-by-status', orderController.getOrdersByStatus);
 // 新しいルート: 注文アイテムのステータスを更新
 router.post('/orderskun/update-status', orderController.updateOrderStatus);
 // alarm_enabledをfalseにする
