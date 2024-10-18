@@ -3409,6 +3409,7 @@ const Orders = require('../schema/orders/orders');
 const OrderItems = require('../schema/orders/order_items');
 const ReservationController = require('../controllers/reservation.controller')
 const orderController = require('../controllers/orderskun.order.controller');
+const registerController = require('../controllers/orderskun.registerController');
 
 // 全ての予約を取得するエンドポイント
 router.get('/reservations', ReservationController.getAllReservations);
@@ -3423,7 +3424,7 @@ router.post('/reservations/create', ReservationController.addReservation);
 // 予約をIDで更新するエンドポイント
 router.put('/reservations/update/:id', ReservationController.updateReservation);
 // 注文確認エンドポイント
-router.post('/orderskun/confirm', orderController.confirmOrder)
+router.post('/orderskun/confirm', orderController.confirmOrder);
 // 準備中オーダーを取得
 router.post('/orderskun/pending', orderController.getPendingOrders);
 // フロントから受け取ったステータス
@@ -3438,6 +3439,14 @@ router.delete('/orderskun/delete/:orderId', orderController.deleteOrder);
 router.post('/orderskun/updatePayment', orderController.updatePayment);
 //提供完了とする
 router.post('/orderskun/updateConfirmd', orderController.updateConfirmd);
+// レジ情報の取得エンドポイント
+router.get('/orderskun/registers', registerController.getRegisters);
+// レジオープン金額
+router.post('/orderskun/registers/open', registerController.openRegister);
+// pickup_timeに基づいて注文を取得するエンドポイント
+router.get('/orderskun/pickup-time', orderController.getOrdersByPickupTime);
+// レジクローズ金額
+router.post('/orderskun/registers/close', registerController.closeRegister);
 
 
 router.delete('/orders/delete/:orderId', async (req, res) => {
