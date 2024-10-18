@@ -130,12 +130,14 @@ const orderService = {
            await orderItem.save();
 
            // 該当する order_id の他の OrderItems をチェック
-             const pendingItems = await OrderItems.findAll({
-                 where: {
-                     order_id: orderItem.order_id,
-                     serve_status: 'pending'  // まだ提供されていないものを取得
-                 }
-             });
+           const pendingOrPreparedItems = await OrderItems.findAll({
+                   where: {
+                       order_id: orderItem.order_id,
+                       serve_status: {
+                           [Op.or]: ['pending', 'prepared']  // "pending" または "prepared" のものを取得
+                       }
+                   }
+               });
              console.log('pendingItems:'+pendingItems)
 
              if (pendingItems.length === 0) {
@@ -232,7 +234,37 @@ const orderService = {
             console.error('Error updating order:', error);
             return { success: false, error: 'Failed to update order' };
         }
+    },
+    getOrdersByPickupTime:async (pickupTime,clientsId) => {
+    try {
+      console.log(clientsId)
+      console.log('de-ta syutoku kaisini')
+      // 日本時間の「今日の00:00:00」を取得する
+      const now = new Date();
+      // UTC時間に日本時間の9時間分のオフセットを追加
+      const jstOffset = 9 * 60 * 60 * 1000;  // 日本のタイムゾーン UTC+9
+      // UTCの現在時刻に対して、JSTオフセットを追加して、今日の00:00:00を設定
+      const startDate = new Date(now.getTime() + jstOffset);
+      startDate.setUTCHours(0, 0, 0, 0);  // 日本時間で00:00:00に設定
+      console.log(startDate)
+      console.log(pickupTime)
+      console.log(clientsId)
+        const orders = await Orders.findAll({
+          where: {
+              pickup_time: {
+                  [Op.between]: [startDate, pickupTime]  // 今日の00:00:00からフロントから来た日付まで
+              },
+              user_id: clientsId
+          },
+            include: [{ model: OrderItems }]  // 関連するOrderItemsも含める
+        });
+        return orders;
+    } catch (error) {
+        console.error('Error fetching orders by pickup time:', error);
+        throw new Error('Failed to fetch orders by pickup time');
     }
+  },
+
 };
 
 module.exports = orderService;
