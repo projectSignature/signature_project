@@ -104,7 +104,27 @@ const orderController = {
           } else {
               res.status(500).json({ error: result.error });
           }
-      }
+      },
+      getOrdersByPickupTime : async (req, res) => {
+    try {
+        const { pickupTime,clientsId } = req.query;  // クエリパラメータからpickup_timeを取得
+        if (!pickupTime) {
+            return res.status(400).json({ message: 'pickup_time is required' });
+        }
+        console.log(pickupTime,clientsId)
+
+        const orders = await orderService.getOrdersByPickupTime(pickupTime,clientsId);
+        if (orders.length === 0) {
+            return res.status(404).json({ message: 'No orders found for the given pickup time' });
+        }
+
+        return res.status(200).json(orders);
+    } catch (error) {
+        console.error('Error in getOrdersByPickupTime controller:', error);
+        return res.status(500).json({ message: 'Server error' });
+    }
+},
+
 };
 
 module.exports = orderController;
