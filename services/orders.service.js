@@ -5,34 +5,41 @@ const { Op } = require('sequelize');
 const orderService = {
     updateExistingOrder: async (user_id, table_no, order_name, items, orderID) => {
         let existingOrder = await Orders.findOne({
-            where: {
-                user_id: user_id,
-                table_no: table_no,
-                order_name: order_name,
-                order_status: 'pending',
-                id:orderID
+          where: {
+            user_id: user_id,
+            table_no: table_no,
+            order_name: order_name,
+            order_status: {
+                [Op.ne]: 'confirmed'  // "confirmed" 以外のものを取得
             },
+            id: orderID
+        },
             order: [['id', 'DESC']]
         });
         if (existingOrder) {
             const existingOrderId = existingOrder.id;
             await Orders.update(
-                { coupon_printed: false },
-                { where: { id: existingOrderId } }
-            );
+                  {
+                      coupon_printed: false,
+                      order_status: 'pending'  // 追加のフィールド
+                  },
+                  {
+                      where: { id: existingOrderId }
+                  }
+              );
             const orderItems = items.map(item => ({
                 order_id: existingOrderId,
                 menu_id: item.id,
                 quantity: item.quantity,
                 options: JSON.stringify(item.options),
-                item_price: item.amount,
+                item_price: item.amount/item.quantity,
                 total_price: item.amount ,//* item.quantity
                 coupon_printed: false,
                 created_at: new Date(),
                 updated_at: new Date()
             }));
             await OrderItems.bulkCreate(orderItems);
-            const additionalAmount = items.reduce((acc, item) => acc + (item.amount * item.quantity), 0);
+            const additionalAmount = items.reduce((acc, item) => acc + (item.amount), 0);
             existingOrder.total_amount = parseFloat(existingOrder.total_amount) + parseFloat(additionalAmount);
             existingOrder.updated_at = new Date();
             await existingOrder.save();
@@ -130,17 +137,20 @@ const orderService = {
            await orderItem.save();
 
            // 該当する order_id の他の OrderItems をチェック
-           const pendingOrPreparedItems = await OrderItems.findAll({
+           const pendingItems = await OrderItems.findAll({
                    where: {
                        order_id: orderItem.order_id,
-                       serve_status: {
-                           [Op.or]: ['pending', 'prepared']  // "pending" または "prepared" のものを取得
-                       }
+                       // serve_status: {
+                         serve_status: 'pending'
+                           // [Op.or]: ['pending', 'prepared']  // "pending" または "prepared" のものを取得
+                       // }
                    }
                });
              console.log('pendingItems:'+pendingItems)
 
+             console.log('件数は'+pendingItems.length)
              if (pendingItems.length === 0) {
+
                  // 全てのアイテムが提供済みなら、Orders の order_status を confirmed に更新
                  const order = await Orders.findOne({
                      where: { id: orderItem.order_id }
@@ -156,6 +166,8 @@ const orderService = {
 
            return { message: 'Order item status updated successfully', success: true };
        } catch (error) {
+         console.log('here')
+        console.log(error)
            throw new Error('Failed to update order item status');
        }
    },
