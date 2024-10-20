@@ -95,8 +95,8 @@ app.use('/planget', rout);
 app.use('/lesson_after/:id', rout);
 
 //const signupRouter = require('./routs/noauth/signup.router.js');
-//const signinRouter = require('./routs/noauth/signin.router.js');
-//app.use('/noauth', signupRouter)
+const signinRouter = require('./routs/noauth/signin.router.js');
+app.use('/noauth', signinRouter)
 //, signinRouter
 
 
