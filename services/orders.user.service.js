@@ -7,6 +7,7 @@ const ordersUserService = {
     },
 
     getByUsername: async (username) => {
+      console.log('user name is' + username)
         const user = await Users.findOne({
             where: { username }
         })
