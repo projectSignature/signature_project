@@ -15,7 +15,7 @@ const OrderssigninController = {
                 return response.status(400).send({ success: false, message: 'Email or password not provided.' });
             }
 
-            const user = await userService.getByEmail(email);
+            const user = await userService.getByUsername(email);
 
             if (!user) {
                 return response.status(404).send({ success: false, message: 'User not found.' });
