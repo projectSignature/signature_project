@@ -107,12 +107,11 @@ const orderController = {
       },
       getOrdersByPickupTime : async (req, res) => {
     try {
+      console.log('pickupTime')
         const { pickupTime,clientsId } = req.query;  // クエリパラメータからpickup_timeを取得
         if (!pickupTime) {
             return res.status(400).json({ message: 'pickup_time is required' });
         }
-        console.log(pickupTime,clientsId)
-
         const orders = await orderService.getOrdersByPickupTime(pickupTime,clientsId);
         if (orders.length === 0) {
             return res.status(404).json({ message: 'No orders found for the given pickup time' });
@@ -124,6 +123,19 @@ const orderController = {
         return res.status(500).json({ message: 'Server error' });
     }
 },
+updateMenuByAdmin: async (req,res)=>{
+  try{
+     const { newOrder} = req.body;
+     if(!newOrder){
+       return res.status(400).json({ message: 'no ordes' });
+     }
+     const UpdateOrders = await orderService.updateMenuByAdmin(newOrder)
+     // console.log(newOrder)
+     return res.status(200).json(UpdateOrders)
+  }catch(e){
+    console.log(e)
+  }
+}
 
 };
 
