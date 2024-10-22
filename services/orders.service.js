@@ -258,24 +258,104 @@ const orderService = {
       // UTCの現在時刻に対して、JSTオフセットを追加して、今日の00:00:00を設定
       const startDate = new Date(now.getTime() + jstOffset);
       startDate.setUTCHours(0, 0, 0, 0);  // 日本時間で00:00:00に設定
+
       console.log(startDate)
-      console.log(pickupTime)
-      console.log(clientsId)
-        const orders = await Orders.findAll({
-          where: {
-              pickup_time: {
-                  [Op.between]: [startDate, pickupTime]  // 今日の00:00:00からフロントから来た日付まで
-              },
-              user_id: clientsId
-          },
-            include: [{ model: OrderItems }]  // 関連するOrderItemsも含める
-        });
+
+
+
+      const pickupTimeUTC = new Date(pickupTime).toISOString();  // pickupTimeをISO形式に変換
+      console.log(pickupTimeUTC)
+      const orders = await Orders.findAll({
+      where: {
+        pickup_time: {
+          [Op.between]: [startDate, pickupTimeUTC]  // 同じフォーマットで比較
+        },
+        user_id: clientsId
+      },
+      include: [{ model: OrderItems }]  // 関連するOrderItemsも含める
+      });
+      console.log(orders)
         return orders;
     } catch (error) {
         console.error('Error fetching orders by pickup time:', error);
         throw new Error('Failed to fetch orders by pickup time');
     }
   },
+  updateMenuByAdmin: async (newOrder) => {
+      try {
+          const updatedItems = [];
+          for (const item of newOrder.OrderItems) {
+              if (item.kubun === 'delete' && item.id) {
+                  // Delete operation for existing items
+                  await OrderItems.destroy({ where: { id: item.id } });
+                  console.log(`Item with id ${item.id} deleted.`);
+
+                  // Check if any other items exist for this order_id
+                  const remainingItems = await OrderItems.findAll({ where: { order_id: item.order_id } });
+                  if (remainingItems.length === 0) {
+                      // If no items remain for the order, delete the order itself
+                      await Orders.destroy({ where: { id: item.order_id } });
+                      console.log(`Order with id ${item.order_id} deleted because no items remain.`);
+                  }
+              } else if (item.kubun === 'add') {
+                  // Add operation for new items
+                  const options = Array.isArray(item.options) ? JSON.stringify(item.options) : item.options;
+
+                  const newItem = await OrderItems.create({
+                      order_id: item.order_id,
+                      menu_id: item.menu_id,
+                      quantity: item.quantity,
+                      options: options,
+                      item_price: item.item_price,
+                      total_price: item.total_price,
+                      coupon_printed: item.coupon_printed || false,
+                      serve_status: item.serve_status || 'pending'
+                  });
+                  updatedItems.push(newItem);
+                  console.log(`New item added:`, newItem);
+              } else if (item.kubun !== 'delete' && item.id) {
+                  // Update operation for existing items
+                  const options = Array.isArray(item.options) ? JSON.stringify(item.options) : item.options;
+
+                  const updatedItem = await OrderItems.update({
+                      quantity: item.quantity,
+                      options: options,
+                      item_price: item.item_price,
+                      total_price: item.total_price,
+                      coupon_printed: item.coupon_printed,
+                      serve_status: item.serve_status
+                  }, {
+                      where: { id: item.id }
+                  });
+                  updatedItems.push(updatedItem);
+                  console.log(`Item with id ${item.id} updated.`);
+              }
+          }
+
+          // 全てのOrderItemsを再取得して、合計金額を再計算
+          const allOrderItems = await OrderItems.findAll({ where: { order_id: newOrder.id } });
+          const totalAmount = allOrderItems.reduce((acc, item) => acc + parseFloat(item.total_price), 0);
+
+          // Update total_amount in Orders table
+          await Orders.update({ total_amount: totalAmount }, { where: { id: newOrder.id } });
+          console.log(`Order total_amount updated to ${totalAmount}`);
+
+          // 最新のOrderとその関連するOrderItemsを取得して返す
+          const updatedOrder = await Orders.findOne({
+              where: { id: newOrder.id },
+              include: [{ model: OrderItems }]
+          });
+
+          return updatedOrder;  // フロントエンドに最新のOrderデータを返す
+
+      } catch (error) {
+          console.error('Error updating menu by admin:', error);
+          throw new Error('Order update failed');
+      }
+  }
+
+
+
 
 };
 
