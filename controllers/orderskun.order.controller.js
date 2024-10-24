@@ -71,7 +71,6 @@ const orderController = {
     try {
       // サービス層を呼び出してオーダーとアイテムを削除
       const result = await orderService.deleteOrder(orderId);
-
       if (!result.success) {
         return res.status(404).json({ message: result.message });
       }
@@ -83,7 +82,6 @@ const orderController = {
   },
   updatePayment: async (req, res) => {
         const { order_id, payment_method, order_status } = req.body;
-
         const result = await orderService.updateOrderPayment(order_id, payment_method, order_status);
         if (result.success) {
             res.status(200).json({ message: result.message });
@@ -94,9 +92,8 @@ const orderController = {
         }
     },
     updateConfirmd: async (req, res) => {
-          const { order_id, order_status } = req.body;
-
-          const result = await orderService.updateConfirmd(order_id, order_status);
+          const { order_id, order_status,paymentType } = req.body;
+          const result = await orderService.updateConfirmd(order_id, order_status, paymentType);
           if (result.success) {
               res.status(200).json({ message: result.message });
           } else if (result.error === 'Order not found') {
@@ -107,7 +104,6 @@ const orderController = {
       },
       getOrdersByPickupTime : async (req, res) => {
     try {
-      console.log('pickupTime')
         const { pickupTime,clientsId } = req.query;  // クエリパラメータからpickup_timeを取得
         if (!pickupTime) {
             return res.status(400).json({ message: 'pickup_time is required' });
@@ -135,8 +131,48 @@ updateMenuByAdmin: async (req,res)=>{
   }catch(e){
     console.log(e)
   }
+},
+historyPedidosBydate: async (req,res)=>{
+  try{
+     const { startDate, endDate, user_id} = req.query;
+     console.log(startDate)
+     console.log(endDate)
+     console.log(user_id)
+     if(!startDate||!endDate||!user_id){
+       return res.status(400).json({ message: 'Check startDate, endDate, clients id' });
+     }
+
+     const historyOrders = await orderService.getOrdersByPickupTimeBetween(startDate, endDate, user_id)
+     // console.log(newOrder)
+     return res.status(200).json(historyOrders)
+  }catch(e){
+    console.log(e)
+  }
+},
+updateOrder : async (req, res) => {
+    const { orderId } = req.params;
+    const { order_status, payment_method, order_type } = req.body;
+
+    try {
+        const updatedOrder = await orderService.updateOrder(orderId, {
+            order_status,
+            payment_method,
+            order_type
+        });
+
+        if (updatedOrder) {
+            res.status(200).json({ success: true, message: '注文が更新されました', data: updatedOrder });
+        } else {
+            res.status(404).json({ success: false, message: '注文が見つかりません' });
+        }
+    } catch (error) {
+        console.error('注文の更新中にエラーが発生しました:', error);
+        res.status(500).json({ success: false, message: '注文の更新に失敗しました' });
+    }
 }
 
+
+//
 };
 
 module.exports = orderController;

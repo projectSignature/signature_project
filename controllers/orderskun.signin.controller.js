@@ -29,7 +29,15 @@ const OrderssigninController = {
               }else{
                 const secretKey = 'abracadabra';
                 console.log(user)
-                const token = jwt.sign({ userId: user.id, email:user.email, username:user.username, table_count:user.table_count}, secretKey);
+                const token = jwt.sign({ userId: user.id,
+                  email:user.email,
+                  username:user.username,
+                  table_count:user.table_count,
+                  language:user.language,
+                  role:user.role,
+                  uber_enabled:user.uber_enabled,
+                  takeout_enabled:user.takeout_enabled
+                }, secretKey);
                return response.status(200).send({ success: true, info: { token }, message: 'User logged in successfully' });
               }
 
