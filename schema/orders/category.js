@@ -1,6 +1,7 @@
 const Sequelize = require('sequelize');
 const { DataTypes } = require('sequelize');
 const database = require('../../order_db');  // データベース接続をインポート
+const CategoryHours = require('./CategoryHours');
 
 const Category = database.define('Category', {
     id: {
@@ -45,6 +46,10 @@ const Category = database.define('Category', {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false  // デフォルトは「false」（テイクアウトではない）
+    },
+    admin_item_name: {  // 新しいカラムの追加
+        type: DataTypes.STRING(255),
+        allowNull: true
     }
 },
 {
@@ -57,5 +62,9 @@ const Category = database.define('Category', {
         }
     ]
 });
+
+Category.hasMany(CategoryHours, { foreignKey: 'category_id', as: 'm_categories' });
+CategoryHours.belongsTo(Category, { foreignKey: 'category_id', as: 'm_categories' });
+
 
 module.exports = Category;

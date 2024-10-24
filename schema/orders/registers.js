@@ -73,6 +73,10 @@ const Register = database.define('Register', {
     close_time: {  // open_time を追加
         type: DataTypes.DATE,
         allowNull: true
+    },
+    register_day: {  // 年、月、日のみを保存
+        type: DataTypes.DATEONLY,
+        allowNull: true
     }
 }, {
     tableName: 'registers',
