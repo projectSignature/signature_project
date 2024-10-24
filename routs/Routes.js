@@ -3403,13 +3403,16 @@ router.post('/pos/updateSettings', async (req, res) => {
 
 const OrdersUser = require('../schema/orders/user')
 const OrdersMenu = require('../schema/orders/menu')
+const CategoryHours = require('../schema/orders/CategoryHours')
 const OrdersCategory = require('../schema/orders/category')
 const OrdersOption = require('../schema/orders/option')
 const Orders = require('../schema/orders/orders');
 const OrderItems = require('../schema/orders/order_items');
-const ReservationController = require('../controllers/reservation.controller')
+const ReservationController = require('../controllers/reservation.controller');
 const orderController = require('../controllers/orderskun.order.controller');
 const registerController = require('../controllers/orderskun.registerController');
+
+
 
 // 全ての予約を取得するエンドポイント
 router.get('/reservations', ReservationController.getAllReservations);
@@ -3447,6 +3450,12 @@ router.post('/orderskun/registers/open', registerController.openRegister);
 router.get('/orderskun/pickup-time', orderController.getOrdersByPickupTime);
 // レジクローズ金額
 router.post('/orderskun/registers/close', registerController.closeRegister);
+//POSより、オーダーのupdateのエンドポイント
+router.post('/orderskun/update/order/admin', orderController.updateMenuByAdmin)
+//ーだー履歴を取得する
+router.get('/orderkuns/historico/pedidos/daterange', orderController.historyPedidosBydate)
+//Orderの状態をupdate
+router.put('/orderskun/update/:orderId', orderController.updateOrder);
 
 
 router.delete('/orders/delete/:orderId', async (req, res) => {
@@ -3478,7 +3487,6 @@ router.delete('/orders/delete/:orderId', async (req, res) => {
 router.get('/orders/getBasedata', async (req, res) => {
   try {
     const userId = req.query.user_id; // クエリパラメータからuser_idを取得
-    console.log(userId)
 
     // Category, Menu, Option のデータをそれぞれ取得
     const categories = await OrdersCategory.findAll({
@@ -3493,11 +3501,23 @@ router.get('/orders/getBasedata', async (req, res) => {
       where: { user_id: userId }
     });
 
+    console.log('operatehourGEt')
+
+    const oparatingHours = await CategoryHours.findAll({
+      include: [{
+        model: OrdersCategory,
+        as: 'm_categories',
+        where: { user_id: userId }
+      }],
+      logging: console.log  // クエリをコンソールに出力
+    });
+
     // 取得したデータをまとめてJSONで返す
     const getData = {
       categories: categories,
       menus: menus,
-      options: options
+      options: options,
+      oparatingHOurs:oparatingHours
     };
 
     res.json(getData); // 結果をJSONとして返す
