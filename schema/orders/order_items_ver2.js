@@ -1,6 +1,7 @@
 const Sequelize = require('sequelize');
 const { DataTypes } = require('sequelize');
-const database = require('../../order_db');  
+const database = require('../../order_db');
+const Menu = require('./menu');  // Menu モデルをインポート
 
 const OrderItems = database.define('OrderItems', {
     id: {
@@ -55,5 +56,8 @@ const OrderItems = database.define('OrderItems', {
     tableName: 'order_items_ver2',
     timestamps: false
 });
+
+// Menu とのリレーションを定義
+OrderItems.belongsTo(Menu, { foreignKey: 'menu_id' });
 
 module.exports = OrderItems;

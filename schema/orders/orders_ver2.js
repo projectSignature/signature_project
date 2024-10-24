@@ -59,11 +59,28 @@ const Orders = database.define('Orders', {
     pickup_time: {  // 引き取り時間カラムを追加
         type: DataTypes.DATE,
         allowNull: true  // デフォルト値なし
+    },
+    order_type: {  // 新しい order_type カラムを追加
+        type: DataTypes.ENUM('local', 'takeout', 'uber', 'demaekan', 'other'),
+        defaultValue: 'local'
     }
 }, {
     tableName: 'orders_ver2',
     timestamps: false
 });
+
+// database.sync({ alter: true })  // データベースとモデルを同期する
+//   .then(() => {
+//     console.log("Database synchronized with the model.");
+//
+//     // サーバーを起動
+//     app.listen(3000, () => {
+//       console.log('Server is running on port 3000');
+//     });
+//   })
+//   .catch(error => {
+//     console.error("Error synchronizing the database:", error);
+//   });
 
 Orders.hasMany(OrderItems, { foreignKey: 'order_id' });
 OrderItems.belongsTo(Orders, { foreignKey: 'order_id' });
