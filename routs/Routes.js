@@ -3509,7 +3509,7 @@ router.get('/orders/getBasedata', async (req, res) => {
         as: 'm_categories',
         where: { user_id: userId }
       }],
-      logging: console.log  // クエリをコンソールに出力
+      //logging: console.log  // クエリをコンソールに出力
     });
 
     // 取得したデータをまとめてJSONで返す
