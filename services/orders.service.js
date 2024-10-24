@@ -1,5 +1,6 @@
 const Orders = require('../schema/orders/orders_ver2');
 const OrderItems = require('../schema/orders/order_items_ver2');
+const Menu = require('../schema/orders/menu');
 const { Op } = require('sequelize');
 
 const orderService = {
@@ -230,17 +231,16 @@ const orderService = {
             return { success: false, error: 'Failed to update order' };
         }
     },
-    updateConfirmd:async (order_id, order_status) => {
+    updateConfirmd:async (order_id, order_status, casyType) => {
         try {
             const order = await Orders.findByPk(order_id);
             if (!order) {
                 return { success: false, error: 'Order not found' };
             }
-
             order.order_status = order_status;
+            order.payment_method = casyType;
             //order.order_status = order_status;
             await order.save();
-
             return { success: true, message: 'Order updated successfully' };
         } catch (error) {
             console.error('Error updating order:', error);
@@ -249,8 +249,6 @@ const orderService = {
     },
     getOrdersByPickupTime:async (pickupTime,clientsId) => {
     try {
-      console.log(clientsId)
-      console.log('de-ta syutoku kaisini')
       // 日本時間の「今日の00:00:00」を取得する
       const now = new Date();
       // UTC時間に日本時間の9時間分のオフセットを追加
@@ -258,13 +256,7 @@ const orderService = {
       // UTCの現在時刻に対して、JSTオフセットを追加して、今日の00:00:00を設定
       const startDate = new Date(now.getTime() + jstOffset);
       startDate.setUTCHours(0, 0, 0, 0);  // 日本時間で00:00:00に設定
-
-      console.log(startDate)
-
-
-
       const pickupTimeUTC = new Date(pickupTime).toISOString();  // pickupTimeをISO形式に変換
-      console.log(pickupTimeUTC)
       const orders = await Orders.findAll({
       where: {
         pickup_time: {
@@ -288,8 +280,6 @@ const orderService = {
               if (item.kubun === 'delete' && item.id) {
                   // Delete operation for existing items
                   await OrderItems.destroy({ where: { id: item.id } });
-                  console.log(`Item with id ${item.id} deleted.`);
-
                   // Check if any other items exist for this order_id
                   const remainingItems = await OrderItems.findAll({ where: { order_id: item.order_id } });
                   if (remainingItems.length === 0) {
@@ -352,7 +342,49 @@ const orderService = {
           console.error('Error updating menu by admin:', error);
           throw new Error('Order update failed');
       }
-  }
+  },
+  getOrdersByPickupTimeBetween: async (startTime, endTime, clientsId) => {
+    try {
+      // endTime に 1 日を追加
+      const adjustedEndTime = new Date(endTime);
+      adjustedEndTime.setDate(adjustedEndTime.getDate() + 1);
+
+      const orders = await Orders.findAll({
+        where: {
+          pickup_time: {
+            [Op.between]: [startTime, adjustedEndTime]  // endTime に1日追加した範囲で検索
+          },
+          user_id: clientsId
+        },
+        include: [{
+          model: OrderItems,
+          include: [{ model: Menu }]
+        }]  // 関連するOrderItemsも含める
+      });
+
+      return orders;
+    } catch (error) {
+      console.error('Error fetching orders by pickup time:', error);
+      throw new Error('Failed to fetch orders by pickup time');
+    }
+  },
+  updateOrder : async (orderId, updateData) => {
+    try {
+        const order = await Orders.findByPk(orderId);
+        if (!order) {
+            return null; // 注文が見つからなかった場合
+        }
+
+        // 注文の更新処理
+        const updatedOrder = await order.update(updateData);
+
+        return updatedOrder;
+    } catch (error) {
+        console.error('注文の更新中にエラーが発生しました:', error);
+        throw new Error('注文の更新に失敗しました');
+    }
+}
+
 
 
 
