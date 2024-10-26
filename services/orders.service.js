@@ -52,6 +52,7 @@ const orderService = {
 
     // 新規注文を作成する
     createNewOrder: async (user_id, table_no, order_name, items,pickup_time,order_type) => {
+      console.log('order is :' +order_type)
         const newOrder = await Orders.create({
             user_id: user_id,
             table_no: table_no,
