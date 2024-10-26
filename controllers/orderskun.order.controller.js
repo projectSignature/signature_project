@@ -3,13 +3,14 @@ const orderService = require('../services/orders.service');
 
 const orderController = {
     confirmOrder: async (req, res) => {
-        const { order_name, user_id, table_no, items, orderId,pickup_time } = req.body;
+        const { order_name, user_id, table_no, items, orderId,pickup_time,order_type } = req.body;
         try {
             // 既存の注文を確認
             let result = await orderService.updateExistingOrder(user_id, table_no, order_name, items, orderId);
             if (!result.success) {
                 // 新規注文を作成
-                result = await orderService.createNewOrder(user_id, table_no, order_name, items,pickup_time);
+                console.log(order_type)
+                result = await orderService.createNewOrder(user_id, table_no, order_name, items,pickup_time,order_type);
                   res.status(200).json({ message: result.message,newflug: true, order: result.order, orderItems:result.orderItems});
             }else{
               res.status(200).json({ message: result.message,newflug: false});
