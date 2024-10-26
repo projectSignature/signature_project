@@ -51,7 +51,7 @@ const orderService = {
     },
 
     // 新規注文を作成する
-    createNewOrder: async (user_id, table_no, order_name, items,pickup_time) => {
+    createNewOrder: async (user_id, table_no, order_name, items,pickup_time,order_type) => {
         const newOrder = await Orders.create({
             user_id: user_id,
             table_no: table_no,
@@ -61,7 +61,8 @@ const orderService = {
             coupon_printed: false,
             created_at: new Date(),
             updated_at: new Date(),
-            pickup_time:pickup_time
+            pickup_time:pickup_time,
+            order_type:order_type
         });
 
         const orderItems = items.map(item => ({
