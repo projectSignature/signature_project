@@ -3540,6 +3540,27 @@ router.get('/orders/getBasedata', async (req, res) => {
       where: { user_id: userId }
     });
 
+    // Mapeia o resultado da consulta, convertendo as imagens de BLOB para Base64
+    const menusWithBase64Images = menus.map(menu => {
+      return {
+        id: menu.id,
+        user_id: menu.user_id,
+        category_id: menu.category_id,
+        menu_name_en: menu.menu_name_en,
+        menu_name_pt: menu.menu_name_pt,
+        menu_name_ja: menu.menu_name_ja,
+        description_en: menu.description_en,
+        description_pt: menu.description_pt,
+        description_ja: menu.description_ja,
+        price: menu.price,
+        display_order: menu.display_order,
+        stock_status: menu.stock_status,
+        imagem_string: menu.imagem_string,
+        is_takeout:menu.is_takeout,
+        admin_item_name:menu.admin_item_name
+      };
+    });
+
     const options = await OrdersOption.findAll({
       where: { user_id: userId }
     });
@@ -3552,13 +3573,13 @@ router.get('/orders/getBasedata', async (req, res) => {
         as: 'm_categories',
         where: { user_id: userId }
       }],
-      //logging: console.log  // クエリをコンソールに出力
+      logging: console.log  // クエリをコンソールに出力
     });
 
     // 取得したデータをまとめてJSONで返す
     const getData = {
       categories: categories,
-      menus: menus,
+      menus: menusWithBase64Images,
       options: options,
       oparatingHOurs:oparatingHours
     };
