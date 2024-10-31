@@ -5,6 +5,7 @@ const database = require('../db');
 const credentials = require('./credentials');
 //const cheerio = require('cheerio');
 //const axios = require('axios');
+const AWS = require('aws-sdk');
 
 
 //SCHEMAS
@@ -41,6 +42,16 @@ const Suppliers = require('../schema/m_suppliers');
 const pdf = require('html-pdf');
 const ejs = require('ejs');
 const { Op, Sequelize } = require('sequelize');
+const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage() }); // Armazenar em memória
+require('dotenv').config(); // Carrega as variáveis do arquivo .env
+
+const s3 = new AWS.S3({
+  endpoint: new AWS.Endpoint(process.env.DO_SPACES_ENDPOINT),
+  accessKeyId: process.env.DO_SPACES_KEY,
+  secretAccessKey: process.env.DO_SPACES_SECRET,
+  region: process.env.DO_SPACES_REGION,
+});
 
 //middleware
 router.use(function timelog(req, res, next) {
@@ -3457,6 +3468,38 @@ router.get('/orderkuns/historico/pedidos/daterange', orderController.historyPedi
 //Orderの状態をupdate
 router.put('/orderskun/update/:orderId', orderController.updateOrder);
 
+const uploadImageToSpace = async (userId, file) => {
+  try {
+    // Recupera o usuário pelo ID para obter o nome da pasta (pode ser personalizado conforme sua lógica)
+    const user = await OrdersUser.findByPk(userId);
+
+    if (!user) {
+      throw new Error('Usuário não encontrado');
+    }
+
+    // Cria a pasta com base no ID ou nome do usuário
+    const folderName = `clients/${user.id}-${user.username}`;
+
+    // Configura o nome do arquivo e o caminho no Space
+    const fileName = `${folderName}/${Date.now()}-${file.originalname}`;
+
+    // Faz o upload do arquivo
+    const params = {
+      Bucket: process.env.DO_SPACES_BUCKET,
+      Key: fileName,
+      Body: file.buffer,
+      ACL: 'public-read', // Deixa a imagem acessível publicamente
+      ContentType: file.mimetype, // Define o tipo MIME
+    };
+
+    const data = await s3.upload(params).promise();
+    return data.Location; // URL gerada pelo Space
+  } catch (error) {
+    console.error('Erro ao fazer upload para o Space:', error);
+    throw error;
+  }
+};
+
 
 router.delete('/orders/delete/:orderId', async (req, res) => {
   const orderId = req.params.orderId; // パラメータから orderId を取得
@@ -3948,64 +3991,140 @@ router.post('/orders/add/option', async (req, res) => {
     }
 });
 
-router.post('/orders/updates/menu', async (req, res) => {
-    const menuData = req.body;
-    console.log(menuData)
-    console.log('haiteruyone')
-    try {
-        let menuItem;
-        if (menuData.id) {
-            // 既存のメニューを更新
-            menuItem = await OrdersMenu.update(menuData, {
-                where: { id: menuData.id }
-            });
+router.post('/orders/updates/menu', upload.single('menu_image'), async (req, res) => {
+  const menuData = JSON.parse(req.body.menuData); // Parse para converter string JSON em objeto
 
-            if (menuItem[0] === 0) {
-                return res.status(404).json({ error: 'Menu item not found' });
-            }
+  try {
+    let menuItem;
 
-            // 更新されたメニューアイテムを取得
-            menuItem = await OrdersMenu.findAll({ where: { user_id: menuData.user_id } });
-            res.status(200).json(menuItem);
-        } else {
-            // 新しいメニューを作成
-            menuItem = await OrdersMenu.create(menuData);
-            res.status(201).json(menuItem);
+    if (menuData.id) {
+      // Recupera o item de menu existente para obter a URL da imagem antiga
+      const existingMenuItem = await OrdersMenu.findByPk(menuData.id);
+
+      if (!existingMenuItem) {
+        return res.status(404).json({ error: 'Item do menu não encontrado.' });
+      }
+
+      // Se uma nova imagem foi enviada
+      if (req.file) {
+        const imageBuffer = req.file.buffer;
+        const imageType = req.file.mimetype;
+        const imageSize = req.file.size;
+
+        // Verificar se o tamanho da imagem é maior que 2MB
+        if (imageSize > 2 * 1024 * 1024) {
+          return res.status(400).json({ error: 'A imagem não pode ser maior que 2MB.' });
         }
-    } catch (error) {
-        console.error('Error saving menu item:', error);
-        res.status(500).json({ error: 'Failed to save menu item' });
+
+        // Faz upload da nova imagem para o Space e obtém a nova URL
+        const newImageUrl = await uploadImageToSpace(menuData.user_id, req.file);
+
+        // (Opcional) Verifica se uma imagem antiga existe e remove do Space
+       // if (existingMenuItem.imagem_string) {
+         // await deleteImageFromSpace(existingMenuItem.imagem_string); // Função de remoção explicada abaixo
+       // }
+
+        // Atualiza o campo de URL de imagem
+        menuData.imagem_string = newImageUrl;
+      } else {
+        // Mantém a imagem antiga se nenhuma nova for enviada
+        menuData.imagem_string = existingMenuItem.imagem_string;
+      }
+
+      // Atualizando o item existente do menu
+      const updated = await OrdersMenu.update(menuData, {
+        where: { id: menuData.id }
+      });
+
+      if (updated[0] === 0) {
+        return res.status(404).json({ error: 'Item do menu não encontrado.' });
+      }
+
+      // Buscar todos os itens de menu do usuário após a atualização
+      menuItem = await OrdersMenu.findAll({ where: { user_id: menuData.user_id } });
+      return res.status(200).json(menuItem);
+
+    } else {
+      // Criar um novo item de menu, se necessário
+      if (req.file) {
+        const imageBuffer = req.file.buffer;
+        const imageType = req.file.mimetype;
+        const imageSize = req.file.size;
+
+        if (imageSize > 2 * 1024 * 1024) {
+          return res.status(400).json({ error: 'A imagem não pode ser maior que 2MB.' });
+        }
+
+        // Faz upload da imagem para o Space e obtém a URL
+        const imageUrl = await uploadImageToSpace(menuData.user_id, req.file);
+        menuData.imagem_string = imageUrl;
+      }
+
+      menuItem = await OrdersMenu.create(menuData);
+      return res.status(201).json(menuItem);
     }
+
+  } catch (error) {
+    console.error('Error saving menu item:', error);
+    res.status(500).json({ error: 'Failed to save menu item' });
+  }
 });
 
-router.post('/orders/create/menu', async (req, res) => {
-    const { user_id, category_id, ...menuData } = req.body;
+router.post('/orders/create/menu', upload.single('menu_image'), async (req, res) => {
 
-    try {
-        // 現在のカテゴリー内の最大 display_order を取得
-        const maxDisplayOrder = await OrdersMenu.max('display_order', {
-            where: {
-                user_id: user_id,
-                category_id: category_id
-            }
-        });
+  const menuData = JSON.parse(req.body.menuData); // Parse para converter string JSON em objeto
+  const { user_id, category_id, menu_name_pt, menu_name_en, menu_name_ja, description_pt, description_en, description_ja, price, display_order, stock_status } = menuData;
+  const imageBuffer = req.file ? req.file.buffer : null; // Se a imagem foi enviada, capture o buffer
+  try {
+    // Obtém o valor máximo de display_order para o usuário e categoria
+    const maxDisplayOrder = await OrdersMenu.max('display_order', {
+      where: {
+        user_id: user_id,
+        category_id: category_id
+      }
+    });
 
-        // 新しい display_order を設定
-        const newDisplayOrder = (maxDisplayOrder || 0) + 1;
+    // Incrementa para o próximo valor de display_order
+    const newDisplayOrder = (maxDisplayOrder || 0) + 1;
+    if (req.file) {
+      const imageUrl = await uploadImageToSpace(user_id, req.file);
+      console.log(imageUrl,'imageUrl')
+      const imageBuffer = req.file.buffer; // Buffer da imagem
+      const imageType = req.file.mimetype; // Tipo MIME da imagem (ex: 'image/jpeg', 'image/png')
+      const imageSize = req.file.size; // Tamanho da imagem em bytes
+      if (imageSize > 2 * 1024 * 1024) {
+        return res.status(400).json({ error: 'A imagem não pode ser maior que 2MB.' });
+      }
+      // Prepara os dados do novo item do menu
+      const newMenuItem = await OrdersMenu.create({
+        user_id,
+        category_id,
+        menu_name_pt,
+        menu_name_en,
+        menu_name_ja,
+        description_pt,
+        description_en,
+        description_ja,
+        price,
+        display_order: newDisplayOrder,
+        stock_status,
+      //  image: imageBuffer,// Armazenando a imagem como BLOB
+        image_type: imageType,
+        imagem_string: imageUrl
+      });
 
-        // メニューアイテムを作成
-        const newMenuItem = await OrdersMenu.create({
-            ...menuData,
-            user_id: user_id,
-            category_id: category_id,
-            display_order: newDisplayOrder
-        });
+      // Cria o novo item do menu no banco de dados
+      //const newMenuItem = await OrdersMenu.create(newMenuItemData);
 
-        res.status(201).json(newMenuItem);
-    } catch (error) {
-        console.error('Error saving menu item:', error);
-        res.status(500).json({ error: 'Failed to save menu item' });
+      // Retorna a resposta com o novo item criado
+      res.status(201).json(newMenuItem);
+    } else {
+      return res.status(400).json({ error: 'Imagem não foi enviada.' });
     }
+  } catch (error) {
+    console.error('Error saving menu item:', error);
+    res.status(500).json({ error: 'Failed to save menu item' });
+  }
 });
 
 router.post('/orders/updateMenuOrder', async (req, res) => {
