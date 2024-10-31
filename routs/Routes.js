@@ -4013,9 +4013,10 @@ router.post('/orders/add/option', async (req, res) => {
 });
 
 router.post('/orders/updates/menu', upload.single('menu_image'), async (req, res) => {
-  const menuData = JSON.parse(req.body.menuData); // Parse para converter string JSON em objeto
+  
 
   try {
+    const menuData = JSON.parse(req.body.menuData); // Parse para converter string JSON em objeto
     let menuItem;
 
     if (menuData.id) {
