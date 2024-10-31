@@ -3996,7 +3996,7 @@ router.post('/orders/create/menu', upload.single('menu_image'), async (req, res)
         price,
         display_order: newDisplayOrder,
         stock_status,
-        image: imageBuffer,// Armazenando a imagem como BLOB
+      //  image: imageBuffer,// Armazenando a imagem como BLOB
         image_type: imageType,
         imagem_string: imageUrl 
       });
