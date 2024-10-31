@@ -70,6 +70,14 @@ const Menu = database.define('Menu', {
     admin_item_name: {  // 管理用のアイテム名を追加
         type: DataTypes.STRING(255),  // 文字列フィールド
         allowNull: true  // 管理用の名前は任意
+    },
+    image_type: {
+        type: DataTypes.STRING(50),
+        allowNull: true
+    },
+    imagem_string: {
+        type: DataTypes.TEXT(50),
+        allowNull: true
     }
 }, {
     tableName: 'menu',
