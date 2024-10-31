@@ -16,6 +16,7 @@
     "body-parser": "^1.20.1",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
+    "dotenv": "^16.4.5",
     "ejs": "^3.1.8",
     "escpos": "^3.0.0-alpha.6",
     "escpos-network": "^3.0.0-alpha.5",
