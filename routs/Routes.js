@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const database = require('../db');
 const credentials = require('./credentials');
-
+const AWS = require('aws-sdk');
 
 //SCHEMAS
 const Member = require('../schema/members');
@@ -30,9 +30,58 @@ const Rest_maneger = require('../schema/rest_manegers')
 const CloseCaixa = require('../schema/closecaixas');
 const Costcategory = require('../schema/costCategory');
 const Dakoku = require('../schema/dakoku');
+const Users = require('../schema/orders/user');
 const Iventory = require('../schema/inventorys');
 const Suppliers = require('../schema/m_suppliers');
+require('dotenv').config(); // Carrega as variáveis do arquivo .env
 
+const s3 = new AWS.S3({
+  endpoint: new AWS.Endpoint(process.env.DO_SPACES_ENDPOINT),
+  accessKeyId: process.env.DO_SPACES_KEY,
+  secretAccessKey: process.env.DO_SPACES_SECRET,
+  region: process.env.DO_SPACES_REGION,
+});
+
+console.log({
+  endpoint: process.env.DO_SPACES_ENDPOINT,
+  key: process.env.DO_SPACES_KEY,
+  secret: process.env.DO_SPACES_SECRET,
+  region: process.env.DO_SPACES_REGION,
+  bucket: process.env.DO_SPACES_BUCKET
+});
+
+// Função  para fazer upload de imagens para um cliente específico
+const uploadImageToSpace = async (userId, file) => {
+  try {
+    // Recupera o usuário pelo ID para obter o nome da pasta (pode ser personalizado conforme sua lógica)
+    const user = await Users.findByPk(userId);
+
+    if (!user) {
+      throw new Error('Usuário não encontrado');
+    }
+
+    // Cria a pasta com base no ID ou nome do usuário
+    const folderName = `clients/${user.id}-${user.username}`;
+
+    // Configura o nome do arquivo e o caminho no Space
+    const fileName = `${folderName}/${Date.now()}-${file.originalname}`;
+    
+    // Faz o upload do arquivo
+    const params = {
+      Bucket: process.env.DO_SPACES_BUCKET,
+      Key: fileName,
+      Body: file.buffer,
+      ACL: 'public-read', // Deixa a imagem acessível publicamente
+      ContentType: file.mimetype, // Define o tipo MIME
+    };
+
+    const data = await s3.upload(params).promise();
+    return data.Location; // URL gerada pelo Space
+  } catch (error) {
+    console.error('Erro ao fazer upload para o Space:', error);
+    throw error;
+  }
+};
 
 
 //LIBS
@@ -3294,7 +3343,7 @@ router.get('/orders/getBasedata', async (req, res) => {
     });
     // Mapeia o resultado da consulta, convertendo as imagens de BLOB para Base64
     const menusWithBase64Images = menus.map(menu => {
-      const imageBase64 = menu.image ? menu.image.toString('base64') : null;
+     // const imageBase64 = menu.image ? menu.image.toString('base64') : null;
       return {
         id: menu.id,
         user_id: menu.user_id,
@@ -3308,8 +3357,9 @@ router.get('/orders/getBasedata', async (req, res) => {
         price: menu.price,
         display_order: menu.display_order,
         stock_status: menu.stock_status,
+        imagem_string: menu.imagem_string
         //image: imageBase64 ? `data:image/png;base64,${imageBase64}` : null // Converte e inclui o prefixo Base64, se existir
-        image: imageBase64 ? `data:${menu.image_type};base64,${imageBase64}` : null
+       // image: imageBase64 ? `data:${menu.image_type};base64,${imageBase64}` : null
       };
     });
 
@@ -3753,8 +3803,9 @@ router.post('/orders/add/option', async (req, res) => {
     res.status(500).json({ error: 'Failed to add option' });
   }
 });
-router.post('/orders/updates/menu', upload.single('menu_image'), async (req, res) => {
+/*router.post('/orders/updates/menu', upload.single('menu_image'), async (req, res) => {
   const menuData = JSON.parse(req.body.menuData); // Parse para converter string JSON em objeto
+
   try {
     let menuItem;
 
@@ -3769,7 +3820,7 @@ router.post('/orders/updates/menu', upload.single('menu_image'), async (req, res
         if (imageSize > 2 * 1024 * 1024) {
           return res.status(400).json({ error: 'A imagem não pode ser maior que 2MB.' });
         }
-
+       
         // Atualizar os dados do menu, incluindo a imagem e o tipo de imagem
         menuData.image = imageBuffer;
         menuData.image_type = imageType;
@@ -3811,7 +3862,101 @@ router.post('/orders/updates/menu', upload.single('menu_image'), async (req, res
     console.error('Error saving menu item:', error);
     res.status(500).json({ error: 'Failed to save menu item' });
   }
+});*/
+const deleteImageFromSpace = async (imageUrl) => {
+  try {
+    // Extraindo o nome do arquivo do URL da imagem
+    const fileKey = imageUrl.split('.com/')[1]; // Remove a parte inicial do URL e deixa o caminho do arquivo
+
+    const params = {
+      Bucket: process.env.DO_SPACES_BUCKET,
+      Key: fileKey,
+    };
+
+    await s3.deleteObject(params).promise();
+  } catch (error) {
+    console.error('Erro ao deletar imagem do Space:', error);
+  }
+};
+router.post('/orders/updates/menu', upload.single('menu_image'), async (req, res) => {
+  const menuData = JSON.parse(req.body.menuData); // Parse para converter string JSON em objeto
+  
+  try {
+    let menuItem;
+
+    if (menuData.id) {
+      // Recupera o item de menu existente para obter a URL da imagem antiga
+      const existingMenuItem = await OrdersMenu.findByPk(menuData.id);
+      
+      if (!existingMenuItem) {
+        return res.status(404).json({ error: 'Item do menu não encontrado.' });
+      }
+
+      // Se uma nova imagem foi enviada
+      if (req.file) {
+        const imageBuffer = req.file.buffer;
+        const imageType = req.file.mimetype;
+        const imageSize = req.file.size;
+
+        // Verificar se o tamanho da imagem é maior que 2MB
+        if (imageSize > 2 * 1024 * 1024) {
+          return res.status(400).json({ error: 'A imagem não pode ser maior que 2MB.' });
+        }
+
+        // Faz upload da nova imagem para o Space e obtém a nova URL
+        const newImageUrl = await uploadImageToSpace(menuData.user_id, req.file);
+
+        // (Opcional) Verifica se uma imagem antiga existe e remove do Space
+       // if (existingMenuItem.imagem_string) {
+         // await deleteImageFromSpace(existingMenuItem.imagem_string); // Função de remoção explicada abaixo
+       // }
+
+        // Atualiza o campo de URL de imagem
+        menuData.imagem_string = newImageUrl;
+      } else {
+        // Mantém a imagem antiga se nenhuma nova for enviada
+        menuData.imagem_string = existingMenuItem.imagem_string;
+      }
+
+      // Atualizando o item existente do menu
+      const updated = await OrdersMenu.update(menuData, {
+        where: { id: menuData.id }
+      });
+
+      if (updated[0] === 0) {
+        return res.status(404).json({ error: 'Item do menu não encontrado.' });
+      }
+
+      // Buscar todos os itens de menu do usuário após a atualização
+      menuItem = await OrdersMenu.findAll({ where: { user_id: menuData.user_id } });
+      return res.status(200).json(menuItem);
+      
+    } else {
+      // Criar um novo item de menu, se necessário
+      if (req.file) {
+        const imageBuffer = req.file.buffer;
+        const imageType = req.file.mimetype;
+        const imageSize = req.file.size;
+
+        if (imageSize > 2 * 1024 * 1024) {
+          return res.status(400).json({ error: 'A imagem não pode ser maior que 2MB.' });
+        }
+
+        // Faz upload da imagem para o Space e obtém a URL
+        const imageUrl = await uploadImageToSpace(menuData.user_id, req.file);
+        menuData.imagem_string = imageUrl;
+      }
+
+      menuItem = await OrdersMenu.create(menuData);
+      return res.status(201).json(menuItem);
+    }
+
+  } catch (error) {
+    console.error('Error saving menu item:', error);
+    res.status(500).json({ error: 'Failed to save menu item' });
+  }
 });
+
 
 router.post('/orders/create/menu', upload.single('menu_image'), async (req, res) => {
 
@@ -3830,7 +3975,8 @@ router.post('/orders/create/menu', upload.single('menu_image'), async (req, res)
     // Incrementa para o próximo valor de display_order
     const newDisplayOrder = (maxDisplayOrder || 0) + 1;
     if (req.file) {
-
+      const imageUrl = await uploadImageToSpace(user_id, req.file);
+      console.log(imageUrl,'imageUrl')
       const imageBuffer = req.file.buffer; // Buffer da imagem
       const imageType = req.file.mimetype; // Tipo MIME da imagem (ex: 'image/jpeg', 'image/png')
       const imageSize = req.file.size; // Tamanho da imagem em bytes
@@ -3851,7 +3997,8 @@ router.post('/orders/create/menu', upload.single('menu_image'), async (req, res)
         display_order: newDisplayOrder,
         stock_status,
         image: imageBuffer,// Armazenando a imagem como BLOB
-        image_type: imageType // Armazenando o tipo MIME da imagem
+        image_type: imageType,
+        imagem_string: imageUrl 
       });
 
       // Cria o novo item do menu no banco de dados

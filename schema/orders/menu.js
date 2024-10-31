@@ -70,6 +70,10 @@ const Menu = database.define('Menu', {
         type: DataTypes.STRING(50),
         allowNull: true
     },
+    imagem_string: {
+        type: DataTypes.TEXT(50),
+        allowNull: true
+    },
 }, {
     tableName: 'menu',
     timestamps: false
