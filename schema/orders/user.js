@@ -31,6 +31,55 @@ const User = database.define('User', {
         type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 0  // レストランのテーブル数
+    },
+    language: {
+        type: DataTypes.STRING(10),
+        allowNull: false,
+        defaultValue: 'en'
+    },
+    role: {
+        type: DataTypes.ENUM('admin', 'operator', 'other'),
+        allowNull: false,
+        defaultValue: 'operator'
+    },
+    uber_enabled: {
+        type: DataTypes.BOOLEAN,  // true/false フラグ
+        allowNull: false,
+        defaultValue: false  // デフォルトで無効
+    },
+    takeout_enabled: {
+        type: DataTypes.BOOLEAN,  // true/false フラグ
+        allowNull: false,
+        defaultValue: false  // デフォルトで無効
+    },
+    tax_enabled: {  // 新しいTax使用フラグ
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false  // デフォルトで無効
+    },
+    receipt_address: {  // レシート用住所
+        type: DataTypes.STRING(255),
+        allowNull: true
+    },
+    receipt_display_name: {  // レシート用表示名
+        type: DataTypes.STRING(100),
+        allowNull: true
+    },
+    receipt_tel: {  // レシート用TEL
+        type: DataTypes.STRING(15),
+        allowNull: true
+    },
+    receipt_postal_code: {  // レシート用郵便番号
+        type: DataTypes.STRING(10),
+        allowNull: true
+    },
+    receipt_fax: {  // レシート用FAX番号
+        type: DataTypes.STRING(15),
+        allowNull: true
+    },
+    receipt_logo_url: {  // レシート用ロゴ画像URL
+        type: DataTypes.STRING(255),
+        allowNull: true
     }
 }, {
     tableName: 'users',
