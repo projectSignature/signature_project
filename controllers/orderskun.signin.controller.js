@@ -36,7 +36,15 @@ const OrderssigninController = {
                   language:user.language,
                   role:user.role,
                   uber_enabled:user.uber_enabled,
-                  takeout_enabled:user.takeout_enabled
+                  takeout_enabled:user.takeout_enabled,
+                  tax_enabled:user.tax_enabled,
+                  receipt_address:user.receipt_address,
+                  receipt_display_name:user.receipt_display_name,
+                  receipt_tel:user.receipt_tel,
+                  receipt_postal_code:user.receipt_postal_code,
+                  receipt_logo_url:user.receipt_logo_url
+
+
                 }, secretKey);
                return response.status(200).send({ success: true, info: { token }, message: 'User logged in successfully' });
               }

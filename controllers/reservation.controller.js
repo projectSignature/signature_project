@@ -57,7 +57,7 @@ const ReservationController = {
        try {
          console.log('nee resarvision creats')
            const { user_id, reservation_date, reservation_start_time, reservation_end_time, table_number, reservation_name, phone_number, num_people, remarks } = req.body;
-
+             console.log(req.body)
            // 必要なフィールドの簡単なバリデーション
            if (!user_id || !reservation_date || !reservation_start_time || !reservation_end_time || !table_number || !reservation_name || !phone_number || !num_people) {
                return res.status(400).send({ success: false, message: 'Missing required fields.' });

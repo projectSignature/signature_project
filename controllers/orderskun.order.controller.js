@@ -84,7 +84,9 @@ const orderController = {
   updatePayment: async (req, res) => {
         const { order_id, payment_method, order_status } = req.body;
         const result = await orderService.updateOrderPayment(order_id, payment_method, order_status);
+        console.log(result.success)
         if (result.success) {
+          console.log('koko')
             res.status(200).json({ message: result.message });
         } else if (result.error === 'Order not found') {
             res.status(404).json({ error: result.error });
@@ -136,14 +138,27 @@ updateMenuByAdmin: async (req,res)=>{
 historyPedidosBydate: async (req,res)=>{
   try{
      const { startDate, endDate, user_id} = req.query;
-     console.log(startDate)
-     console.log(endDate)
-     console.log(user_id)
      if(!startDate||!endDate||!user_id){
        return res.status(400).json({ message: 'Check startDate, endDate, clients id' });
      }
 
      const historyOrders = await orderService.getOrdersByPickupTimeBetween(startDate, endDate, user_id)
+     // console.log(newOrder)
+     return res.status(200).json(historyOrders)
+  }catch(e){
+    console.log(e)
+  }
+},getOrdersByPickupRange: async (req,res)=>{
+  try{
+     const { startDate, endDate, user_id} = req.query;
+     if(!startDate||!endDate||!user_id){
+       return res.status(400).json({ message: 'Check startDate, endDate, clients id' });
+     }
+     console.log(startDate)
+     console.log(endDate)
+     console.log(user_id)
+
+     const historyOrders = await orderService.getOrdersByPickupRange(startDate, endDate, user_id)
      // console.log(newOrder)
      return res.status(200).json(historyOrders)
   }catch(e){

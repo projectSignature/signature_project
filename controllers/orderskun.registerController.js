@@ -8,9 +8,10 @@ const registerController = {
             if (!date || !clientsId) {
                 return res.status(400).json({ message: '日付とクライアントIDが必要です' });
             }
+            console.log('date: is ' + date);
 
             const registers = await registerService.getRegistersByDateAndClient(date, clientsId);
-            console.log('date: is ' + date);
+
             return res.status(200).json(registers);
         } catch (error) {
             console.error('レジ情報の取得エラー:', error);
