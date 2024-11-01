@@ -3460,6 +3460,8 @@ router.post('/orderskun/registers/open', registerController.openRegister);
 // pickup_timeに基づいて注文を取得するエンドポイント
 router.get('/orderskun/pickup-time', orderController.getOrdersByPickupTime);
 // レジクローズ金額
+// pickup_timeに基づいて注文を取得するエンドポイント
+router.get('/orderskun/pickup-time/range', orderController.getOrdersByPickupRange);
 router.post('/orderskun/registers/close', registerController.closeRegister);
 //POSより、オーダーのupdateのエンドポイント
 router.post('/orderskun/update/order/admin', orderController.updateMenuByAdmin)
