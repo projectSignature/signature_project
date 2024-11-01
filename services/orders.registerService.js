@@ -3,24 +3,25 @@ const Register = require('../schema/orders/registers');
 
 const registerService = {
     // 指定された日付とクライアントIDでレジ情報を取得するサービス
-    getRegistersByDateAndClient: async (endDate, clientsId) => {
-      // 日本時間の「今日の00:00:00」を取得する
-      const now = new Date();
-      // UTC時間に日本時間の9時間分のオフセットを追加
-      const jstOffset = 9 * 60 * 60 * 1000;  // 日本のタイムゾーン UTC+9
-      // UTCの現在時刻に対して、JSTオフセットを追加して、今日の00:00:00を設定
-      const startDate = new Date(now.getTime() + jstOffset);
-      startDate.setUTCHours(0, 0, 0, 0);  // 日本時間で00:00:00に設定
-    const registers = await Register.findAll({
-        where: {
-            open_time: {
-                [Op.between]: [startDate, endDate]  // 今日の00:00:00からフロントから来た日付まで
-            },
-            user_id: clientsId
-        }
-    });
+    getRegistersByDateAndClient: async (serchDay, clientsId) => {
+      try {
+      console.log('serchDay is:', serchDay);
+      console.log('clientsId is:', clientsId);
 
-    return registers;
+      const registers = await Register.findAll({
+          where: {
+              register_day: serchDay,
+              user_id: clientsId
+          }
+      });
+
+      console.log('Registers found:', registers);
+      return registers;
+
+  } catch (error) {
+      console.error('Error fetching registers:', error);
+      return null;
+  }
 },
     // レジオープンのデータをインサート
     insertRegisterData: async (registerData) => {
@@ -37,7 +38,8 @@ const registerService = {
             coin_1: registerData.coin_1,
             open_time: registerData.open_time,
             open_amount: registerData.totalAmount,
-            status:'open'
+            status:'open',
+            register_day:registerData.registerDT
         });
 
         return newRegister;

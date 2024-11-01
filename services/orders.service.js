@@ -226,7 +226,7 @@ const orderService = {
             order.payment_method = payment_method;
             //order.order_status = order_status;
             await order.save();
-
+            console.log('success')
             return { success: true, message: 'Order updated successfully' };
         } catch (error) {
             console.error('Error updating order:', error);
@@ -355,6 +355,27 @@ const orderService = {
         where: {
           pickup_time: {
             [Op.between]: [startTime, adjustedEndTime]  // endTime に1日追加した範囲で検索
+          },
+          user_id: clientsId
+        },
+        include: [{
+          model: OrderItems,
+          include: [{ model: Menu }]
+        }]  // 関連するOrderItemsも含める
+      });
+
+      return orders;
+    } catch (error) {
+      console.error('Error fetching orders by pickup time:', error);
+      throw new Error('Failed to fetch orders by pickup time');
+    }
+  },
+  getOrdersByPickupRange: async (startTime, endTime, clientsId) => {//期間で指定
+    try {
+      const orders = await Orders.findAll({
+        where: {
+          pickup_time: {
+            [Op.between]: [startTime, endTime]  // endTime に1日追加した範囲で検索
           },
           user_id: clientsId
         },
