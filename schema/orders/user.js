@@ -80,6 +80,14 @@ const User = database.define('User', {
     receipt_logo_url: {  // レシート用ロゴ画像URL
         type: DataTypes.STRING(255),
         allowNull: true
+    },
+    instagram_url: {  // Instagram URL
+        type: DataTypes.STRING(255),
+        allowNull: true
+    },
+    facebook_url: {  // Facebook URL
+        type: DataTypes.STRING(255),
+        allowNull: true
     }
 }, {
     tableName: 'users',
