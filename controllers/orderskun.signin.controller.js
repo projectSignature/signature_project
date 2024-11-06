@@ -42,9 +42,9 @@ const OrderssigninController = {
                   receipt_display_name:user.receipt_display_name,
                   receipt_tel:user.receipt_tel,
                   receipt_postal_code:user.receipt_postal_code,
-                  receipt_logo_url:user.receipt_logo_url
-
-
+                  receipt_logo_url:user.receipt_logo_url,
+                  instagram_url:user.instagram_url,
+                  facebook_url:user.facebook_url
                 }, secretKey);
                return response.status(200).send({ success: true, info: { token }, message: 'User logged in successfully' });
               }
