@@ -1,4 +1,4 @@
-const Reservation = require('../schema/orders/Reservation');  // 予約モデルをインポート
+const Reservation = require('../schema/orders/reservation');  // 予約モデルをインポート
 const { Op } = require('sequelize');
 
 const reservationService = {
@@ -28,7 +28,13 @@ const reservationService = {
 
    // 新しい予約を作成
     create: async (reservationData) => {
+      try{
+        console.log('reservation')
         return await Reservation.create(reservationData);
+      }catch(e){
+        console.log(e)
+      }
+
     },
 
     // IDで予約を更新
@@ -48,6 +54,9 @@ getReservationsByDateRange: async (user_id, startDate, endDate) => {
         }
     });
 }
+
+
+
 };
 
 module.exports = reservationService;
