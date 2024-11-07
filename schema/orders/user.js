@@ -88,6 +88,14 @@ const User = database.define('User', {
     facebook_url: {  // Facebook URL
         type: DataTypes.STRING(255),
         allowNull: true
+    },
+    restaurant_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+            model: 'users',  // 同じテーブルを参照
+            key: 'id'
+        }
     }
 }, {
     tableName: 'users',
