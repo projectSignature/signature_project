@@ -3470,6 +3470,59 @@ router.get('/orderkuns/historico/pedidos/daterange', orderController.historyPedi
 //Orderの状態をupdate
 router.put('/orderskun/update/:orderId', orderController.updateOrder);
 
+router.post('/orderskun/updateSettings', async (req, res) => {
+    try {
+        const { id, current_password, representativeName, language, confirm_password, password, email } = req.body;
+        console.log(req.body);
+
+        // ユーザーをDBから検索
+        const user = await OrdersUser.findOne({ where: { id } });
+        if (!user) {
+            return res.status(404).json({ message: 'ユーザーが見つかりません' });
+        }
+
+        // パスワードの検証と変更処理
+        if (current_password) {
+            // 現在のパスワードとDBのハッシュ化パスワードを比較
+            const match = await verifyPassword(current_password, user.password);
+            if (!match) {
+                return res.status(401).json({ message: '現在のパスワードが正しくありません' });
+            }
+
+            // 新しいパスワードが入力された場合、ハッシュ化して保存
+            if (confirm_password && password === confirm_password) {
+                user.password = await encryptPassword(confirm_password);
+            } else {
+                return res.status(400).json({ message: '新しいパスワードが一致しません' });
+            }
+        }
+
+        // 他の設定の更新
+        if (email) {
+            user.email = email;
+        }
+        if (representativeName) {
+            user.username = representativeName;
+        }
+        if (language) {
+            user.language = language;
+        }
+
+        const result = await user.save();
+        res.json({
+            message: '設定が正常に更新されました',
+            user: {
+                user_id: user.id,
+                username: user.username,
+                language: user.language
+            }
+        });
+    } catch (error) {
+        console.error('エラー発生:', error);
+        res.status(500).json({ message: '設定の更新に失敗しました', error: error.message });
+    }
+});
+
 const uploadImageToSpace = async (userId, file) => {
   try {
     // Recupera o usuário pelo ID para obter o nome da pasta (pode ser personalizado conforme sua lógica)
