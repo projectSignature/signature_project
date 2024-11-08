@@ -35,6 +35,7 @@ const Costcategory = require('../schema/costCategory');
 const Dakoku = require('../schema/dakoku');
 const Iventory = require('../schema/inventorys');
 const Suppliers = require('../schema/m_suppliers');
+const { encryptPassword, verifyPassword } = require('../libs/encypt/password-crypto'); // comparePasswordをverifyPasswordに変更
 
 
 
