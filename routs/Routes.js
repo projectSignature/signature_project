@@ -3103,17 +3103,64 @@ router.post('/pos/login', async (req, res) => {
     }
 });
 
-// POSTエンドポイント - レコードの挿入
+// POSTエンドポイント - 登録データ確認と集計
 router.post('/pos/register_open_close', async (req, res) => {
     try {
-        const {
-            register_id,
-            cashier_id,
-            open_time,
-            cash_opening_balance
-        } = req.body;
+        const { register_id, cashier_id, open_time, cash_opening_balance } = req.body;
 
-        // 新しいレコードを挿入
+        // 日本時間の今日の日付範囲を計算
+        const japanTimeOffset = 9 * 60 * 60 * 1000; // UTC+9
+        const todayStart = new Date(new Date().setHours(0, 0, 0, 0) + japanTimeOffset);
+        const todayEnd = new Date(new Date().setHours(23, 59, 59, 999) + japanTimeOffset);
+
+        // 今日の登録データをチェック
+        const existingRecord = await RegisterOpenClose.findOne({
+            where: {
+                register_id,
+                open_time: {
+                    [Op.between]: [todayStart, todayEnd]
+                }
+            }
+        });
+
+        // 支払いタイプ一覧
+        const payTypes = ['cash', 'credit', 'other', 'online'];
+
+        // Salesテーブルからpay_typeごとにtotal_priceを集計
+        const rawSalesSummary = await Sale.findAll({
+            attributes: [
+                'pay_type',
+                [Sequelize.fn('SUM', Sequelize.col('total_price')), 'total_price_sum']
+            ],
+            where: {
+                register_id,
+                transaction_time: {
+                    [Op.between]: [todayStart, todayEnd]
+                }
+            },
+            group: ['pay_type']
+        });
+
+        // rawSalesSummaryを加工して、すべてのpay_typeを含む形式に変換
+        const salesSummary = payTypes.map(type => {
+            const match = rawSalesSummary.find(record => record.pay_type === type);
+            return {
+                pay_type: type,
+                total_price_sum: match ? match.dataValues.total_price_sum : "0.00"
+            };
+        });
+
+        if (existingRecord) {
+            // 結果を返す
+            return res.json({
+                success: true,
+                registerFlag: true,
+                cash_opening_balance: existingRecord.cash_opening_balance,
+                salesSummary
+            });
+        }
+
+        // 登録データがない場合、新しいレコードを挿入
         const newRecord = await RegisterOpenClose.create({
             register_id,
             cashier_id,
@@ -3123,7 +3170,8 @@ router.post('/pos/register_open_close', async (req, res) => {
 
         res.json({
             success: true,
-            message: 'レコードが正常に挿入されました',
+            registerFlag: false,
+            message: '新しいレコードが挿入されました',
             record: newRecord
         });
     } catch (err) {
