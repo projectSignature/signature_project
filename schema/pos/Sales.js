@@ -36,7 +36,7 @@ const Sale = database.define('Sale', {
         allowNull: true,
     },
     pay_type: {
-        type: DataTypes.ENUM('cash', 'credit', 'other'),  // ENUM型で選択肢を指定
+        type: DataTypes.ENUM('cash', 'credit', 'other','online'),  // ENUM型で選択肢を指定
         allowNull: false,
         defaultValue: 'cash'  // デフォルト値を指定
     }
