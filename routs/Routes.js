@@ -3155,6 +3155,7 @@ router.post('/pos/register_open_close', async (req, res) => {
             return res.json({
                 success: true,
                 registerFlag: true,
+                register_open_close_id: existingRecord.register_open_close_id, // IDを追加
                 cash_opening_balance: existingRecord.cash_opening_balance,
                 salesSummary
             });
