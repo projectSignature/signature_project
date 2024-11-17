@@ -3113,12 +3113,15 @@ router.post('/pos/register_open_close', async (req, res) => {
         const todayStart = new Date(new Date().setHours(0, 0, 0, 0) + japanTimeOffset);
         const todayEnd = new Date(new Date().setHours(23, 59, 59, 999) + japanTimeOffset);
 
-        // 今日の登録データをチェック
+            // 今日の登録データをチェック
         const existingRecord = await RegisterOpenClose.findOne({
             where: {
                 register_id,
                 open_time: {
                     [Op.between]: [todayStart, todayEnd]
+                },
+                close_time: {
+                    [Op.ne]: null // close_time が null ではないもの
                 }
             }
         });
