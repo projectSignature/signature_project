@@ -3106,25 +3106,55 @@ router.post('/pos/login', async (req, res) => {
 // POSTエンドポイント - 登録データ確認と集計
 router.post('/pos/register_open_close', async (req, res) => {
     try {
-        const { register_id, cashier_id, open_time, cash_opening_balance } = req.body;
+        const { register_id, cashier_id, cash_opening_balance } = req.body;
+        // const { register_id, cashier_id, open_time, cash_opening_balance } = req.body;
 
-        // 日本時間の今日の日付範囲を計算
-        const japanTimeOffset = 9 * 60 * 60 * 1000; // UTC+9
-        const todayStart = new Date(new Date().setHours(0, 0, 0, 0) + japanTimeOffset);
-        const todayEnd = new Date(new Date().setHours(23, 59, 59, 999) + japanTimeOffset);
+        // 日本時間の「今日」の開始時刻と終了時刻を正確に計算
+        const now = new Date(); // 現在のUTC時刻
+        const japanOffset = 9 * 60 * 60 * 1000; // UTC+9 のミリ秒
+        const nowJapanTime = new Date(now.getTime() + japanOffset); // 日本時間に変換
 
-            // 今日の登録データをチェック
+
+        // 日本時間での「今日」の開始時刻
+        const todayStart = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate(),
+            0, 0, 0, 0 // UTC基準で開始時刻を設定
+        );
+
+        // 日本時間での「今日」の終了時刻
+        const todayEnd = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate(),
+            23, 59, 59, 999 // UTC基準で終了時刻を設定
+        );
+
+        // タイムゾーン補正 (UTC -> 日本時間)
+        const todayStartJapan = new Date(todayStart.getTime() + japanOffset);
+        const todayEndJapan = new Date(todayEnd.getTime() + japanOffset);
+        const open_time = nowJapanTime;
+
+        // 2024-11-21T00:00:00.000Z
+        const tgtStartTime = todayStartJapan.toISOString().split('.000Z')[0].replace('T', ' ')
+        const tgtFinishTime = todayEndJapan.toISOString().split('.999Z')[0].replace('T', ' ')
+        const tgtid = register_id-0
+        // 今日の登録データをチェック
         const existingRecord = await RegisterOpenClose.findOne({
             where: {
-                register_id,
+                register_id:tgtid,
                 open_time: {
-                    [Op.between]: [todayStart, todayEnd]
+                    [Op.between]: [tgtStartTime, tgtFinishTime]
                 },
                 close_time: {
-                    [Op.ne]: null // close_time が null ではないもの
+                  [Op.is]: null
                 }
+
             }
         });
+
+        console.log('Existing Record:', existingRecord);
 
         // 支払いタイプ一覧
         const payTypes = ['cash', 'credit', 'other', 'online'];
@@ -3138,11 +3168,13 @@ router.post('/pos/register_open_close', async (req, res) => {
             where: {
                 register_id,
                 transaction_time: {
-                    [Op.between]: [todayStart, todayEnd]
+                    [Op.between]: [todayStartJapan, todayEndJapan]
                 }
             },
             group: ['pay_type']
         });
+
+        console.log('Raw Sales Summary:', rawSalesSummary);
 
         // rawSalesSummaryを加工して、すべてのpay_typeを含む形式に変換
         const salesSummary = payTypes.map(type => {
@@ -3152,6 +3184,8 @@ router.post('/pos/register_open_close', async (req, res) => {
                 total_price_sum: match ? match.dataValues.total_price_sum : "0.00"
             };
         });
+
+        console.log('Sales Summary:', salesSummary);
 
         if (existingRecord) {
             // 結果を返す
@@ -3176,7 +3210,8 @@ router.post('/pos/register_open_close', async (req, res) => {
             success: true,
             registerFlag: false,
             message: '新しいレコードが挿入されました',
-            record: newRecord
+            record: newRecord,
+            salesSummary
         });
     } catch (err) {
         console.error(err);
