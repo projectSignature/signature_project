@@ -2849,6 +2849,59 @@ router.post('/pos/createmenuaddcolomun', async (req, res) => {
     }
 });
 
+router.put('/pos/updatemenucolumnAdd/:id', async (req, res) => {
+  console.log('posupdate')
+    try {
+        const { id } = req.params;
+        const {
+            item_name,
+            item_name_jp,
+            category,
+            category_jp,
+            price,
+            unit,
+            description,
+            available,
+            isVisible
+        } = req.body;
+
+        // メニューアイテムを更新
+        const [updated] = await PosMenu.update({
+            item_name,
+            item_name_jp,
+            category,
+            category_jp,
+            price,
+            unit,
+            description,
+            available,
+            isVisible
+        }, {
+            where: { id }
+        });
+
+        if (updated) {
+            const updatedMenuItem = await PosMenu.findOne({ where: { id } });
+            res.status(200).json({
+                success: true,
+                message: 'Menu item successfully updated',
+                data: updatedMenuItem
+            });
+        } else {
+            res.status(404).json({
+                success: false,
+                message: 'Menu item not found'
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: 'Failed to update menu item',
+            error: error.message
+        });
+    }
+});
+
 
 //POS/MENU/Finish
 
