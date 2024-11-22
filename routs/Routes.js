@@ -3263,6 +3263,7 @@ router.post('/pos/register_open_close', async (req, res) => {
             success: true,
             registerFlag: false,
             message: '新しいレコードが挿入されました',
+            register_open_close_id: newRecord.register_open_close_id, // ここを追加
             record: newRecord,
             salesSummary
         });
