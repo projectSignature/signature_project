@@ -4474,7 +4474,6 @@ router.post('/keirikun/updateSettings', async (req, res) => {
 // const { Client, Supplier } = require('../../models');
 const jwt = require('jsonwebtoken'); // ここでjsonwebtokenをインポート
 // const bcrypt = require('bcrypt'); // bcryptをインポート
-const { encryptPassword, verifyPassword } = require('../libs/encypt/password-crypto'); // comparePasswordをverifyPasswordに変更
 
 UserCategory.belongsTo(Category, { foreignKey: 'category_id', targetKey: 'identification_id' });
 Category.hasMany(UserCategory, { foreignKey: 'category_id', sourceKey: 'identification_id' });
