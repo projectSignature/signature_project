@@ -11,25 +11,19 @@ const signinController = {
                 return response.status(400).send({ success: false, message: 'Email or password not provided.' });
             }
 
-            const user = await userService.getByEmail(email);
+            const user = await userService.getByUsername(email);
 
             if (!user) {
                 return response.status(404).send({ success: false, message: 'User not found.' });
             }
 
-            console.log('User found:', user);
-            console.log('Stored password:', user.password);
-            console.log('Provided password:', password);
-
             const authorizedPassword = await verifyPassword(password, user.password);
-            console.log('Password match result:', authorizedPassword);
-
             if (!authorizedPassword) {
                 return response.status(401).send({ success: false, message: 'Invalid password.' });
             }
-
             const secretKey = 'abracadabra';
-            const token = jwt.sign({ userId: user.id,language: user.language }, secretKey);
+            console.log(user)
+            const token = jwt.sign({ userId: user.id,language: user.language,clientNmae:user.username,email:user.email }, secretKey);
 
             return response.status(200).send({ success: true, info: { token }, message: 'User logged in successfully' });
         } catch (error) {
