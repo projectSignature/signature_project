@@ -4363,6 +4363,703 @@ router.post('/orders/updateMenuOrder', async (req, res) => {
     }
 });
 
+//App KEirikun 2024/07/15 Created by Paulo
+const KeiriUsers = require('../schema/keirikun/user.schema');
+const SuppliresKeiri = require('../schema/keirikun/suppliers.schema')
+const UserCategory = require('../schema/keirikun/UserCategory.schema');
+const Category = require('../schema/keirikun/Category.schema');
+const Client = require('../schema/keirikun/client.schema');
+const FinancialRecord = require('../schema/keirikun/financial_records.schema');
+const financialRecordsController = require('../controllers/keirikun.financialRecordsController');
+
+// PUT エンドポイント
+router.put('/keirikun/financial-records/:id', financialRecordsController.updateFinancialRecord);
+// DELETE エンドポイントを設定
+router.delete('/keirikun/financial-records-delete/:id', financialRecordsController.deleteFinancialRecord);
+router.get('/keirikun/annual-summary', async (req, res) => {
+    const { year } = req.query;
+    try {
+        const records = await FinancialRecord.findAll({
+            attributes: [
+                [Sequelize.fn('MONTH', Sequelize.col('record_date')), 'month'],
+                [Sequelize.fn('SUM', Sequelize.col('income')), 'total_income'],
+                [Sequelize.fn('SUM', Sequelize.col('expense')), 'total_expense']
+            ],
+            where: Sequelize.where(Sequelize.fn('YEAR', Sequelize.col('record_date')), year),
+            group: [Sequelize.fn('MONTH', Sequelize.col('record_date'))]
+        });
+
+        res.status(200).json({ success: true, records });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Failed to fetch monthly summary.' });
+    }
+});
+
+//年度の取得
+router.get('/keirikun/category-summary/:year/:month/:id', async (req, res) => {
+  console.log('keirikun is')
+    const { year, month, id } = req.params;
+    console.log('year is:' + year)
+    console.log(`id is :` +id)
+    try {
+        const records = await FinancialRecord.findAll({
+            attributes: [
+                'party_code',
+                [Sequelize.fn('SUM', Sequelize.col('income')), 'total_income'],
+                [Sequelize.fn('SUM', Sequelize.col('expense')), 'total_expense']
+            ],
+            where: {
+                [Sequelize.Op.and]: [
+                    Sequelize.where(Sequelize.fn('YEAR', Sequelize.col('record_date')), year),
+                    Sequelize.where(Sequelize.fn('MONTH', Sequelize.col('record_date')), month)
+                ],
+                user_id:id
+            },
+            group: ['party_code']
+        });
+
+        res.status(200).json({ success: true, records });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Failed to fetch category summary.' });
+    }
+});
+
+router.post('/keirikun/updateSettings', async (req, res) => {
+    try {
+      const { id,current_password,representativeName,language,confirm_password,password,email } = req.body;
+      console.log(req.body)
+        // ユーザーをDBから検索
+        const user = await KeiriUsers.findOne({ where: { id } });
+        if (!user) {
+            return res.status(404).json({ message: 'ユーザーが見つかりません' });
+        }
+        if (current_password) {
+            // 現在のパスワードとDBのハッシュ化パスワードを比較
+            const match = await verifyPassword(current_password, user.password);
+            if (!match) {
+                return res.status(401).json({ message: '現在のパスワードが正しくありません' });
+            }
+
+                user.password = await encryptPassword(password);
+
+        }
+        if(email){
+          user.username = email
+        }
+        if(representativeName){
+          user.representative_name = representativeName;
+        }
+        if(language){
+          user.language = language
+        }
+
+        const result = await user.save();
+        res.json({
+            message: '設定が正常に更新されました',
+            user: {
+                id: user.id,
+                username: user.username,
+                language: user.language
+            }
+        });
+    } catch (error) {
+        console.error('エラー発生:', error);
+        res.status(500).json({ message: '設定の更新に失敗しました', error: error.message });
+    }
+});
+
+
+// const { Client, Supplier } = require('../../models');
+const jwt = require('jsonwebtoken'); // ここでjsonwebtokenをインポート
+// const bcrypt = require('bcrypt'); // bcryptをインポート
+const { encryptPassword, verifyPassword } = require('../libs/encypt/password-crypto'); // comparePasswordをverifyPasswordに変更
+
+UserCategory.belongsTo(Category, { foreignKey: 'category_id', targetKey: 'identification_id' });
+Category.hasMany(UserCategory, { foreignKey: 'category_id', sourceKey: 'identification_id' });
+
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  console.log('Token:', token); // トークンを表示
+
+  if (!token) {
+    console.log('Token is missing');
+    return res.sendStatus(401);
+  }
+
+  jwt.verify(token, 'abracadabra', (err, user) => {
+    if (err) {
+      console.log('Token verification failed', err);
+      return res.sendStatus(403);
+    }
+    console.log('Token verified successfully', user);
+    req.user = user;
+    next();
+  });
+};
+
+router.get('/keirikun/masterdata/get', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId; // トークンから取得
+    console.log('User ID:', userId); // ユーザーIDの内容をログ出力
+    if (!userId) {
+      return res.status(400).json({ success: false, message: 'User ID is required' });
+    }
+
+    // サプライヤーデータの取得
+    const suppliers = await SuppliresKeiri.findAll({
+      where: { user_id: userId }
+    });
+
+    // ユーザーカテゴリデータの取得
+    const userCategories = await UserCategory.findAll({
+      where: { user_id: userId },
+      include: [{
+        model: Category,
+        required: true
+      }]
+    });
+
+    const clients = await Client.findAll({
+    where: { user_id: userId }
+  });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        suppliers,
+        userCategories,
+        clients
+      }
+    });
+  } catch (err) {
+    console.error('Error fetching master data:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch master data',
+      error: err.message
+    });
+  }
+});
+
+// 支出データの登録エンドポイント
+router.post('/keirikun/data/regist/expenses', authenticateToken, async (req, res) => {
+    try {
+      console.log(req.body)
+    const { userId, date, supplier, method, amount, memo, category, kubun } = req.body;
+    console.log(supplier)
+    console.log('user id is'+ userId)
+    // 入力チェック
+    if (!date || !supplier || !amount || !category) {
+        return res.status(400).json({
+            success: false,
+            message: 'Required fields are missing'
+        });
+    }
+        // データの登録
+        const newRecord = await FinancialRecord.create({
+            record_date: date,
+            party_code: category,
+            description: `取引先:${supplier} 内容:${memo}`,
+
+            user_id: userId,
+            category_id: category,
+            payment_method: method,
+            created_at: new Date(),
+            updated_at: new Date(),
+            expense:kubun===0?parseFloat(amount.replace(/[^\d.-]/g, '')):null,
+            income:kubun===1?parseFloat(amount.replace(/[^\d.-]/g, '')):null
+            // kubun===0?expense: parseFloat(amount.replace(/[^\d.-]/g, '')):income:parseFloat(amount.replace(/[^\d.-]/g, '')), // 金額を数値に変換:
+        });
+
+        res.status(201).json({
+            success: true,
+            data: newRecord,
+            message: 'Expense recorded successfully'
+        });
+    } catch (error) {
+        console.error('Error recording expense:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to record expense',
+            error: error.message
+        });
+    }
+});
+
+router.post('/keirikun/data/regist/income', authenticateToken, async (req, res) => {
+  console.log(req.body)
+  const { userId, date, clients, method, amount, memo, category } = req.body;
+
+  // 入力チェック
+  if (!date || !clients || !amount || !category) {
+    console.log(2853)
+    return res.status(400).json({
+      success: false,
+      message: 'Required fields are missing'
+    });
+  }
+
+  try {
+    // データの登録
+    const newRecord = await FinancialRecord.create({
+      record_date: date,
+      payment_method: method,
+      party_code: category,
+      // party_name: client,
+      description: `請求先:${clients} 内容:${memo}`,
+      income: parseFloat(amount.replace(/[^\d.-]/g, '')), // 金額を数値に変換
+      user_id: userId
+    });
+
+    res.status(201).json({
+      success: true,
+      data: newRecord,
+      message: 'Income recorded successfully'
+    });
+  } catch (error) {
+    console.error('Error recording income:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to record income',
+      error: error.message
+    });
+  }
+});
+
+// router.put('/keirikun/settings/update', authenticateToken, async (req, res) => {
+//     const userId = req.user.id; // トークンからユーザーIDを取得
+//     const { password, email, language, invoice_number, company_name, phone_number } = req.body;
+//
+//     try {
+//         const user = await User.findByPk(userId);
+//         if (!user) {
+//             return res.status(404).json({ success: false, message: 'User not found' });
+//         }
+//
+//         user.password = password || user.password; // パスワードが提供されていない場合、既存のパスワードを保持
+//         user.email = email || user.email;
+//         user.language = language || user.language;
+//         user.invoice_number = invoice_number || user.invoice_number;
+//         user.company_name = company_name || user.company_name;
+//         user.phone_number = phone_number || user.phone_number;
+//
+//         await user.save();
+//
+//         res.status(200).json({ success: true, message: 'Settings updated successfully' });
+//     } catch (error) {
+//         console.error('Error updating settings:', error);
+//         res.status(500).json({ success: false, message: 'Failed to update settings' });
+//     }
+// });
+
+
+router.get('/keirikun/data/history', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.userId; // トークンからユーザーIDを取得
+        const { startDate, endDate } = req.query; // クエリパラメータから日付範囲を取得
+        if (!userId) {
+            return res.status(400).json({ success: false, message: 'User ID is required' });
+        }
+
+        if (!startDate || !endDate) {
+            return res.status(400).json({ success: false, message: 'Both startDate and endDate are required' });
+        }
+
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        end.setUTCHours(23, 59, 59, 999); // End dateを23:59:59に設定して1日の範囲をカバー
+
+        const startISO = start.toISOString();
+        const endISO = end.toISOString();
+
+
+        // SQLクエリを実行してデータを取得
+        const records = await FinancialRecord.findAll({
+            where: {
+                user_id: userId,
+                record_date: {
+                    [Sequelize.Op.between]: [startISO, endISO]
+                }
+            },
+            order: [['record_date', 'DESC']]
+        });
+
+        res.status(200).json({
+            success: true,
+            records
+        });
+    } catch (err) {
+        console.error('Error fetching history data:', err);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch history data',
+            error: err.message
+        });
+    }
+});
+
+
+router.put('/keirikun/data/update', authenticateToken, async (req, res) => {
+    const { id, date, amount, memo } = req.body;
+
+    console.log(req.body);
+    try {
+        const record = await FinancialRecord.findOne({ where: { id } });
+        if (!record) {
+            return res.status(404).json({ success: false, message: 'Record not found' });
+        }
+        record.record_date = date;
+        if (record.income !== null) {
+            record.income = amount;
+        } else {
+            record.expense = amount;
+        }
+        record.description = memo;
+        await record.save();
+
+        res.status(200).json({ success: true, message: 'Record updated successfully' });
+    } catch (error) {
+        console.error('Error updating record:', error);
+        res.status(500).json({ success: false, message: 'Failed to update record' });
+    }
+});
+
+
+router.delete('/keirikun/data/delete', authenticateToken, async (req, res) => {
+    const { id } = req.body;
+
+    try {
+        const record = await FinancialRecord.findOne({ where: { id } });
+        if (!record) {
+            return res.status(404).json({ success: false, message: 'Record not found' });
+        }
+
+        await record.destroy();
+        res.status(200).json({ success: true, message: 'Record deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting record:', error);
+        res.status(500).json({ success: false, message: 'Failed to delete record' });
+    }
+});
+
+// ユーザー情報取得エンドポイント
+router.get('/keirikun/user-info', authenticateToken, async (req, res) => {
+    const userId = req.user.userId;
+     console.log("ID is: "+userId)
+    try {
+        const user = await KeiriUsers.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        console.log(user)
+
+        res.status(200).json({
+            email: user.email,
+            language: user.language,
+            invoice_number: user.invoiceNumber,
+            company_name: user.companyName,
+            phone_number: user.phoneNumber
+        });
+    } catch (error) {
+        console.error('Error fetching user info:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch user info' });
+    }
+});
+
+// 設定更新エンドポイント
+router.put('/keirikun/settings/update', authenticateToken, async (req, res) => {
+    console.log('update backend its is');
+    const userId = req.user.userId;
+    console.log("ID is: " + userId);
+    const { email, language, invoice_number, company_name, phone_number } = req.body;
+
+    console.log(req.body);
+
+    try {
+        const user = await KeiriUsers.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        if (email) user.email = email;
+        if (language) user.language = language;
+        if (invoice_number) {
+            console.log("Updating invoice_number: ", invoice_number);
+            user.invoiceNumber = invoice_number;
+        }
+        if (company_name) {
+            console.log("Updating company_name: ", company_name);
+            user.companyName = company_name;
+        }
+        if (phone_number) {
+            console.log("Updating phone_number: ", phone_number);
+            user.phoneNumber = phone_number;
+        }
+
+        await user.save();
+
+        res.status(200).json({ success: true, message: 'Settings updated successfully' });
+    } catch (error) {
+        console.error('Error updating settings:', error);
+        res.status(500).json({ success: false, message: 'Failed to update settings' });
+    }
+});
+
+
+// パスワード変更エンドポイント
+router.put('/keirikun/settings/change-password', authenticateToken, async (req, res) => {
+    const userId = req.user.userId;
+    console.log("ID is: " + userId);
+    const { current_password, new_password } = req.body;
+
+    try {
+        const user = await KeiriUsers.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        const validPassword = await verifyPassword(current_password, user.password); // comparePasswordをverifyPasswordに変更
+        if (!validPassword) {
+            return res.status(400).json({ success: false, message: 'Current password is incorrect' });
+        }
+
+        user.password = await encryptPassword(new_password);
+        await user.save();
+
+        res.status(200).json({ success: true, message: 'Password updated successfully' });
+    } catch (error) {
+        console.error('Error updating password:', error);
+        res.status(500).json({ success: false, message: 'Failed to update password' });
+    }
+});
+
+// 新しいトークンを発行するエンドポイント
+router.post('/keirikun/new-token', authenticateToken, async (req, res) => {
+    const userId = req.user.userId;
+    const { language } = req.body;
+
+    try {
+        const user = await KeiriUsers.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // 新しいトークンを作成
+        const newToken = jwt.sign({ userId: user.id, language: language || user.language }, 'abracadabra', { expiresIn: '1h' });
+
+        res.status(200).json({ success: true, token: newToken });
+    } catch (error) {
+        console.error('Error creating new token:', error);
+        res.status(500).json({ success: false, message: 'Failed to create new token' });
+    }
+});
+
+
+// 収入データ取得エンドポイント
+router.get('/keirikun/data/income', authenticateToken, async (req, res) => {
+    const userId = req.user.userId;
+    const { date } = req.query;
+
+    if (!date) {
+        return res.status(400).json({ success: false, message: 'Date is required' });
+    }
+
+    const startDate = new Date(date);
+    const endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0);
+    const startISO = startDate.toISOString();
+    const endISO = new Date(endDate.setUTCHours(23, 59, 59, 999)).toISOString();
+
+    try {
+        const records = await FinancialRecord.findAll({
+            where: {
+                user_id: userId,
+                income: { [Op.ne]: null },
+                record_date: {
+                    [Op.between]: [startISO, endISO]
+                }
+            },
+            attributes: ['record_date', 'income'],
+            order: [['record_date', 'ASC']]
+        });
+
+        const data = records.map(record => ({
+            date: record.record_date,
+            amount: record.income
+        }));
+
+        res.status(200).json({ success: true, data });
+    } catch (error) {
+        console.error('Error fetching income data:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch income data' });
+    }
+});
+
+// 支出データ取得エンドポイント
+router.get('/keirikun/data/expense', authenticateToken, async (req, res) => {
+    const userId = req.user.userId;
+    const { date } = req.query;
+
+    if (!date) {
+        return res.status(400).json({ success: false, message: 'Date is required' });
+    }
+
+    const startDate = new Date(date);
+    const endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0);
+    const startISO = startDate.toISOString();
+    const endISO = new Date(endDate.setUTCHours(23, 59, 59, 999)).toISOString();
+
+    try {
+        const records = await FinancialRecord.findAll({
+            where: {
+                user_id: userId,
+                expense: { [Op.ne]: null },
+                record_date: {
+                    [Op.between]: [startISO, endISO]
+                }
+            },
+            attributes: ['record_date', 'expense'],
+            order: [['record_date', 'ASC']]
+        });
+
+        const data = records.map(record => ({
+            date: record.record_date,
+            amount: record.expense
+        }));
+
+        res.status(200).json({ success: true, data });
+    } catch (error) {
+        console.error('Error fetching expense data:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch expense data' });
+    }
+});
+
+// クライアントとサプライヤーを取得するエンドポイント
+router.get('/partners', authenticateToken, async (req, res) => {
+    const userId = req.user.userId;
+
+    try {
+        // クライアントとサプライヤーを取得
+        const clients = await Client.findAll({ where: { user_id: userId } });
+        const suppliers = await SuppliresKeiri.findAll({ where: { user_id: userId } });
+
+        res.json({ success: true, clients, suppliers });
+    } catch (error) {
+        console.error('Error fetching partners:', error);
+        res.status(500).json({ success: false, message: 'An error occurred while fetching partners' });
+    }
+});
+
+router.put('/partners/:type/:id', authenticateToken, async (req, res) => {
+    const { type, id } = req.params;
+    const updatedData = req.body;
+    try {
+        if (type === 'client') {
+            await Client.update(updatedData, { where: { id } });
+        } else if (type === 'supplier') {
+            await SuppliresKeiri.update(updatedData, { where: { id } });
+        } else {
+            return res.status(400).json({ success: false, message: 'Invalid type' });
+        }
+        res.json({ success: true, message: 'Partner updated successfully' });
+    } catch (error) {
+        console.error('Error updating partner:', error);
+        res.status(500).json({ success: false, message: 'Failed to update partner' });
+    }
+});
+
+
+// 新しいパートナーを追加
+router.post('/partners', authenticateToken, async (req, res) => {
+    const { name, type, address, phone, contact_person } = req.body;
+    const userId = req.user.userId;
+
+    try {
+        // 既存のパートナー名を確認
+        if (type === 'supplier') {
+            const existingSupplier = await SuppliresKeiri.findOne({ where: { user_id: userId, supplier_name: name } });
+            if (existingSupplier) {
+                return res.status(400).json({ success: false, message: 'Supplier name already exists' });
+            }
+        } else if (type === 'customer') {
+            const existingClient = await Client.findOne({ where: { user_id: userId, client_name: name } });
+            if (existingClient) {
+                return res.status(400).json({ success: false, message: 'Client name already exists' });
+            }
+        }
+
+        // 最大値を取得し、新しいIDを生成
+        let newId = 1;
+        if (type === 'supplier') {
+            const maxSupplier = await SuppliresKeiri.findOne({
+                attributes: [[Sequelize.fn('MAX', Sequelize.col('supplier_id')), 'maxId']],
+                where: { user_id: userId }
+            });
+            newId = (maxSupplier.dataValues.maxId || 0) + 1;
+        } else if (type === 'customer') {
+            const maxClient = await Client.findOne({
+                attributes: [[Sequelize.fn('MAX', Sequelize.col('client_id')), 'maxId']],
+                where: { user_id: userId }
+            });
+            newId = (maxClient.dataValues.maxId || 0) + 1;
+        }
+
+        // 新しいパートナーを作成
+        if (type === 'customer') {
+            await Client.create({
+                client_id: newId,
+                client_name: name,
+                client_address: address,
+                client_phone: phone,
+                client_contact_person: contact_person,
+                user_id: userId
+            });
+        } else if (type === 'supplier') {
+            await SuppliresKeiri.create({
+                supplier_id: newId,
+                supplier_name: name,
+                supplier_address: address,
+                supplier_phone: phone,
+                supplier_contact_person: contact_person,
+                user_id: userId
+            });
+        } else {
+            return res.status(400).json({ success: false, message: 'Invalid partner type' });
+        }
+        res.json({ success: true, message: 'Partner added successfully' });
+    } catch (error) {
+        console.error('Error adding partner:', error);
+        res.status(500).json({ success: false, message: 'An error occurred while adding the partner' });
+    }
+});
+
+// パートナー情報の削除
+router.delete('/partners/:type/:id', authenticateToken, async (req, res) => {
+    const { type, id } = req.params;
+    try {
+        if (type === 'client') {
+            await Client.destroy({ where: { id } });
+        } else if (type === 'supplier') {
+            await SuppliresKeiri.destroy({ where: { id } });
+        } else {
+            return res.status(400).json({ success: false, message: 'Invalid type' });
+        }
+        res.json({ success: true, message: 'Partner deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting partner:', error);
+        res.status(500).json({ success: false, message: 'Failed to delete partner' });
+    }
+});
+
+
+// module.exports = router;
+
+
+//keirikun final
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
