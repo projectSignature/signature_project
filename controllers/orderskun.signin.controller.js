@@ -18,7 +18,7 @@ const OrderssigninController = {
             const user = await userService.getByUsername(email);
 
             if (!user) {
-                return response.status(404).send({ success: false, message: 'User not found.' });
+                return response.status(401).send({ success: false, message: 'User not found.' });
             }
 
             const authorizedPassword = await verifyPassword(password, user.password);
