@@ -4377,7 +4377,7 @@ router.put('/keirikun/financial-records/:id', financialRecordsController.updateF
 // DELETE エンドポイントを設定
 router.delete('/keirikun/financial-records-delete/:id', financialRecordsController.deleteFinancialRecord);
 router.get('/keirikun/annual-summary', async (req, res) => {
-    const { year } = req.query;
+    const { year, id } = req.query; // クエリから `id` を取得
     try {
         const records = await FinancialRecord.findAll({
             attributes: [
@@ -4385,7 +4385,12 @@ router.get('/keirikun/annual-summary', async (req, res) => {
                 [Sequelize.fn('SUM', Sequelize.col('income')), 'total_income'],
                 [Sequelize.fn('SUM', Sequelize.col('expense')), 'total_expense']
             ],
-            where: Sequelize.where(Sequelize.fn('YEAR', Sequelize.col('record_date')), year),
+            where: {
+                [Sequelize.Op.and]: [
+                    Sequelize.where(Sequelize.fn('YEAR', Sequelize.col('record_date')), year),
+                    { user_id: id } // IDフィルタ条件を追加
+                ]
+            },
             group: [Sequelize.fn('MONTH', Sequelize.col('record_date'))]
         });
 
