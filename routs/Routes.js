@@ -5140,6 +5140,117 @@ const uploadImageToSpaceNaisho = async (userId, file) => {
 };
 
 
+// ログイン処理
+router.post('/access/hiketsu/login', (req, res) => {
+
+  const correctAnswers = {
+  answer1: '26', // 質問1の答え
+  answer2: '4',     // 質問2の答え
+};
+    const { answer1, answer2 } = req.body;
+
+    if (!answer1 || !answer2) {
+        return res.status(400).json({ error: 'すべての質問に答えてください' });
+    }
+
+    // 答えを検証
+    if (
+        answer1.toLowerCase() === correctAnswers.answer1.toLowerCase() &&
+        answer2 === correctAnswers.answer2
+    ) {
+        return res.status(200).json({ message: 'ログイン成功!' });
+    }
+
+    return res.status(401).json({ error: '回答が正しくありません' });
+});
+
+
+
+const ImageUploadAccess = require('../schema/imagesSystem/uploadImageAccess');
+router.post('/access/upload', upload.single('image'), async (req, res) => {
+    try {
+
+      console.log('image hozon start')
+        const { date, comment } = req.body;
+
+        if (!req.file) {
+            return res.status(400).json({ error: '画像がアップロードされていません' });
+        }
+
+        // S3またはDigitalOcean Spacesに画像をアップロード
+        const imageUrl = await uploadImageToSpaceNaishoAccess(20000, req.file);
+
+        // データベースに保存
+        const newRecord = await ImageUploadAccess.create({
+            user_id: 20000, // ユーザーID
+            image_url: imageUrl,
+            date,
+            comment,
+        });
+
+        res.status(201).json({ message: 'アップロード成功', record: newRecord });
+    } catch (error) {
+        console.error('画像アップロード中にエラー:', error);
+        res.status(500).json({ error: 'サーバーエラー' });
+    }
+});
+
+
+const uploadImageToSpaceNaishoAccess = async (userId, file) => {
+  try {
+    // Recupera o usuário pelo ID para obter o nome da pasta (pode ser personalizado conforme sua lógica)
+    // const user = await OrdersUser.findByPk(userId);
+    //
+    // if (!user) {
+    //   throw new Error('Usuário não encontrado');
+    // }
+
+    // Cria a pasta com base no ID ou nome do usuário
+    const folderName = `clients/${userId}-Tailandia`;
+
+    // Configura o nome do arquivo e o caminho no Space
+    const fileName = `${folderName}/${Date.now()}-${file.originalname}`;
+
+    // Faz o upload do arquivo
+    const params = {
+      Bucket: process.env.DO_SPACES_BUCKET,
+      Key: fileName,
+      Body: file.buffer,
+      ACL: 'public-read', // Deixa a imagem acessível publicamente
+      ContentType: file.mimetype, // Define o tipo MIME
+    };
+
+    const data = await s3.upload(params).promise();
+    return data.Location; // URL gerada pelo Space
+  } catch (error) {
+    console.error('Erro ao fazer upload para o Space:', error);
+    throw error;
+  }
+};
+
+
+router.get('/access/images', async (req, res) => {
+    try {
+        const images = await ImageUploadAccess.findAll({
+            attributes: ['id', 'image_url', 'date', 'comment'],
+            order: [['date', 'ASC']],
+        });
+
+        if (images.length === 0) {
+            return res.status(404).json({ message: '画像が見つかりませんでした' });
+        }
+
+        res.status(200).json({ images });
+    } catch (error) {
+        console.error('画像取得中にエラーが発生しました:', error);
+        res.status(500).json({ error: 'サーバーエラー' });
+    }
+});
+
+
+
+
+
 // module.exports = router;
 
 
