@@ -5058,6 +5058,87 @@ router.delete('/partners/:type/:id', authenticateToken, async (req, res) => {
     }
 });
 
+//タイ旅行のための暫定APP
+const ImageUpload = require('../schema/imagesSystem/uploadImage');
+router.post('/tairyokou/upload', upload.single('image'), async (req, res) => {
+    try {
+
+      console.log('image hozon start')
+        const { date, comment } = req.body;
+
+        if (!req.file) {
+            return res.status(400).json({ error: '画像がアップロードされていません' });
+        }
+
+        // S3またはDigitalOcean Spacesに画像をアップロード
+        const imageUrl = await uploadImageToSpaceNaisho(10000, req.file);
+
+        // データベースに保存
+        const newRecord = await ImageUpload.create({
+            user_id: 10000, // ユーザーID
+            image_url: imageUrl,
+            date,
+            comment,
+        });
+
+        res.status(201).json({ message: 'アップロード成功', record: newRecord });
+    } catch (error) {
+        console.error('画像アップロード中にエラー:', error);
+        res.status(500).json({ error: 'サーバーエラー' });
+    }
+});
+
+router.get('/tairyokou/images', async (req, res) => {
+    try {
+        // 全ての画像を取得
+        const images = await ImageUpload.findAll({
+            attributes: ['id', 'image_url', 'date', 'comment'], // 必要なフィールドのみ取得
+            order: [['date', 'ASC']], // 日付順にソート（必要に応じて変更）
+        });
+
+        if (images.length === 0) {
+            return res.status(404).json({ message: '画像が見つかりませんでした' });
+        }
+
+        res.status(200).json({ images });
+    } catch (error) {
+        console.error('画像取得中にエラーが発生しました:', error);
+        res.status(500).json({ error: 'サーバーエラー' });
+    }
+});
+
+const uploadImageToSpaceNaisho = async (userId, file) => {
+  try {
+    // Recupera o usuário pelo ID para obter o nome da pasta (pode ser personalizado conforme sua lógica)
+    // const user = await OrdersUser.findByPk(userId);
+    //
+    // if (!user) {
+    //   throw new Error('Usuário não encontrado');
+    // }
+
+    // Cria a pasta com base no ID ou nome do usuário
+    const folderName = `clients/${userId}-Tailandia`;
+
+    // Configura o nome do arquivo e o caminho no Space
+    const fileName = `${folderName}/${Date.now()}-${file.originalname}`;
+
+    // Faz o upload do arquivo
+    const params = {
+      Bucket: process.env.DO_SPACES_BUCKET,
+      Key: fileName,
+      Body: file.buffer,
+      ACL: 'public-read', // Deixa a imagem acessível publicamente
+      ContentType: file.mimetype, // Define o tipo MIME
+    };
+
+    const data = await s3.upload(params).promise();
+    return data.Location; // URL gerada pelo Space
+  } catch (error) {
+    console.error('Erro ao fazer upload para o Space:', error);
+    throw error;
+  }
+};
+
 
 // module.exports = router;
 
