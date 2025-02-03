@@ -5248,6 +5248,38 @@ router.get('/access/images', async (req, res) => {
 });
 
 
+/////////////////////////道場管理システム修正版///////////////////////////////////////
+router.get('/gyminfoall', async (req, res) => {
+  try {
+    console.log(req.query.id)
+    const gymId = req.query.id;
+
+    // 並列実行で高速化
+    const [graduationlist, paymentlist, members] = await Promise.all([
+      Graduation.findAll({
+        where: { GYM_ID: gymId }
+      }),
+      Pay.findAll({
+        where: { division: 1, GYM_ID: gymId }
+      }),
+      Member.findAll({
+        where: { status: "active", gymid: gymId }
+      })
+    ]);
+
+    // まとめて返す
+    res.json({
+      graduationlist,
+      paymentlist,
+      members
+    });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(400).json({ error: 'データ取得に失敗しました', details: err });
+  }
+});
+
 
 
 
