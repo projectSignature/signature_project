@@ -4401,6 +4401,59 @@ router.get('/keirikun/annual-summary', async (req, res) => {
     }
 });
 
+router.post('/keirikun/add/suppliers', async (req, res) => {
+    try {
+        // user_id から現在の最大 supplier_id を取得
+        const maxSupplier = await SuppliresKeiri.findOne({
+            where: { user_id: req.body.user_id },
+            attributes: [[Sequelize.fn('MAX', Sequelize.col('supplier_id')), 'maxSupplierId']],
+            raw: true
+        });
+
+        // supplier_id を 1 増加させる
+        const nextSupplierId = (maxSupplier.maxSupplierId || 0) + 1;
+
+        // 新しい supplier データを作成
+        const supplierData = {
+            ...req.body, // リクエストボディのデータをコピー
+            supplier_id: nextSupplierId // supplier_id を最大値 + 1 に更新
+        };
+
+        // データベースにサプライヤーを作成
+        const supplier = await SuppliresKeiri.create(supplierData);
+
+        res.json({ success: true, supplier });
+    } catch (error) {
+        console.error('登録中にエラーが発生しました:', error);
+        res.status(500).json({ success: false, message: '登録に失敗しました', error });
+    }
+});
+
+// 収入先の追加
+router.post('/keirikun/add/clients', async (req, res) => {
+    try {
+        // user_id から現在の最大 client_id を取得
+        const maxClient = await Client.findOne({
+            where: { user_id: req.body.user_id },
+            attributes: [[Sequelize.fn('MAX', Sequelize.col('client_id')), 'maxClientId']],
+            raw: true
+        });
+        // client_id を 1 増加させる
+        const nextClientId = (maxClient.maxClientId || 0) + 1;
+        // 新しい client データを作成
+        const clientData = {
+            ...req.body, // リクエストボディのデータをコピー
+            client_id: nextClientId // client_id を最大値 + 1 に更新
+        };
+        // データベースにクライアントを作成
+        const client = await Client.create(clientData);
+        res.json({ success: true, client });
+    } catch (error) {
+        console.error('登録中にエラーが発生しました:', error);
+        res.status(500).json({ success: false, message: '登録に失敗しました', error });
+    }
+});
+
 //年度の取得
 router.get('/keirikun/category-summary/:year/:month/:id', async (req, res) => {
   console.log('keirikun is')
@@ -4549,6 +4602,82 @@ router.get('/keirikun/masterdata/get', authenticateToken, async (req, res) => {
 });
 
 // 支出データの登録エンドポイント
+router.post('/keirikun/data/regist/otherImportantRegister', authenticateToken, async (req, res) => {
+    try {
+        console.log(req.body);
+        const { userId, date, amount, kubun, memo } = req.body;
+
+        console.log('user id is ' + userId);
+
+        // 入力チェック
+        if (!date || !amount || !userId || kubun === undefined) {
+            return res.status(400).json({
+                success: false,
+                message: 'Required fields are missing'
+            });
+        }
+
+        // 金額を数値に変換
+        const parsedAmount = parseFloat(amount.replace(/[^\d.-]/g, ''));
+
+        // 処理内容を設定
+        const actions = {
+            0: { description: '銀行引出', from: 'bank', to: 'cash'},
+            1: { description: '銀行預入', from: 'cash', to: 'bank' },
+            // 3: { description: '事業主借', from: 'cash', to: 'bank',code:327 },
+            // 4: { description: '事業主借', from: 'cash', to: 'bank',code:327 }
+        };
+
+        const action = actions[kubun];
+        if (!action) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid kubun value'
+            });
+        }
+
+        // データ作成
+        await createDataOtherRegistKeirikun({
+            record_date: date,
+            party_code: 999,
+            description: `内容:${action.description}　メモ:${memo}`,
+            user_id: userId,
+            payment_method: action.from,
+            created_at: new Date(),
+            updated_at: new Date(),
+            expense: parsedAmount
+        });
+
+        await createDataOtherRegistKeirikun({
+            record_date: date,
+            party_code: 999,
+            description: `内容:${action.description}　メモ:${memo}`,
+            user_id: userId,
+            payment_method: action.to,
+            created_at: new Date(),
+            updated_at: new Date(),
+            income: parsedAmount
+        });
+
+        res.status(201).json({
+            success: true,
+            message: 'Expense recorded successfully'
+        });
+    } catch (error) {
+        console.error('Error recording expense:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to record expense',
+            error: error.message
+        });
+    }
+});
+
+async function createDataOtherRegistKeirikun(data) {
+    return await FinancialRecord.create(data);
+}
+
+// 支出データの登録エンドポイント
 router.post('/keirikun/data/regist/expenses', authenticateToken, async (req, res) => {
     try {
       console.log(req.body)
@@ -4581,6 +4710,62 @@ router.post('/keirikun/data/regist/expenses', authenticateToken, async (req, res
         res.status(201).json({
             success: true,
             data: newRecord,
+            message: 'Expense recorded successfully'
+        });
+    } catch (error) {
+        console.error('Error recording expense:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to record expense',
+            error: error.message
+        });
+    }
+});
+
+// 支出データの登録エンドポイント
+router.post('/keirikun/data/regist/RegisterShakinOrKari', authenticateToken, async (req, res) => {
+    try {
+        console.log(req.body);
+        const { userId, date, amount, kubun, memo } = req.body;
+
+        if (!date || !amount || !userId || kubun === undefined) {
+            return res.status(400).json({
+                success: false,
+                message: 'Required fields are missing'
+            });
+        }
+        // 金額を数値に変換
+        const parsedAmount = parseFloat(amount.replace(/[^\d.-]/g, ''));
+
+        // 処理内容を設定
+        const actions = {
+            2: { description: '事業主貸し', from: 'bank', to: 'bank',code:189 },
+            3: { description: '事業主借り', from: 'bank', to: 'bank',code:327 },
+            // 3: { description: '事業主借', from: 'cash', to: 'bank',code:327 },
+            // 4: { description: '事業主借', from: 'cash', to: 'bank',code:327 }
+        };
+
+        const action = actions[kubun];
+        if (!action) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid kubun value'
+            });
+        }
+        // データ作成
+        await createDataOtherRegistKeirikun({
+            record_date: date,
+            party_code: action.code,
+            description: `内容:${action.description}　メモ:${memo}`,
+            user_id: userId,
+            payment_method: action.from,
+            created_at: new Date(),
+            updated_at: new Date(),
+            expense:kubun===2?parsedAmount:null,
+            income:kubun===3?parsedAmount:null
+        });
+        res.status(201).json({
+            success: true,
             message: 'Expense recorded successfully'
         });
     } catch (error) {
