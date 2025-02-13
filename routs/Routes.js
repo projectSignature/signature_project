@@ -3507,6 +3507,65 @@ router.get('/pos/total-sales', async (req, res) => {
  }
 });
 
+//new endpoint for pos
+router.get('/pos/total-sales/Byyear', async (req, res) => {
+  try {
+    const { user_id, year } = req.query;
+
+    if (!user_id) {
+      return res.status(400).json({ error: 'user_id は必須です' });
+    }
+    if (!year || isNaN(year)) {
+      return res.status(400).json({ error: '年度 (year) は必須です' });
+    }
+
+    // 年度の開始日と終了日を設定
+    const startDate = new Date(`${year}-01-01T00:00:00.000Z`);
+    const endDate = new Date(`${year}-12-31T23:59:59.999Z`);
+
+    // 総売上を計算
+    const totalSales = await Sale.sum('total_price', {
+      where: {
+        transaction_time: {
+          [Op.between]: [startDate, endDate]
+        },
+        register_id: user_id
+      }
+    });
+
+    // 日別の売上を計算
+    const dailySales = await Sale.findAll({
+      attributes: [
+        [Sequelize.fn('DATE', Sequelize.col('transaction_time')), 'date'],
+        [Sequelize.fn('SUM', Sequelize.col('total_price')), 'total_sales']
+      ],
+      where: {
+        transaction_time: {
+          [Op.between]: [startDate, endDate]
+        },
+        register_id: user_id
+      },
+      group: [Sequelize.fn('DATE', Sequelize.col('transaction_time'))],
+      order: [[Sequelize.fn('DATE', Sequelize.col('transaction_time')), 'ASC']]
+    });
+
+    // 日ごとのtotal_priceを配列として集計
+    const dailyTotals = dailySales.map(sale => ({
+      date: sale.get('date'),
+      total_sales: parseFloat(sale.get('total_sales'))
+    }));
+
+    // データを返す
+    res.json({
+      totalSales: totalSales || 0,
+      dailySales: dailyTotals
+    });
+  } catch (error) {
+    console.error('Error fetching sales data:', error);
+    res.status(500).json({ error: '売上データを取得中にエラーが発生しました' });
+  }
+});
+
 router.post('/pos/updateSettings', async (req, res) => {
 
     try {
