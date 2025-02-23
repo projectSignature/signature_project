@@ -3012,55 +3012,6 @@ router.post('/pos/delete/sale', async (req, res) => {
 });
 
 // POSTエンドポイントで特定のIDのSaleデータを更新
-router.post('/pos/update/sale', async (req, res) => {
-    try {
-        const { sale_id, item_details } = req.body;
-        // sale_idが提供されているかチェック
-        if (!sale_id) {
-            return res.status(400).json({ error: 'sale_id は必須です' });
-        }
-        // 更新フィールドを準備
-        let totalPrice = 0;
-        let registerId, cashierId, payType, transactionTime;
-        // item_detailsから各フィールドを取り出す
-        for (let key in item_details) {
-            const item = item_details[key];
-            totalPrice += parseFloat(item.total_price);
-            if (key === '0') {
-                registerId = item.register_id;
-                cashierId = item.cashier_id;
-                payType = item.pay_type;
-            }
-        }
-        // item_detailsをJSON文字列に変換
-        const itemDetails = JSON.stringify(item_details);
-      //const itemDetails = item_details;
-        // 現在の日時を使用 (UTC+9に設定)
-        transactionTime = new Date();
-        transactionTime.setHours(transactionTime.getHours() + 9);
-        // Saleテーブルで該当するレコードを更新
-        const updateFields = {
-            total_price: totalPrice,
-            register_id: registerId,
-            item_details: itemDetails,
-            cashier_id: cashierId,
-            pay_type: payType,
-            transaction_time: transactionTime
-        };
-        const updated = await Sale.update(updateFields, {
-            where: { sale_id: sale_id }
-        });
-
-        if (updated[0] === 1) {  // 更新された行が1件の場合
-             res.status(200).json({ success: true,  message: '販売データが更新されました' });
-        } else {
-            res.status(404).json({ message: '指定されたIDの販売データが見つかりませんでした' });
-        }
-    } catch (error) {
-        res.status(500).json({ error: '販売データの更新に失敗しました', message: error.message });
-    }
-});
-
 router.get('/pos/sales-history', async (req, res) => {
     const { start_date, end_date } = req.query;
 
@@ -3079,25 +3030,45 @@ router.get('/pos/sales-history', async (req, res) => {
             order: [['transaction_time', 'ASC']]
         });
 
-        // 各Saleのitem_detailsをパースしてメニューIDを取得
-        const detailedSales = await Promise.all(salesHistory.map(async (sale) => {
-            const itemDetails = JSON.parse(sale.item_details);
-            const parsedItems = Object.values(itemDetails);
+        if (salesHistory.length === 0) {
+            return res.json([]); // 売上履歴がない場合
+        }
 
-            // メニューIDを取得して、Menuテーブルからメニュー名を取得
-            const menuDetails = await Promise.all(parsedItems.map(async (item) => {
-                const menu = await PosMenu.findOne({ where: { menu_id: item.menu_id } });
-                return {
-                    ...item,
-                    item_name: menu ? menu.item_name : '不明なメニュー'
-                };
+        // 全てのitem_detailsからmenu_idを収集
+        const allItemDetails = salesHistory.flatMap(sale => {
+            const itemDetails = JSON.parse(sale.item_details);
+            return Object.values(itemDetails).map(item => item.menu_id);
+        });
+
+        // 重複したmenu_idを削除
+        const uniqueMenuIds = [...new Set(allItemDetails)];
+
+        // まとめてメニューIDに対応するメニュー名を取得
+        const menuDetails = await PosMenu.findAll({
+            where: {
+                menu_id: uniqueMenuIds
+            }
+        });
+
+        // メニューIDをキーとしてメニュー名をマッピング
+        const menuMap = menuDetails.reduce((map, menu) => {
+            map[menu.menu_id] = menu.item_name;
+            return map;
+        }, {});
+
+        // 各売上のitem_detailsにメニュー名を追加
+        const detailedSales = salesHistory.map(sale => {
+            const itemDetails = JSON.parse(sale.item_details);
+            const parsedItems = Object.values(itemDetails).map(item => ({
+                ...item,
+                item_name: menuMap[item.menu_id] || '不明なメニュー'
             }));
 
             return {
                 ...sale.toJSON(),
-                item_details: menuDetails
+                item_details: parsedItems
             };
-        }));
+        });
 
         res.json(detailedSales);
 
