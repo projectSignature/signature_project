@@ -3372,7 +3372,7 @@ router.get('/pos/register-history', async (req, res) => {
             },
             order: [['open_time', 'ASC']]
         });
-        console.log(registerHistory)
+
         res.json(registerHistory);
     } catch (error) {
         console.error('Error fetching register history:', error);
