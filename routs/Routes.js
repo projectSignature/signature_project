@@ -3408,7 +3408,35 @@ router.get('/pos/register-history', async (req, res) => {
         res.status(500).json({ error: 'レジ履歴の取得中にエラーが発生しました' });
     }
 });
+router.get('/pos/total-sales/Start/finish', async (req, res) => {
+  try {
+    const { user_id, start, finish } = req.query;
 
+    if (!user_id) {
+      return res.status(400).json({ error: 'user_id は必須です' });
+    }
+    if (!start || !finish) {
+      return res.status(400).json({ error: '開始日と終了日が必要です' });
+    }
+
+    const startDate = new Date(start);
+    const endDate = new Date(finish);
+
+    const salesData = await Sale.findAll({
+      where: {
+        transaction_time: {
+          [Op.between]: [startDate, endDate]
+        },
+        register_id: user_id
+      }
+    });
+
+    res.json({ salesData });
+  } catch (error) {
+    console.error('Error fetching sales data:', error);
+    res.status(500).json({ error: '売上データを取得中にエラーが発生しました' });
+  }
+});
 
 
 
