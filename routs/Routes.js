@@ -4350,7 +4350,7 @@ router.post('/orders/updates/menu', upload.single('menu_image'), async (req, res
 router.post('/orders/create/menu', upload.single('menu_image'), async (req, res) => {
 
   const menuData = JSON.parse(req.body.menuData); // Parse para converter string JSON em objeto
-  const { user_id, category_id, menu_name_pt, menu_name_en, menu_name_ja, description_pt, description_en, description_ja, price, display_order, stock_status } = menuData;
+  const { user_id, category_id, menu_name_pt, menu_name_en, menu_name_ja, description_pt, description_en, description_ja, price, display_order, stock_status, admin_item_name } = menuData;
   const imageBuffer = req.file ? req.file.buffer : null; // Se a imagem foi enviada, capture o buffer
   try {
     // Obtém o valor máximo de display_order para o usuário e categoria
@@ -4385,6 +4385,7 @@ router.post('/orders/create/menu', upload.single('menu_image'), async (req, res)
         price,
         display_order: newDisplayOrder,
         stock_status,
+        admin_item_name,
       //  image: imageBuffer,// Armazenando a imagem como BLOB
         image_type: imageType,
         imagem_string: imageUrl
