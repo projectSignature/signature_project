@@ -99,6 +99,51 @@ const signinRouter = require('./routs/noauth/signin.router.js');
 app.use('/noauth', signinRouter)
 //, signinRouter
 
+// //kengo system////////////////////////
+app.post('/processar', async (req, res) => {
+  const termos = req.body.termos;
+  if (!termos || !Array.isArray(termos)) {
+    return res.status(400).json({ error: 'termosが必要です' });
+  }
+
+  // 件数制限チェック（最大10件まで）
+ if (termos.length > 10) {
+   return res.status(400).json({ error: '最大10件までしか処理できません' });
+ }
+
+  const results = {};
+
+  for (let termo of termos) {
+    const encodedTerm = encodeURIComponent(termo);
+
+    // sold検索URL
+    const urlSold = `https://www.ebay.com/sch/31387/i.html?_nkw=${encodedTerm}&LH_Complete=1&LH_Sold=1&LH_ItemCondition=3000&LH_PrefLoc=2`;
+     console.log(urlSold)
+    // all（出品中）検索URL
+    const urlAll = `https://www.ebay.com/sch/31387/i.html?_nkw=${encodedTerm}&LH_ItemCondition=3000&LH_PrefLoc=2&_sop=10&_blrs=category_constraint&_blrs=spell_auto_correct`;
+     console.log(urlAll)
+    try {
+      // sold数取得
+      const soldRes = await axios.get(urlSold);
+      const $sold = cheerio.load(soldRes.data);
+      const soldText = $sold('h1.srp-controls__count-heading span.BOLD').eq(1).text();
+      const sold = parseInt(soldText.replace(/,/g, ''), 10) || 0;
+
+      // all数取得
+      const allRes = await axios.get(urlAll);
+      const $all = cheerio.load(allRes.data);
+      const allText = $all('h1.srp-controls__count-heading span.BOLD').eq(1).text();
+      const all = parseInt(allText.replace(/,/g, ''), 10) || 0;
+
+      results[termo] = { sold, all };
+    } catch (err) {
+      results[termo] = { error: err.message };
+    }
+  }
+
+  res.json(results);
+});
+
 
 
 server.listen(port, () => { // Listen on port 3000
