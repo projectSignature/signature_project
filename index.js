@@ -135,7 +135,7 @@ app.post('/processar', async (req, res) => {
 
       // sold数取得
       const soldRes = await axios.get(urlSold, headers);
-        console.log(soldRes.data)
+        console.log('HTML preview:', soldRes.data.slice(0, 500));
       const $sold = cheerio.load(soldRes.data);
       const soldText = $sold('h1.srp-controls__count-heading span.BOLD').eq(1).text();
       const sold = parseInt(soldText.replace(/,/g, ''), 10) || 0;
