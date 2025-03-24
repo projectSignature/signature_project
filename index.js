@@ -109,9 +109,9 @@ app.post('/processar', async (req, res) => {
   }
 
   // 件数制限チェック（最大10件まで）
- if (termos.length > 10) {
-   return res.status(400).json({ error: '最大10件までしか処理できません' });
- }
+  if (termos.length > 10) {
+    return res.status(400).json({ error: '最大10件までしか処理できません' });
+  }
 
   const results = {};
 
@@ -120,19 +120,27 @@ app.post('/processar', async (req, res) => {
 
     // sold検索URL
     const urlSold = `https://www.ebay.com/sch/31387/i.html?_nkw=${encodedTerm}&LH_Complete=1&LH_Sold=1&LH_ItemCondition=3000&LH_PrefLoc=2`;
-     console.log(urlSold)
+    console.log(urlSold);
+
     // all（出品中）検索URL
     const urlAll = `https://www.ebay.com/sch/31387/i.html?_nkw=${encodedTerm}&LH_ItemCondition=3000&LH_PrefLoc=2&_sop=10&_blrs=category_constraint&_blrs=spell_auto_correct`;
-     console.log(urlAll)
+    console.log(urlAll);
+
     try {
+      const headers = {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+        }
+      };
+
       // sold数取得
-      const soldRes = await axios.get(urlSold);
+      const soldRes = await axios.get(urlSold, headers);
       const $sold = cheerio.load(soldRes.data);
       const soldText = $sold('h1.srp-controls__count-heading span.BOLD').eq(1).text();
       const sold = parseInt(soldText.replace(/,/g, ''), 10) || 0;
 
       // all数取得
-      const allRes = await axios.get(urlAll);
+      const allRes = await axios.get(urlAll, headers);
       const $all = cheerio.load(allRes.data);
       const allText = $all('h1.srp-controls__count-heading span.BOLD').eq(1).text();
       const all = parseInt(allText.replace(/,/g, ''), 10) || 0;
@@ -145,6 +153,7 @@ app.post('/processar', async (req, res) => {
 
   res.json(results);
 });
+
 
 
 
