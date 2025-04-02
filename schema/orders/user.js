@@ -52,10 +52,14 @@ const User = database.define('User', {
         allowNull: false,
         defaultValue: false  // デフォルトで無効
     },
-    tax_enabled: {  // 新しいTax使用フラグ
-        type: DataTypes.BOOLEAN,
+    tax_type: {
+        type: DataTypes.ENUM('inclusive', 'exclusive'), // 内税か外税か
         allowNull: false,
-        defaultValue: false  // デフォルトで無効
+        defaultValue: 'exclusive'
+    },
+    invoice_number: {
+        type: DataTypes.STRING(50),  // インボイス番号
+        allowNull: true
     },
     receipt_address: {  // レシート用住所
         type: DataTypes.STRING(255),
