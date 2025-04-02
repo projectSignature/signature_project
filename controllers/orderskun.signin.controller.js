@@ -45,7 +45,9 @@ const OrderssigninController = {
                   receipt_logo_url:user.receipt_logo_url,
                   instagram_url:user.instagram_url,
                   facebook_url:user.facebook_url,
-                  restaurant_id:user.restaurant_id
+                  restaurant_id:user.restaurant_id,
+                  invoice_number:user.invoice_number,
+                  tax_type:user.tax_type
                 }, secretKey);
                return response.status(200).send({ success: true, info: { token },kubun:user.role, message: 'User logged in successfully' });
               }
