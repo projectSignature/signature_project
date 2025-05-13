@@ -185,6 +185,43 @@ updateOrder : async (req, res) => {
         console.error('注文の更新中にエラーが発生しました:', error);
         res.status(500).json({ success: false, message: '注文の更新に失敗しました' });
     }
+},
+updateStockStatus : async (req, res) => {
+  try {
+    const { id, stock_status } = req.body;
+console.log(req.body)
+    if (typeof id !== 'number' || typeof stock_status !== 'boolean') {
+        return res.status(400).json({ error: "Invalid input format" });
+    }
+
+    const updatedMenu = await orderService.updateStock(id, stock_status);
+
+    if (!updatedMenu) {
+        return res.status(404).json({ error: "Menu item not found" });
+    }
+
+    res.json({ success: true, message: "Stock status updated", menu: updatedMenu });
+} catch (error) {
+    console.error("❌ Error updating stock status:", error);
+    res.status(500).json({ error: "Internal server error" });
+}
+},
+mergeOrders: async (req, res) => {
+try {
+  console.log('mmarge')
+  const { orderIds, baseOrderId } = req.body;
+// baseOrderId に集約先の ID が入る
+
+    if (!orderIds || orderIds.length < 2) {
+        return res.status(400).json({ error: '少なくとも2つ選んでください' });
+    }
+
+    const newOrderId = await orderService.mergeOrders(orderIds, baseOrderId);
+    res.status(200).json({ message: '統合成功', newOrderId });
+} catch (err) {
+    console.error('統合エラー:', err);
+    res.status(500).json({ error: '統合に失敗しました' });
+}
 }
 
 
