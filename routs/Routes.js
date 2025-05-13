@@ -3670,6 +3670,8 @@ router.get('/orderkuns/historico/pedidos/daterange', orderController.historyPedi
 //Orderの状態をupdate
 router.put('/orderskun/update/:orderId', orderController.updateOrder);
 
+router.post('/orderskun/updateStock', orderController.updateStockStatus);
+
 router.post('/orderskun/updateSettings', async (req, res) => {
     try {
         const { id, current_password, representativeName, language, confirm_password, password, email } = req.body;
