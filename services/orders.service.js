@@ -406,6 +406,53 @@ const orderService = {
         console.error('注文の更新中にエラーが発生しました:', error);
         throw new Error('注文の更新に失敗しました');
     }
+},
+updateStock : async (id, stock_status) => {
+  try {
+    const menuItem = await Menu.findByPk(id);
+    console.log(id)
+     if (!menuItem) return null;
+
+     menuItem.stock_status = stock_status;
+     await menuItem.save();
+
+     return menuItem;
+  } catch (error) {
+      console.error('在庫の変更に失敗しました:', error);
+      throw new Error('在庫の変更に失敗しました');
+  }
+},
+mergeOrders: async (orderIds, baseOrderId) => {
+  if (!orderIds || orderIds.length < 2) throw new Error('2つ以上選んでください');
+
+  const originalOrders = await Orders.findAll({
+    where: { id: { [Op.in]: orderIds } },
+    include: [{ model: OrderItems }]
+  });
+
+  const allItems = originalOrders.flatMap(o => o.OrderItems);
+
+  // OrderItemsをbaseOrderIdに集約
+  await Promise.all(allItems.map(async (item) => {
+    await OrderItems.update(
+      { order_id: baseOrderId },
+      { where: { id: item.id } }
+    );
+  }));
+
+  // 合計金額を更新
+  const total = allItems.reduce((sum, item) => sum + parseFloat(item.total_price), 0);
+  await Orders.update(
+    { total_amount: total },
+    { where: { id: baseOrderId } }
+  );
+
+  // 🔥 baseOrder 以外を削除
+  const deleteTargets = orderIds.filter(id => id != baseOrderId);
+  await OrderItems.destroy({ where: { order_id: { [Op.in]: deleteTargets } } });
+  await Orders.destroy({ where: { id: { [Op.in]: deleteTargets } } });
+
+  return { message: '統合成功', newOrderId: baseOrderId };
 }
 
 
