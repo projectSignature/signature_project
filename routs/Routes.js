@@ -4230,6 +4230,37 @@ router.post('/orders/delete/option', async (req, res) => {
     }
 });
 
+// 更新：該当 menu_id のオプションを全削除 → 再登録
+router.post('/orders/update/options', async (req, res) => {
+    const { menu_id, user_id, options } = req.body;
+
+    if (!menu_id || !user_id || !Array.isArray(options)) {
+        return res.status(400).json({ message: 'Invalid request data' });
+    }
+
+    try {
+        // 既存削除
+        await OrdersOption.destroy({ where: { menu_id } });
+
+        // 再登録
+        const createdOptions = await Promise.all(options.map(opt =>
+            OrdersOption.create({
+                user_id,
+                menu_id,
+                option_name_en: opt.option_name_en,
+                option_name_pt: opt.option_name_pt,
+                option_name_ja: opt.option_name_ja,
+                additional_price: opt.additional_price || 0
+            })
+        ));
+
+        res.status(200).json({ message: 'Options updated successfully', data: createdOptions });
+    } catch (error) {
+        console.error('Failed to update options:', error);
+        res.status(500).json({ message: 'Failed to update options' });
+    }
+});
+
 router.post('/orders/delete/menu', async (req, res) => {
     try {
         const deletedOption = await OrdersMenu.destroy({
