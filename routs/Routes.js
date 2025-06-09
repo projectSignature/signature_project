@@ -4386,7 +4386,7 @@ router.post('/orders/create/menu', upload.single('menu_image'), async (req, res)
     user_id, category_id,
     menu_name_pt, menu_name_en, menu_name_ja,
     description_pt, description_en, description_ja,
-    price, display_order, stock_status, admin_item_name
+    price, display_order, stock_status, admin_item_name,is_takeout 
   } = menuData;
 
   try {
@@ -4425,7 +4425,8 @@ router.post('/orders/create/menu', upload.single('menu_image'), async (req, res)
       stock_status,
       admin_item_name,
       image_type: imageType,
-      imagem_string: imageUrl
+      imagem_string: imageUrl,
+      is_takeout
     });
 
     res.status(201).json(newMenuItem);
