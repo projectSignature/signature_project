@@ -33,7 +33,7 @@ const orderService = {
                 menu_id: item.id,
                 quantity: item.quantity,
                 options: JSON.stringify(item.options),
-                item_price: item.amount/item.quantity,
+                item_price: item.amount,
                 total_price: item.amount ,//* item.quantity
                 coupon_printed: false,
                 created_at: new Date(),
