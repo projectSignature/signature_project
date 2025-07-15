@@ -4812,6 +4812,66 @@ router.post('/keirikun/data/regist/expenses', authenticateToken, async (req, res
     }
 });
 
+// 支出データ（更新・登録）エンドポイント
+router.post('/keirikun/data/upsert/expenses/by/orderskun', authenticateToken, async (req, res) => {
+    try {
+        const { userId, date, supplier, method, amount, memo, category, kubun } = req.body;
+
+        // 入力チェック
+        if (!date || !supplier || !amount || !category) {
+            return res.status(400).json({
+                success: false,
+                message: 'Required fields are missing'
+            });
+        }
+
+        console.log('keirikun no jyoutai')
+        console.log(date)
+        console.log(category)
+        console.log(userId)
+
+        // 既存データの削除
+        await FinancialRecord.destroy({
+            where: {
+                record_date: {
+                    [Op.gte]: `${date} 00:00:00`,
+                    [Op.lt]:  `${date} 23:59:59`
+                },
+                party_code: category,
+                user_id: userId
+            }
+        });
+
+        // 新規登録
+        const newRecord = await FinancialRecord.create({
+            record_date: date,
+            party_code: category,
+            description: `取引先:${supplier} 内容:${memo}`,
+            user_id: userId,
+            category_id: category,
+            payment_method: method,
+            created_at: new Date(),
+            updated_at: new Date(),
+            expense: kubun === 0 ? parseFloat(amount.replace(/[^\d.-]/g, '')) : null,
+            income: kubun === 1 ? parseFloat(amount.replace(/[^\d.-]/g, '')) : null
+        });
+
+        res.status(201).json({
+            success: true,
+            data: newRecord,
+            message: 'Expense upserted successfully'
+        });
+
+    } catch (error) {
+        console.error('Error upserting expense:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to upsert expense',
+            error: error.message
+        });
+    }
+});
+
 // 支出データの登録エンドポイント
 router.post('/keirikun/data/regist/RegisterShakinOrKari', authenticateToken, async (req, res) => {
     try {
