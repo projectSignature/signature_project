@@ -3610,6 +3610,29 @@ router.post('/pos/updateSettings', async (req, res) => {
 
 //POS Finish
 
+//room sync system
+
+const RoomsOperation = require('../controllers/rooms/roomsOperation')
+
+
+
+//get
+router.get('/api/room/status', RoomsOperation.getRoomStatus);
+router.get('/api/room/amenity', RoomsOperation.getAmenityRequests);
+router.get('/api/room/amenity/list', RoomsOperation.getAmenityRequests); 
+
+//put
+router.put('/api/room/status', RoomsOperation.updateRoomStatus);
+router.put("/api/room/details", RoomsOperation.updateRoomDetails);
+
+
+//POST
+router.post('/api/room/amenity', RoomsOperation.registerAmenityAction);
+// ===== アメニティ関連 =====
+
+//delete
+router.delete('/api/room/amenity/:id', RoomsOperation.completeAmenityRequest);
+
 //order App
 
 const OrdersUser = require('../schema/orders/user')
@@ -5626,5 +5649,6 @@ router.get('/gyminfoall', async (req, res) => {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+
 
 
