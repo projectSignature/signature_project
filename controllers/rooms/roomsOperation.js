@@ -11,6 +11,8 @@ exports.getRoomStatus = async (req, res) => {
   try {
     const { hotel_id } = req.query;
 
+    console.log(req.query)
+
     if (!hotel_id) {
       return res.status(400).json({ error: 'hotel_id is required' });
     }
@@ -30,7 +32,9 @@ exports.getRoomStatus = async (req, res) => {
         'last_cleaned',
         'notes',
         'cleaning_price',
-        'updated_at'
+        'updated_at',
+        "stay_type",
+        "checkout_status"
       ],
       order: [['floor', 'ASC'], ['room_number', 'ASC']]
     });
@@ -165,22 +169,22 @@ exports.completeAmenityRequest = async (req, res) => {
   }
 };
 
+// controllers/rooms/roomsOperation.js
 exports.updateRoomDetails = async (req, res) => {
   try {
-    const { room_id, guest_name, checkout_time, guest_count, notes } = req.body;
-    if (!room_id) return res.status(400).json({ success: false, error: "room_id 必須" });
-
+    const { id, guest_name, guest_count, checkout_time, notes } = req.body;
+    console.log(req.body)
     await Room.update(
-      { guest_name, checkout_time, guest_count, notes, updated_at: new Date() },
-      { where: { id: room_id } }
+      { guest_name, guest_count, checkout_time, notes },
+      { where: { id } }
     );
-
-    res.json({ success: true, message: "部屋詳細を更新しました" });
+    res.json({ success: true });
   } catch (err) {
-    console.error("❌ updateRoomDetails error:", err);
-    res.status(500).json({ success: false, error: "サーバーエラー" });
+    console.error("❌ 部屋詳細更新エラー:", err);
+    res.status(500).json({ error: "更新失敗" });
   }
 };
+
 
 // ====================================================
 // 🟢 アメニティ依頼一覧取得
@@ -270,5 +274,132 @@ exports.completeAmenityRequest = async (req, res) => {
   } catch (err) {
     console.error('❌ completeAmenityRequest error:', err);
     res.status(500).json({ success: false, error: 'サーバーエラー（削除）' });
+  }
+};
+
+// ====================================================
+// 🟢 宿泊人数（guest_count）更新（hotel_id対応版）
+// ====================================================
+exports.updateGuestCount = async (req, res) => {
+  try {
+    const { id } = req.params;               // URLパラメータ
+    const { hotel_id, guest_count } = req.body;  // JSONボディ
+console.log(req.body)
+console.log('人数変更')
+    if (!id) {
+      return res.status(400).json({ success: false, error: "id は必須です。" });
+    }
+    if (!hotel_id) {
+      return res.status(400).json({ success: false, error: "hotel_id は必須です。" });
+    }
+    if (guest_count === undefined || guest_count === null) {
+      return res.status(400).json({ success: false, error: "guest_count が未指定です。" });
+    }
+
+    // 対象ホテル＆部屋を特定して更新
+    const [updated] = await Room.update(
+      { guest_count, updated_at: new Date() },
+      { where: { id, hotel_id } }
+    );
+
+    if (updated === 0) {
+      return res.status(404).json({ success: false, error: "対象の部屋が見つかりません。" });
+    }
+
+    res.json({
+      success: true,
+      message: `ホテルID:${hotel_id} 部屋ID:${id} の人数を ${guest_count} に更新しました。`,
+    });
+  } catch (err) {
+    console.error("❌ updateGuestCount error:", err);
+    res.status(500).json({ success: false, error: "サーバーエラー（人数更新）" });
+  }
+};
+
+// ====================================================
+// 🟢 グループ／個別（stay_type）切り替え
+// ====================================================
+exports.updateStayType = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { hotel_id } = req.body;
+
+    if (!id) return res.status(400).json({ success: false, error: "id は必須です。" });
+    if (!hotel_id) return res.status(400).json({ success: false, error: "hotel_id は必須です。" });
+
+    // 現在のstay_typeを取得
+    const room = await Room.findOne({ where: { id, hotel_id } });
+    if (!room) return res.status(404).json({ success: false, error: "部屋が見つかりません。" });
+
+    const newType = room.stay_type === "group" ? "individual" : "group";
+
+    await Room.update(
+      { stay_type: newType, updated_at: new Date() },
+      { where: { id, hotel_id } }
+    );
+
+    res.json({
+      success: true,
+      newType,
+      message: `部屋ID:${id} の宿泊タイプを '${newType}' に変更しました。`,
+    });
+  } catch (err) {
+    console.error("❌ updateStayType error:", err);
+    res.status(500).json({ success: false, error: "サーバーエラー（宿泊タイプ切替）" });
+  }
+};
+
+// ====================================================
+// 🟢 チェックアウトステータス切替（before/after）
+// ====================================================
+exports.updateCheckoutStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { hotel_id } = req.body;
+
+    if (!id) return res.status(400).json({ success: false, error: "id は必須です。" });
+    if (!hotel_id) return res.status(400).json({ success: false, error: "hotel_id は必須です。" });
+
+    const room = await Room.findOne({ where: { id, hotel_id } });
+    if (!room) return res.status(404).json({ success: false, error: "部屋が見つかりません。" });
+
+    const newStatus = room.checkout_status === "after" ? "before" : "after";
+
+    await Room.update(
+      { checkout_status: newStatus, updated_at: new Date() },
+      { where: { id, hotel_id } }
+    );
+
+    res.json({
+      success: true,
+      newStatus,
+      message: `部屋ID:${id} のチェックアウト状態を '${newStatus}' に変更しました。`,
+    });
+  } catch (err) {
+    console.error("❌ updateCheckoutStatus error:", err);
+    res.status(500).json({ success: false, error: "サーバーエラー（チェックアウト切替）" });
+  }
+};
+
+exports.bulkUpdateRoomStatus = async (req, res) => {
+  try {
+    const { updates } = req.body; // [{room_id, status}, ...]
+    if (!Array.isArray(updates) || updates.length === 0) {
+      return res.status(400).json({ success: false, error: "更新データが空です。" });
+    }
+
+    const updatePromises = updates.map(({ room_id, status }) =>
+      Room.update(
+        { status, updated_at: new Date() },
+        { where: { id: room_id } }
+      )
+    );
+
+    await Promise.all(updatePromises);
+
+    res.json({ success: true, updated: updates.length });
+  } catch (err) {
+    console.error("❌ bulkUpdateRoomStatus error:", err);
+    res.status(500).json({ success: false, error: "一括更新失敗" });
   }
 };
