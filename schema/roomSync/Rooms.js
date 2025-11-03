@@ -34,13 +34,19 @@ const Room = database.define('Room', {
   status: {
     type: DataTypes.STRING(50),
     allowNull: false,
-    defaultValue: 'available',
-    comment: '部屋状態（available, occupied, cleaning, etc）'
+    defaultValue: 'unused', // ← 初期値を「未使用」に変更
+    comment: '部屋状態（checked, stay_clean, stay_noclean, need_clean, unused）'
   },
   last_cleaned: {
     type: DataTypes.DATE,
     allowNull: true,
     comment: '最終清掃日'
+  },
+  checkout_status: {
+    type: DataTypes.STRING(20),
+    allowNull: false,
+    defaultValue: 'before', // 'before' or 'after'
+    comment: 'チェックアウト状態（before=チェックアウト前, after=チェックアウト後）'
   },
 
   // ===============================
@@ -65,6 +71,16 @@ const Room = database.define('Room', {
     type: DataTypes.TEXT,
     allowNull: true,
     comment: '備考欄（メモやリクエスト）'
+  },
+
+  // ===============================
+  // 🧍‍♀️👥 個人 or 団体管理カラム
+  // ===============================
+  stay_type: {
+    type: DataTypes.STRING(10),
+    allowNull: false,
+    defaultValue: 'individual', // 'individual' or 'group'
+    comment: '宿泊タイプ（individual=個人, group=団体）'
   },
 
   created_at: {
