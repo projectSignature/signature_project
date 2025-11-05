@@ -382,44 +382,50 @@ exports.updateCheckoutStatus = async (req, res) => {
 };
 
 exports.bulkUpdateRoomStatus = async (req, res) => {
-  const t = await Room.sequelize.transaction(); // 🔹 トランザクション開始
+  const t = await Room.sequelize.transaction();
 
   try {
-    const { updates } = req.body; // [{room_id, status}, ...]
+    const { updates } = req.body;
     if (!Array.isArray(updates) || updates.length === 0) {
       return res.status(400).json({ success: false, error: "更新データが空です。" });
     }
 
-    // === 1️⃣ room_idが該当するものだけステータス変更 ===
-    const updatePromises = updates.map(({ room_id, status }) =>
-      Room.update(
-        { status, updated_at: new Date() },
-        { where: { id: room_id }, transaction: t }
-      )
-    );
-    await Promise.all(updatePromises);
+    // === 1️⃣ 一括CASE UPDATE ===
+    // 例: UPDATE Rooms SET status = CASE id WHEN 1 THEN 'clean' WHEN 2 THEN 'need_clean' END WHERE id IN (1,2);
+    const ids = updates.map((u) => u.room_id);
+    const caseParts = updates
+      .map((u) => `WHEN ${u.room_id} THEN '${u.status}'`)
+      .join(" ");
 
-    // === 2️⃣ 全件 checkout_status / stay_type を一括更新 ===
+    const sql = `
+      UPDATE Rooms
+      SET status = CASE id
+        ${caseParts}
+      END,
+      updated_at = NOW()
+      WHERE id IN (${ids.join(",")});
+    `;
+
+    await Room.sequelize.query(sql, { transaction: t });
+
+    // === 2️⃣ 全件更新 ===
     await Room.update(
       {
         checkout_status: "before",
         stay_type: "group",
         updated_at: new Date(),
       },
-      {
-        where: {}, // ← 全件対象
-        transaction: t,
-      }
+      { where: {}, transaction: t }
     );
 
-    // ✅ すべて成功したらコミット
     await t.commit();
-
     res.json({ success: true, updated: updates.length });
   } catch (err) {
-    await t.rollback(); // 🔁 失敗時はロールバック
+    await t.rollback();
     console.error("❌ bulkUpdateRoomStatus error:", err);
     res.status(500).json({ success: false, error: "一括更新失敗" });
   }
 };
+
+
 
