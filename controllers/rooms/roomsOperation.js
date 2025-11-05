@@ -390,15 +390,15 @@ exports.bulkUpdateRoomStatus = async (req, res) => {
       return res.status(400).json({ success: false, error: "更新データが空です。" });
     }
 
-    // === 1️⃣ 一括CASE UPDATE ===
-    // 例: UPDATE Rooms SET status = CASE id WHEN 1 THEN 'clean' WHEN 2 THEN 'need_clean' END WHERE id IN (1,2);
     const ids = updates.map((u) => u.room_id);
     const caseParts = updates
       .map((u) => `WHEN ${u.room_id} THEN '${u.status}'`)
       .join(" ");
 
+    const tableName = Room.getTableName(); // ✅ 自動でテーブル名を取得
+
     const sql = `
-      UPDATE Rooms
+      UPDATE ${tableName}
       SET status = CASE id
         ${caseParts}
       END,
@@ -408,7 +408,6 @@ exports.bulkUpdateRoomStatus = async (req, res) => {
 
     await Room.sequelize.query(sql, { transaction: t });
 
-    // === 2️⃣ 全件更新 ===
     await Room.update(
       {
         checkout_status: "before",
@@ -426,6 +425,8 @@ exports.bulkUpdateRoomStatus = async (req, res) => {
     res.status(500).json({ success: false, error: "一括更新失敗" });
   }
 };
+
+
 
 
 
