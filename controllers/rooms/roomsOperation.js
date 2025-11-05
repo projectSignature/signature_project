@@ -391,23 +391,35 @@ exports.bulkUpdateRoomStatus = async (req, res) => {
     }
 
     const ids = updates.map((u) => u.room_id);
-    const caseParts = updates
+
+    // 🔹 status 用 CASE
+    const caseStatus = updates
       .map((u) => `WHEN ${u.room_id} THEN '${u.status}'`)
       .join(" ");
 
-    const tableName = Room.getTableName(); // ✅ 自動でテーブル名を取得
+    // 🔹 guest_count 用 CASE（人数空欄なら0扱い）
+    const caseGuest = updates
+      .map((u) => `WHEN ${u.room_id} THEN ${u.guest_count ?? 0}`)
+      .join(" ");
+
+    const tableName = Room.getTableName();
 
     const sql = `
       UPDATE ${tableName}
-      SET status = CASE id
-        ${caseParts}
-      END,
-      updated_at = NOW()
+      SET 
+        status = CASE id
+          ${caseStatus}
+        END,
+        guest_count = CASE id
+          ${caseGuest}
+        END,
+        updated_at = NOW()
       WHERE id IN (${ids.join(",")});
     `;
 
     await Room.sequelize.query(sql, { transaction: t });
 
+    // 🔸 ここは全体更新ではなく、必要なら残す
     await Room.update(
       {
         checkout_status: "before",
@@ -425,6 +437,8 @@ exports.bulkUpdateRoomStatus = async (req, res) => {
     res.status(500).json({ success: false, error: "一括更新失敗" });
   }
 };
+
+
 
 
 
