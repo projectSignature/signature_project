@@ -385,62 +385,83 @@ exports.bulkUpdateRoomStatus = async (req, res) => {
   const t = await Room.sequelize.transaction();
 
   try {
-    const { updates } = req.body;
-    if (!Array.isArray(updates) || updates.length === 0) {
-      return res.status(400).json({ success: false, error: "更新データが空です。" });
-    }
-
-    const ids = updates.map((u) => u.room_id);
-
-    // 🔹 status 用 CASE
-    const caseStatus = updates
-      .map((u) => `WHEN ${u.room_id} THEN '${u.status}'`)
-      .join(" ");
-
-    // 🔹 guest_count 用 CASE（人数空欄なら0扱い）
-    const caseGuest = updates
-      .map((u) => `WHEN ${u.room_id} THEN ${u.guest_count ?? 0}`)
-      .join(" ");
-
+    const { updates, updateGuestList } = req.body;
     const tableName = Room.getTableName();
 
-    const sql = `
-      UPDATE ${tableName}
-      SET 
-        status = CASE id
-          ${caseStatus}
-        END,
-        guest_count = CASE id
-          ${caseGuest}
-        END,
-        updated_at = NOW()
-      WHERE id IN (${ids.join(",")});
-    `;
+    // =========================================================
+    // ① ステータス更新（従来処理）--------------------------------
+    // =========================================================
+    if (Array.isArray(updates) && updates.length > 0) {
+      const ids = updates.map((u) => u.room_id);
+      const caseStatus = updates
+        .map((u) => `WHEN ${u.room_id} THEN '${u.status}'`)
+        .join(" ");
+      const caseGuest = updates
+        .map((u) => `WHEN ${u.room_id} THEN ${u.guest_count ?? 0}`)
+        .join(" ");
 
-    await Room.sequelize.query(sql, { transaction: t });
+      const sqlStatus = `
+        UPDATE ${tableName}
+        SET
+          status = CASE id
+            ${caseStatus}
+          END,
+          guest_count = CASE id
+            ${caseGuest}
+          END,
+          updated_at = NOW()
+        WHERE id IN (${ids.join(",")});
+      `;
 
-    // 🔸 ここは全体更新ではなく、必要なら残す
-    await Room.update(
-      {
-        checkout_status: "before",
-        stay_type: "group",
-        updated_at: new Date(),
-      },
-      { where: {}, transaction: t }
-    );
+      await Room.sequelize.query(sqlStatus, { transaction: t });
+
+      await Room.update(
+        {
+          checkout_status: "before",
+          stay_type: "group",
+          updated_at: new Date(),
+        },
+        { where: {}, transaction: t }
+      );
+    }
+
+    // =========================================================
+    // ② 人数更新（updateGuestList全件・ゼロ除去対応）--------------
+    // =========================================================
+    if (updateGuestList && typeof updateGuestList === "object") {
+      const entries = Object.entries(updateGuestList); // [["0413", 2], ["0414", 1], ...]
+
+      if (entries.length > 0) {
+        // 🔸 ゼロを除いたroom番号を使用
+        const caseGuestAll = entries
+          .map(([roomNo, count]) => {
+            const trimmed = String(roomNo).replace(/^0+/, ""); // ← 先頭の0削除
+            return `WHEN '${trimmed}' THEN ${Number(count) || 0}`;
+          })
+          .join(" ");
+
+        const roomNos = entries
+          .map(([roomNo]) => `'${String(roomNo).replace(/^0+/, "")}'`)
+          .join(",");
+
+        const sqlGuest = `
+          UPDATE ${tableName}
+          SET guest_count = CASE room_number
+            ${caseGuestAll}
+          END,
+          updated_at = NOW()
+          WHERE room_number IN (${roomNos});
+        `;
+
+        await Room.sequelize.query(sqlGuest, { transaction: t });
+      }
+    }
 
     await t.commit();
-    res.json({ success: true, updated: updates.length });
+    res.json({ success: true, updated: updates?.length || 0 });
   } catch (err) {
     await t.rollback();
     console.error("❌ bulkUpdateRoomStatus error:", err);
     res.status(500).json({ success: false, error: "一括更新失敗" });
   }
 };
-
-
-
-
-
-
-
