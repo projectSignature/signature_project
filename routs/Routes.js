@@ -3624,6 +3624,7 @@ router.get('/api/room/amenity/list', RoomsOperation.getAmenityRequests);
 router.put('/api/room/status', RoomsOperation.updateRoomStatus);
 router.put("/api/room/details", RoomsOperation.updateRoomDetails);
 router.put("/api/room/status/checkOut/after", RoomsOperation.updateRoomStatusForCheckOutAfter)
+router.put("/api/room/status/singleGuest", RoomsOperation.updateRoomStatusSingleGuest)
 
 
 //POST
@@ -5660,6 +5661,7 @@ router.get('/gyminfoall', async (req, res) => {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+
 
 
 
