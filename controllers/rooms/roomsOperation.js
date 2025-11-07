@@ -404,6 +404,29 @@ exports.updateCheckoutStatus = async (req, res) => {
   }
 };
 
+exports.updateRoomStatusSingleGuest = async (req, res) => {
+  try {
+    const { room_id, status } = req.body;
+    if (!room_id || !status)
+      return res.status(400).json({ error: "room_id と status は必須です。" });
+
+    // DB更新
+    const [updated] = await Room.update(
+      { stay_type:status, updated_at: new Date() },
+      { where: { id: room_id } }
+    );
+
+    if (updated === 0) {
+      return res.status(404).json({ error: "対象の部屋が見つかりません。" });
+    }
+
+    res.json({ success: true, message: "部屋ステータスを更新しました。" });
+  } catch (err) {
+    console.error("❌ updateRoomStatus error:", err);
+    res.status(500).json({ error: "サーバーエラー" });
+  }
+};
+
 exports.bulkUpdateRoomStatus = async (req, res) => {
   const t = await Room.sequelize.transaction();
 
@@ -488,4 +511,5 @@ exports.bulkUpdateRoomStatus = async (req, res) => {
     res.status(500).json({ success: false, error: "一括更新失敗" });
   }
 };
+
 
