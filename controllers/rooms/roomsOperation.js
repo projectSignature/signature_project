@@ -102,6 +102,31 @@ exports.updateRoomStatusForCheckOutAfter = async (req, res) => {
   }
 };
 
+exports.updateRoomStatusSingleGuest = async (req, res) => {
+  try {
+    const { room_id, status } = req.body;
+    if (!room_id || !status)
+      return res.status(400).json({ error: "room_id と status は必須です。" });
+
+    // DB更新
+    const [updated] = await Room.update(
+      { stay_type:status, updated_at: new Date() },
+      { where: { id: room_id } }
+    );
+
+    if (updated === 0) {
+      return res.status(404).json({ error: "対象の部屋が見つかりません。" });
+    }
+
+    res.json({ success: true, message: "部屋ステータスを更新しました。" });
+  } catch (err) {
+    console.error("❌ updateRoomStatus error:", err);
+    res.status(500).json({ error: "サーバーエラー" });
+  }
+};
+
+
+
 // 🔹 アメニティ依頼登録
 exports.registerAmenityAction = async (req, res) => {
   try {
@@ -404,29 +429,6 @@ exports.updateCheckoutStatus = async (req, res) => {
   }
 };
 
-exports.updateRoomStatusSingleGuest = async (req, res) => {
-  try {
-    const { room_id, status } = req.body;
-    if (!room_id || !status)
-      return res.status(400).json({ error: "room_id と status は必須です。" });
-
-    // DB更新
-    const [updated] = await Room.update(
-      { stay_type:status, updated_at: new Date() },
-      { where: { id: room_id } }
-    );
-
-    if (updated === 0) {
-      return res.status(404).json({ error: "対象の部屋が見つかりません。" });
-    }
-
-    res.json({ success: true, message: "部屋ステータスを更新しました。" });
-  } catch (err) {
-    console.error("❌ updateRoomStatus error:", err);
-    res.status(500).json({ error: "サーバーエラー" });
-  }
-};
-
 exports.bulkUpdateRoomStatus = async (req, res) => {
   const t = await Room.sequelize.transaction();
 
@@ -512,4 +514,97 @@ exports.bulkUpdateRoomStatus = async (req, res) => {
   }
 };
 
+exports.registerOtherRoomRequest = async (req, res) => {
+  try {
+    const { room_id, instruction } = req.body;
 
+    if (!room_id || !instruction) {
+      return res.status(400).json({ error: 'room_id と instruction は必須です。' });
+    }
+
+    // 対象の部屋を取得
+    const room = await Room.findByPk(room_id);
+    if (!room) {
+      return res.status(404).json({ error: '指定された部屋が見つかりません。' });
+    }
+
+    // 既存メモがあれば追記（改行区切り）
+    const existingNotes = room.notes || '';
+    const newNote = existingNotes
+      ? `${existingNotes}\n📝その他依頼：${instruction}`
+      : `📝その他依頼：${instruction}`;
+
+    // 更新
+    await room.update({ notes: newNote, updated_at: new Date() });
+
+    res.json({
+      message: 'その他の依頼をnotesに登録しました。',
+      room_id,
+      updated_notes: newNote
+    });
+
+  } catch (err) {
+    console.error('❌ registerOtherRoomRequest エラー:', err);
+    res.status(500).json({ error: 'サーバーエラーが発生しました。' });
+  }
+};
+
+// ===============================
+// ⚙️ その他依頼一覧を取得
+// ===============================
+exports.getOtherRoomRequests = async (req, res) => {
+  try {
+    const { hotel_id } = req.query;
+
+    const where = {};
+    if (hotel_id) where.hotel_id = hotel_id;
+
+    // notes に「📝その他依頼」が含まれている部屋を取得
+    const rooms = await Room.findAll({
+      where,
+      attributes: ['id', 'room_number', 'floor', 'guest_name', 'notes', 'updated_at'],
+      order: [['floor', 'ASC'], ['room_number', 'ASC']]
+    });
+
+    // 📝が含まれる部屋だけフィルタ
+    const filtered = rooms.filter(r => r.notes && r.notes.includes('📝その他依頼'));
+
+    res.json(filtered);
+
+  } catch (err) {
+    console.error('❌ getOtherRoomRequests エラー:', err);
+    res.status(500).json({ error: 'サーバーエラーが発生しました。' });
+  }
+};
+
+// ===============================
+// 🗑 その他依頼（notes）の削除
+// ===============================
+exports.deleteOtherRoomRequest = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const room = await Room.findByPk(id);
+    if (!room) {
+      return res.status(404).json({ error: '対象の部屋が見つかりません。' });
+    }
+
+    if (!room.notes || !room.notes.includes('📝その他依頼')) {
+      return res.status(400).json({ error: '削除対象の依頼が存在しません。' });
+    }
+
+    // 🧹 「📝その他依頼：」部分だけ削除（他メモがあっても保持）
+    const cleanedNotes = room.notes
+      .split('\n')
+      .filter(line => !line.includes('📝その他依頼'))
+      .join('\n')
+      .trim();
+
+    await room.update({ notes: cleanedNotes || null, updated_at: new Date() });
+
+    res.json({ message: 'その他依頼を削除しました。', id, updated_notes: cleanedNotes });
+  } catch (err) {
+    console.error('❌ deleteOtherRoomRequest エラー:', err);
+    res.status(500).json({ error: 'サーバーエラーが発生しました。' });
+  }
+};
