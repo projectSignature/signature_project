@@ -3611,14 +3611,16 @@ router.post('/pos/updateSettings', async (req, res) => {
 //POS Finish
 
 
+//room sync system
+
 const RoomsOperation = require('../controllers/rooms/roomsOperation')
-
-
-
 //get
 router.get('/api/room/status', RoomsOperation.getRoomStatus);
 router.get('/api/room/amenity', RoomsOperation.getAmenityRequests);
 router.get('/api/room/amenity/list', RoomsOperation.getAmenityRequests);
+// --- その他の依頼を含む部屋一覧を取得 ---
+router.get('/api/room/other-request/list', RoomsOperation.getOtherRoomRequests);
+
 
 //put
 router.put('/api/room/status', RoomsOperation.updateRoomStatus);
@@ -3629,10 +3631,18 @@ router.put("/api/room/status/singleGuest", RoomsOperation.updateRoomStatusSingle
 
 //POST
 router.post('/api/room/amenity', RoomsOperation.registerAmenityAction);
+// --- その他のアメニティ依頼登録 ---
+// --- その他の依頼をRoomテーブルのnotesに保存 ---
+router.post('/api/room/other-request', RoomsOperation.registerOtherRoomRequest);
+
+
 // ===== アメニティ関連 =====
 
 //delete
 router.delete('/api/room/amenity/:id', RoomsOperation.completeAmenityRequest);
+// --- その他依頼（Room.notes）削除 ---
+router.delete('/api/room/other-request/:id', RoomsOperation.deleteOtherRoomRequest);
+
 
 // PUT（人数更新）
 router.put('/api/room/:id/guest_count', RoomsOperation.updateGuestCount);
@@ -5661,6 +5671,7 @@ router.get('/gyminfoall', async (req, res) => {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+
 
 
 
