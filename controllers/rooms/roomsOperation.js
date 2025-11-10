@@ -411,21 +411,30 @@ exports.updateCheckoutStatus = async (req, res) => {
     const room = await Room.findOne({ where: { id, hotel_id } });
     if (!room) return res.status(404).json({ success: false, error: "部屋が見つかりません。" });
 
+    // 🔄 チェックアウト状態の切り替え
     const newStatus = room.checkout_status === "after" ? "before" : "after";
 
-    await Room.update(
-      { checkout_status: newStatus, updated_at: new Date() },
-      { where: { id, hotel_id } }
-    );
+    // 🧽 after → つまり「チェックアウトされた」場合は清掃要へ
+    const updateFields = {
+      checkout_status: newStatus,
+      updated_at: new Date(),
+    };
 
-    res.json({
+    if (newStatus === "after") {
+      updateFields.status = "need_clean"; // ← これ追加！
+    }
+
+    await Room.update(updateFields, { where: { id, hotel_id } });
+
+    return res.json({
       success: true,
       newStatus,
       message: `部屋ID:${id} のチェックアウト状態を '${newStatus}' に変更しました。`,
     });
+
   } catch (err) {
     console.error("❌ updateCheckoutStatus error:", err);
-    res.status(500).json({ success: false, error: "サーバーエラー（チェックアウト切替）" });
+    return res.status(500).json({ success: false, error: "サーバーエラー（チェックアウト切替）" });
   }
 };
 
@@ -608,3 +617,4 @@ exports.deleteOtherRoomRequest = async (req, res) => {
     res.status(500).json({ error: 'サーバーエラーが発生しました。' });
   }
 };
+
