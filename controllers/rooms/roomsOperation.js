@@ -403,7 +403,9 @@ exports.updateStayType = async (req, res) => {
 exports.updateCheckoutStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { hotel_id } = req.body;
+    const { hotel_id,status } = req.body;
+    console.log('room to checkOut')
+    console.log(req.body)
 
     if (!id) return res.status(400).json({ success: false, error: "id は必須です。" });
     if (!hotel_id) return res.status(400).json({ success: false, error: "hotel_id は必須です。" });
@@ -421,7 +423,7 @@ exports.updateCheckoutStatus = async (req, res) => {
     };
 
     if (newStatus === "after") {
-      updateFields.status = "need_clean"; // ← これ追加！
+      updateFields.status = status; // ← これ追加！
     }
 
     await Room.update(updateFields, { where: { id, hotel_id } });
@@ -617,4 +619,5 @@ exports.deleteOtherRoomRequest = async (req, res) => {
     res.status(500).json({ error: 'サーバーエラーが発生しました。' });
   }
 };
+
 
