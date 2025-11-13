@@ -92,7 +92,20 @@ const Room = database.define('Room', {
     type: DataTypes.DATE,
     allowNull: false,
     defaultValue: DataTypes.NOW
-  }
+  },
+  excel_status: {
+  type: DataTypes.STRING(50),
+  allowNull: true,
+  comment: 'Excel取り込み時のステータス（生データ保持用）'
+},
+clean_flag: {
+  type: DataTypes.STRING(20),
+  allowNull: true,
+  defaultValue: null,
+  comment: '清掃フラグ（清掃必要・不要・連泊など）'
+},
+
+
 }, {
   tableName: 'rooms',
   timestamps: false
