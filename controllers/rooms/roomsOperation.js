@@ -34,7 +34,8 @@ exports.getRoomStatus = async (req, res) => {
         'cleaning_price',
         'updated_at',
         "stay_type",
-        "checkout_status"
+        "checkout_status",
+        "excel_status"
       ],
       order: [['floor', 'ASC'], ['room_number', 'ASC']]
     });
@@ -440,6 +441,7 @@ exports.updateCheckoutStatus = async (req, res) => {
   }
 };
 
+
 exports.bulkUpdateRoomStatus = async (req, res) => {
   const t = await Room.sequelize.transaction();
 
@@ -448,53 +450,62 @@ exports.bulkUpdateRoomStatus = async (req, res) => {
     const tableName = Room.getTableName();
 
     // =========================================================
-    // ① ステータス更新（従来処理）--------------------------------
+    // ① ステータス更新（excel_status + clean_flag 対応）
     // =========================================================
     if (Array.isArray(updates) && updates.length > 0) {
       const ids = updates.map((u) => u.room_id);
+
       const caseStatus = updates
         .map((u) => `WHEN ${u.room_id} THEN '${u.status}'`)
         .join(" ");
+
       const caseGuest = updates
         .map((u) => `WHEN ${u.room_id} THEN ${u.guest_count ?? 0}`)
+        .join(" ");
+
+      const caseExcel = updates
+        .map((u) => `WHEN ${u.room_id} THEN '${u.excel_status ?? ""}'`)
+        .join(" ");
+
+      // 🆕 clean_flag の CASE 文
+      const caseCleanFlag = updates
+        .map((u) => `WHEN ${u.room_id} THEN '${u.clean_flag ?? ""}'`)
         .join(" ");
 
       const sqlStatus = `
         UPDATE ${tableName}
         SET
-          status = CASE id
-            ${caseStatus}
-          END,
-          guest_count = CASE id
-            ${caseGuest}
-          END,
+          status = CASE id ${caseStatus} END,
+          guest_count = CASE id ${caseGuest} END,
+          excel_status = CASE id ${caseExcel} END,
+          clean_flag = CASE id ${caseCleanFlag} END,
           updated_at = NOW()
         WHERE id IN (${ids.join(",")});
       `;
 
       await Room.sequelize.query(sqlStatus, { transaction: t });
 
+      // 🔹 対象部屋のみ更新（全件更新バグ修正済）
       await Room.update(
         {
           checkout_status: "before",
           stay_type: "group",
           updated_at: new Date(),
         },
-        { where: {}, transaction: t }
+        { where: { id: ids }, transaction: t }
       );
     }
 
     // =========================================================
-    // ② 人数更新（updateGuestList全件・ゼロ除去対応）--------------
+    // ② 人数更新（updateGuestList全件・ゼロ除去対応）
     // =========================================================
     if (updateGuestList && typeof updateGuestList === "object") {
-      const entries = Object.entries(updateGuestList); // [["0413", 2], ["0414", 1], ...]
+      const entries = Object.entries(updateGuestList);
 
       if (entries.length > 0) {
-        // 🔸 ゼロを除いたroom番号を使用
         const caseGuestAll = entries
           .map(([roomNo, count]) => {
-            const trimmed = String(roomNo).replace(/^0+/, ""); // ← 先頭の0削除
+            const trimmed = String(roomNo).replace(/^0+/, "");
             return `WHEN '${trimmed}' THEN ${Number(count) || 0}`;
           })
           .join(" ");
@@ -505,10 +516,9 @@ exports.bulkUpdateRoomStatus = async (req, res) => {
 
         const sqlGuest = `
           UPDATE ${tableName}
-          SET guest_count = CASE room_number
-            ${caseGuestAll}
-          END,
-          updated_at = NOW()
+          SET
+            guest_count = CASE room_number ${caseGuestAll} END,
+            updated_at = NOW()
           WHERE room_number IN (${roomNos});
         `;
 
@@ -524,6 +534,8 @@ exports.bulkUpdateRoomStatus = async (req, res) => {
     res.status(500).json({ success: false, error: "一括更新失敗" });
   }
 };
+
+
 
 exports.registerOtherRoomRequest = async (req, res) => {
   try {
@@ -619,5 +631,3 @@ exports.deleteOtherRoomRequest = async (req, res) => {
     res.status(500).json({ error: 'サーバーエラーが発生しました。' });
   }
 };
-
-
