@@ -7,54 +7,41 @@ const AmenityRequest = require('../../schema/roomSync/AmenityRequests');
  * GET /room/status?hotel_id=1
  * 指定ホテルの全ルームステータスを取得
  */
-exports.getRoomStatus = async (req, res) => {
-  try {
-    const { hotel_id } = req.query;
+ exports.getRoomStatus = async (req, res) => {
+   try {
+     const { hotel_id } = req.query;
 
-    console.log(req.query)
+     console.log(req.query);
 
-    if (!hotel_id) {
-      return res.status(400).json({ error: 'hotel_id is required' });
-    }
+     if (!hotel_id) {
+       return res.status(400).json({ error: 'hotel_id is required' });
+     }
 
-    // hotel_id で部屋を検索
-    const rooms = await Room.findAll({
-      where: { hotel_id },
-      attributes: [
-        'id',
-        'room_number',
-        'floor',
-        'room_type',
-        'status',
-        'guest_name',
-'guest_count',
-'checkout_time',
-        'last_cleaned',
-        'notes',
-        'cleaning_price',
-        'updated_at',
-        "stay_type",
-        "checkout_status",
-        "excel_status"
-      ],
-      order: [['floor', 'ASC'], ['room_number', 'ASC']]
-    });
+     // 全カラム返す → attributes を削除
+     const rooms = await Room.findAll({
+       where: { hotel_id },
+       order: [
+         ['floor', 'ASC'],
+         ['room_number', 'ASC']
+       ]
+     });
 
-    if (!rooms || rooms.length === 0) {
-      return res.status(404).json({ message: 'No rooms found for this hotel_id' });
-    }
+     if (!rooms || rooms.length === 0) {
+       return res.status(404).json({ message: 'No rooms found for this hotel_id' });
+     }
 
-    return res.json({
-      hotel_id,
-      count: rooms.length,
-      rooms
-    });
+     return res.json({
+       hotel_id,
+       count: rooms.length,
+       rooms
+     });
 
-  } catch (error) {
-    console.error('❌ Error fetching room status:', error);
-    return res.status(500).json({ error: 'Internal server error' });
-  }
-};
+   } catch (error) {
+     console.error('❌ Error fetching room status:', error);
+     return res.status(500).json({ error: 'Internal server error' });
+   }
+ };
+
 
 // ✅ 部屋ステータス更新
 exports.updateRoomStatus = async (req, res) => {
@@ -629,5 +616,177 @@ exports.deleteOtherRoomRequest = async (req, res) => {
   } catch (err) {
     console.error('❌ deleteOtherRoomRequest エラー:', err);
     res.status(500).json({ error: 'サーバーエラーが発生しました。' });
+  }
+};
+
+// ----------------------------------------------------
+// 滞在タイプ 一括更新処理
+// ----------------------------------------------------
+exports.bulkUpdateStayType = async (req, res) => {
+  const { hotel_id, updates } = req.body;
+
+  if (!updates || typeof updates !== "object") {
+    return res.status(400).json({
+      success: false,
+      error: "updates が不正です",
+    });
+  }
+
+  try {
+    const ids = Object.keys(updates);
+
+    console.log("🟣 一括 stay_type 更新リクエスト:", updates);
+
+    // まとめて UPDATE（高速）
+    for (const id of ids) {
+      await Room.update(
+        { stay_type: updates[id] },
+        { where: { id, hotel_id } }
+      );
+    }
+
+    return res.json({
+      success: true,
+      updated_count: ids.length,
+      updated_ids: ids,
+    });
+
+  } catch (err) {
+    console.error("❌ bulkUpdateStayType エラー:", err);
+    return res.status(500).json({
+      success: false,
+      error: err.message,
+    });
+  }
+};
+
+exports.bulkUpdateCheckoutStatus = async (req, res) => {
+  const { hotel_id, updates } = req.body;
+
+  if (!updates || typeof updates !== "object") {
+    return res.status(400).json({ success: false, error: "updates が不正" });
+  }
+
+  try {
+    const ids = Object.keys(updates);
+
+    for (const id of ids) {
+      await Room.update(
+        { checkout_status: updates[id] },
+        { where: { id, hotel_id } }
+      );
+    }
+
+    res.json({ success: true, updated: ids.length });
+
+  } catch (err) {
+    console.error("bulkUpdateCheckoutStatus エラー:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+
+exports.startCleaning = async (req, res) => {
+  try {
+    const { room_id } = req.body;
+
+    if (!room_id) {
+      return res.status(400).json({ error: "room_id is required" });
+    }
+
+    const room = await Room.findByPk(room_id);
+    if (!room) return res.status(404).json({ error: "Room not found" });
+
+    await room.update({
+      cleaning_status: "in_progress",
+      cleaning_start_time: new Date(),
+      cleaning_done_time: null
+    });
+
+    return res.json({ success: true, room });
+  } catch (err) {
+    console.error("startCleaning error:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.finishCleaning = async (req, res) => {
+  try {
+    const { room_id } = req.body;
+
+    if (!room_id) {
+      return res.status(400).json({ error: "room_id is required" });
+    }
+
+    const room = await Room.findByPk(room_id);
+    if (!room) return res.status(404).json({ error: "Room not found" });
+
+    await room.update({
+      cleaning_status: "done",
+      cleaning_done_time: new Date()
+    });
+
+    return res.json({ success: true, room });
+  } catch (err) {
+    console.error("finishCleaning error:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.undoCleaning = async (req, res) => {
+  try {
+    const { room_id } = req.body;
+
+    if (!room_id) {
+      return res.status(400).json({ error: "room_id is required" });
+    }
+
+    const room = await Room.findByPk(room_id);
+    if (!room) return res.status(404).json({ error: "Room not found" });
+
+    await room.update({
+      cleaning_status: "not_started",
+      cleaning_start_time: null,
+      cleaning_done_time: null
+    });
+
+    return res.json({ success: true, room });
+  } catch (err) {
+    console.error("undoCleaning error:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// =========================
+//   確認済み（checked）
+// =========================
+exports.inspectorChecked = async (req, res) => {
+  try {
+    const { room_id } = req.body;
+
+    if (!room_id) {
+      return res.status(400).json({ message: "room_id is required" });
+    }
+
+    // 部屋取得
+    const room = await Room.findByPk(room_id);
+    if (!room) {
+      return res.status(404).json({ message: "Room not found" });
+    }
+
+    // 更新
+    await room.update({
+      cleaning_status: "checked",
+      status:"checked",
+      inspector_checked_at: new Date() // ← 必要なら
+    });
+
+    return res.json({
+      message: "Room marked as checked",
+      room
+    });
+
+  } catch (err) {
+    console.error("❌ inspectorChecked error:", err);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
