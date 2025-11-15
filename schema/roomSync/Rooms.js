@@ -104,6 +104,25 @@ clean_flag: {
   defaultValue: null,
   comment: '清掃フラグ（清掃必要・不要・連泊など）'
 },
+cleaning_status: {
+  type: DataTypes.STRING(20),
+  allowNull: false,
+  defaultValue: 'not_started',
+  comment: '清掃状態（not_started, in_progress, done, checked）'
+},
+
+cleaning_start_time: {
+  type: DataTypes.DATE,
+  allowNull: true,
+  comment: '清掃開始時刻'
+},
+
+cleaning_done_time: {
+  type: DataTypes.DATE,
+  allowNull: true,
+  comment: '清掃完了時刻'
+},
+
 
 
 }, {
