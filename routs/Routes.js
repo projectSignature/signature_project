@@ -3613,47 +3613,40 @@ router.post('/pos/updateSettings', async (req, res) => {
 
 //room sync system
 
-const RoomsOperation = require('../controllers/rooms/roomsOperation')
-//get
+const RoomsOperation = require('../controllers/rooms/roomsOperation');
+
+// 🔐 すべての /api/room/xxx を JWT 認証必須に
+// router.use("/api/room", auth);
+
+// GET
 router.get('/api/room/status', RoomsOperation.getRoomStatus);
 router.get('/api/room/amenity', RoomsOperation.getAmenityRequests);
 router.get('/api/room/amenity/list', RoomsOperation.getAmenityRequests);
-// --- その他の依頼を含む部屋一覧を取得 ---
 router.get('/api/room/other-request/list', RoomsOperation.getOtherRoomRequests);
 
-
-//put
+// PUT
 router.put('/api/room/status', RoomsOperation.updateRoomStatus);
-router.put("/api/room/details", RoomsOperation.updateRoomDetails);
-router.put("/api/room/status/checkOut/after", RoomsOperation.updateRoomStatusForCheckOutAfter)
-router.put("/api/room/status/singleGuest", RoomsOperation.updateRoomStatusSingleGuest)
+router.put('/api/room/details', RoomsOperation.updateRoomDetails);
+router.put('/api/room/status/checkOut/after', RoomsOperation.updateRoomStatusForCheckOutAfter);
+router.put('/api/room/status/singleGuest', RoomsOperation.updateRoomStatusSingleGuest);
 
-
-//POST
+// POST
 router.post('/api/room/amenity', RoomsOperation.registerAmenityAction);
-// --- その他のアメニティ依頼登録 ---
-// --- その他の依頼をRoomテーブルのnotesに保存 ---
 router.post('/api/room/other-request', RoomsOperation.registerOtherRoomRequest);
 
-
-// ===== アメニティ関連 =====
-
-//delete
+// DELETE
 router.delete('/api/room/amenity/:id', RoomsOperation.completeAmenityRequest);
-// --- その他依頼（Room.notes）削除 ---
 router.delete('/api/room/other-request/:id', RoomsOperation.deleteOtherRoomRequest);
 
+// 一括
+router.put('/api/room/status/bulk', RoomsOperation.bulkUpdateRoomStatus);
+router.put("/api/room/stay_type/bulk", RoomsOperation.bulkUpdateStayType);
+router.put("/api/room/checkout_status/bulk", RoomsOperation.bulkUpdateCheckoutStatus);
 
-// PUT（人数更新）
-router.put('/api/room/:id/guest_count', RoomsOperation.updateGuestCount);
-// 宿泊タイプの変更
-router.put('/api/room/:id/stay_type', RoomsOperation.updateStayType);
-// チェックアウト状況の変更
-router.put('/api/room/:id/checkout_status', RoomsOperation.updateCheckoutStatus);
-
-//一括ステータス変更
-router.put("/api/room/status/bulk", RoomsOperation.bulkUpdateRoomStatus);
-
+router.put('/api/room/cleaning/start', RoomsOperation.startCleaning);
+router.put('/api/room/cleaning/finish', RoomsOperation.finishCleaning);
+router.put('/api/room/cleaning/undo', RoomsOperation.undoCleaning);
+router.put("/api/room/inspector/checked", RoomsOperation.inspectorChecked);
 
 //order App
 
@@ -5671,6 +5664,7 @@ router.get('/gyminfoall', async (req, res) => {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+
 
 
 
