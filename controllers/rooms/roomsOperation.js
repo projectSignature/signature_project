@@ -433,12 +433,25 @@ exports.bulkUpdateRoomStatus = async (req, res) => {
   const t = await Room.sequelize.transaction();
 
   try {
-    const { updates, updateGuestList } = req.body;
+    console.log(`req.body`,req.body)
+    const { updates, updateGuestList,hotelId } = req.body;
     const tableName = Room.getTableName();
+    console.log(`hotelId`,hotelId)
 
     // =========================================================
     // ① ステータス更新（excel_status + clean_flag 対応）
     // =========================================================
+
+    await Room.update(
+      {
+        cleaning_done_time: null,
+        cleaning_start_time: null,
+        cleaning_status: "not_started",
+      },
+      { where: { hotel_id: hotelId } }
+    );
+
+
     if (Array.isArray(updates) && updates.length > 0) {
       const ids = updates.map((u) => u.room_id);
 
