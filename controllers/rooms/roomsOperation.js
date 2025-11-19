@@ -494,6 +494,12 @@ exports.bulkUpdateRoomStatus = async (req, res) => {
         },
         { where: { id: ids }, transaction: t }
       );
+
+      await AmenityRequest.update(
+        { status: "done" },
+        { where: {}, transaction: t } // ← 全件更新するなら必ず where: {} と明示
+      );
+
     }
 
     // =========================================================
