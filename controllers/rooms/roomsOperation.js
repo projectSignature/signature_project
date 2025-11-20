@@ -491,6 +491,7 @@ exports.bulkUpdateRoomStatus = async (req, res) => {
           checkout_status: "before",
           stay_type: "group",
           updated_at: new Date(),
+          notes:""
         },
         { where: { id: ids }, transaction: t }
       );
