@@ -3648,6 +3648,27 @@ router.put('/api/room/cleaning/finish', RoomsOperation.finishCleaning);
 router.put('/api/room/cleaning/undo', RoomsOperation.undoCleaning);
 router.put("/api/room/inspector/checked", RoomsOperation.inspectorChecked);
 
+const UserController = require("../controllers/rooms/userController");
+
+// 認証があるなら↓
+// const auth = require("../middleware/roomSyncAuth");
+// router.use("/api/user", auth);
+
+// === CREATE ===
+router.post("/api/user/create", UserController.createUser);
+
+// === UPDATE ===
+router.put("/api/user/update", UserController.updateUser);
+
+// === DELETE ===
+router.delete("/api/user/delete", UserController.deleteUser);
+
+// === GET ALL USERS ===
+router.get("/api/user/list", UserController.getAllUsers);
+
+router.get("/api/user/list", UserController.getUserList);
+
+
 //order App
 
 const OrdersUser = require('../schema/orders/user')
@@ -5664,6 +5685,7 @@ router.get('/gyminfoall', async (req, res) => {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+
 
 
 
