@@ -2,6 +2,7 @@
 // controller/rooms/roomsOperation.js
 const Room = require('../../schema/roomSync/Rooms');
 const AmenityRequest = require('../../schema/roomSync/AmenityRequests');
+const DailyRoomList = require("../../schema/roomSync/DailyRoomList");
 
 /**
  * GET /room/status?hotel_id=1
@@ -808,5 +809,136 @@ exports.inspectorChecked = async (req, res) => {
   } catch (err) {
     console.error("❌ inspectorChecked error:", err);
     return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.closeDailyList = async (req, res) => {
+  try {
+    const { hotel_id, work_date } = req.body;
+
+    if (!hotel_id || !work_date) {
+      return res.status(400).json({
+        success: false,
+        error: "hotel_id と work_date は必須です。",
+      });
+    }
+
+    const exists = await DailyRoomList.findOne({
+      where: { hotel_id, work_date },
+    });
+
+    if (exists) {
+      return res.json({ exists: true, message: "既に登録済みです。" });
+    }
+
+    const rooms = await Room.findAll({
+      where: { hotel_id },
+      order: [
+        ["floor", "ASC"],
+        ["room_number", "ASC"],
+      ],
+    });
+
+    if (!rooms.length) {
+      return res.status(404).json({ success: false, error: "部屋がありません。" });
+    }
+
+    const insertList = rooms.map((r) => ({
+      hotel_id,
+      work_date,
+      room_number: r.room_number,
+
+      // 🟢 clean_flag を保存する
+      status: r.clean_flag,
+
+      guest_count: r.guest_count ?? 0,
+
+      assigned_staff_id: null,
+      cleaned_by: null,
+      cleaning_done_at: null,
+      checked_done_at: null,
+
+      created_at: new Date(),
+      updated_at: new Date(),
+    }));
+
+    await DailyRoomList.bulkCreate(insertList);
+
+    return res.json({
+      success: true,
+      count: insertList.length,
+      message: `${work_date} の締め処理完了`,
+    });
+  } catch (err) {
+    console.error("❌ closeDailyList error:", err);
+    return res.status(500).json({
+      success: false,
+      error: "サーバーエラー（締め処理）",
+    });
+  }
+};
+
+
+exports.getDailyRoomList = async (req, res) => {
+  try {
+    const { date, hotel_id } = req.query;
+
+    if (!date || !hotel_id) {
+      return res.json({
+        success: false,
+        error: "date と hotel_id は必須です"
+      });
+    }
+
+    // 🔥 daily_room_list を取得
+    const rows = await DailyRoomList.findAll({
+      where: {
+        work_date: date,
+        hotel_id: hotel_id
+      },
+      order: [["room_number", "ASC"]]
+    });
+
+    return res.json({
+      success: true,
+      rows
+    });
+
+  } catch (err) {
+    console.error("getDailyRoomList ERROR:", err);
+    return res.json({
+      success: false,
+      error: "サーバーエラー"
+    });
+  }
+};
+
+exports.assignBulk = async (req, res) => {
+  try {
+    const { hotel_id, worker, room_ids, date } = req.body;
+
+    if (!hotel_id || !worker || !room_ids || room_ids.length === 0) {
+      return res.json({ success: false, error: "Missing parameters" });
+    }
+
+    await DailyRoomList.update(
+      { assigned_staff_id: worker },
+      {
+        where: {
+          hotel_id,
+          work_date: date,
+          id: room_ids
+        }
+      }
+    );
+
+    return res.json({ success: true });
+  } catch (err) {
+    console.error("assignBulk ERROR:", err);
+    return res.json({
+      success: false,
+      error: "assignBulk failed",
+      details: err.message
+    });
   }
 };
