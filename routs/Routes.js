@@ -3647,6 +3647,9 @@ router.put('/api/room/cleaning/start', RoomsOperation.startCleaning);
 router.put('/api/room/cleaning/finish', RoomsOperation.finishCleaning);
 router.put('/api/room/cleaning/undo', RoomsOperation.undoCleaning);
 router.put("/api/room/inspector/checked", RoomsOperation.inspectorChecked);
+router.post("/api/room/daily-list/close",  RoomsOperation.closeDailyList);
+router.get("/api/room/daily_room_list", RoomsOperation.getDailyRoomList);
+router.post("/api/room/assign_bulk", RoomsOperation.assignBulk);
 
 const UserController = require("../controllers/rooms/userController");
 
@@ -5685,6 +5688,7 @@ router.get('/gyminfoall', async (req, res) => {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+
 
 
 
