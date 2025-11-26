@@ -908,11 +908,14 @@ exports.closeDailyList = async (req, res) => {
 };
 
 
+
 exports.getDailyRoomList = async (req, res) => {
   try {
     const { date, hotel_id } = req.query;
 
+
     if (!date || !hotel_id) {
+      console.log()
       return res.json({
         success: false,
         error: "date と hotel_id は必須です"
@@ -972,3 +975,76 @@ exports.assignBulk = async (req, res) => {
   }
 };
 
+exports.updateDailyRoomList = async (req, res) => {
+  try {
+    const { rows, hotel_id } = req.body;
+
+    if (!rows || !Array.isArray(rows) || !hotel_id) {
+      return res.status(400).json({
+        success: false,
+        error: "rows と hotel_id は必須です"
+      });
+    }
+
+    for (const row of rows) {
+      const record = await DailyRoomList.findOne({
+        where: { id: row.id, hotel_id }
+      });
+
+      if (!record) continue;
+
+      // 既存履歴を取得
+      const history = record.edit_history ? JSON.parse(record.edit_history) : [];
+
+      // 🔥 変更チェック → 履歴追加
+      const logTime = new Date();
+
+      if (row.status !== record.status) {
+        history.push({
+          time: logTime,
+          field: "status",
+          before: record.status,
+          after: row.status
+        });
+      }
+
+      if (row.stay_type !== record.stay_type) {
+        history.push({
+          time: logTime,
+          field: "stay_type",
+          before: record.stay_type,
+          after: row.stay_type
+        });
+      }
+
+      if (row.notes !== record.notes) {
+        history.push({
+          time: logTime,
+          field: "notes",
+          before: record.notes,
+          after: row.notes
+        });
+      }
+
+      // 🔥 更新実行
+      await record.update({
+        status: row.status,
+        stay_type: row.stay_type,
+        notes: row.notes,
+
+        is_edited: 1,
+        edit_history: JSON.stringify(history),
+        updated_at: new Date()
+      });
+    }
+
+    return res.json({ success: true });
+
+  } catch (err) {
+    console.error("updateDailyRoomList ERROR:", err);
+    return res.status(500).json({
+      success: false,
+      error: "サーバーエラー（updateDailyRoomList）"
+    });
+  }
+};
