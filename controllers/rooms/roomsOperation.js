@@ -835,6 +835,7 @@ exports.closeDailyList = async (req, res) => {
       });
     }
 
+    // 🔥 既に登録済みチェック
     const exists = await DailyRoomList.findOne({
       where: { hotel_id, work_date },
     });
@@ -843,6 +844,7 @@ exports.closeDailyList = async (req, res) => {
       return res.json({ exists: true, message: "既に登録済みです。" });
     }
 
+    // 🔥 ホテルの部屋一覧取得
     const rooms = await Room.findAll({
       where: { hotel_id },
       order: [
@@ -855,15 +857,24 @@ exports.closeDailyList = async (req, res) => {
       return res.status(404).json({ success: false, error: "部屋がありません。" });
     }
 
+    // ⭐ DailyRoomList に保存するJSON生成
     const insertList = rooms.map((r) => ({
       hotel_id,
       work_date,
+
       room_number: r.room_number,
 
-      // 🟢 clean_flag を保存する
+      // 🟢 ステータスは clean_flag を保存（従来通り）
       status: r.clean_flag,
 
+      // 🆕 ゲスト数
       guest_count: r.guest_count ?? 0,
+
+      // 🆕 追加した FIT / 団体
+      stay_type: r.stay_type ?? "individual",
+
+      // 🆕 コメント（notes）
+      notes: r.notes ?? null,
 
       assigned_staff_id: null,
       cleaned_by: null,
@@ -872,15 +883,21 @@ exports.closeDailyList = async (req, res) => {
 
       created_at: new Date(),
       updated_at: new Date(),
+
+      // 🆕 新規追加カラムなので初期値
+      is_edited: 0,
+      edit_history: null,
     }));
 
+    // 🔥 一括登録
     await DailyRoomList.bulkCreate(insertList);
 
     return res.json({
       success: true,
       count: insertList.length,
-      message: `${work_date} の締め処理完了`,
+      message: `${work_date} の締め処理完了（stay_type / notes 含む）`,
     });
+
   } catch (err) {
     console.error("❌ closeDailyList error:", err);
     return res.status(500).json({
@@ -954,3 +971,4 @@ exports.assignBulk = async (req, res) => {
     });
   }
 };
+
