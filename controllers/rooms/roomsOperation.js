@@ -51,10 +51,20 @@ exports.updateRoomStatus = async (req, res) => {
     if (!room_id || !status)
       return res.status(400).json({ error: "room_id と status は必須です。" });
 
-    // DB更新
+    // ------------------------------
+    // 1回のUPDATEでまとめる
+    // ------------------------------
     const [updated] = await Room.update(
-      { status, updated_at: new Date() },
-      { where: { id: room_id } }
+      {
+        status,
+        excel_status: status === "stay_clean" ? "S" : undefined,
+        updated_at: new Date(),
+      },
+      {
+        where: { id: room_id },
+        // excel_status を undefined のとき更新しないための設定
+        fields: ["status", "updated_at", ...(status === "stay_clean" ? ["excel_status"] : [])]
+      }
     );
 
     if (updated === 0) {
@@ -62,11 +72,13 @@ exports.updateRoomStatus = async (req, res) => {
     }
 
     res.json({ success: true, message: "部屋ステータスを更新しました。" });
+
   } catch (err) {
     console.error("❌ updateRoomStatus error:", err);
     res.status(500).json({ error: "サーバーエラー" });
   }
 };
+
 
 exports.updateRoomStatusForCheckOutAfter = async (req, res) => {
   try {
