@@ -947,32 +947,48 @@ exports.getDailyRoomList = async (req, res) => {
 
 exports.assignBulk = async (req, res) => {
   try {
-    const { hotel_id, worker, room_ids, date } = req.body;
+  const { hotel_id, date, updates } = req.body;
 
-    if (!hotel_id || !worker || !room_ids || room_ids.length === 0) {
-      return res.json({ success: false, error: "Missing parameters" });
+  if (!hotel_id || !date || !updates || updates.length === 0) {
+    return res.json({ success: false, error: "Missing parameters" });
+  }
+
+  // 🔥 トランザクション開始
+  const t = await DailyRoomList.sequelize.transaction();
+
+  try {
+    // まとめて UPDATE
+    for (const u of updates) {
+      await DailyRoomList.update(
+        { assigned_staff_id: u.worker },
+        {
+          where: {
+            hotel_id,
+            work_date: date,
+            id: u.room_id
+          },
+          transaction: t
+        }
+      );
     }
 
-    await DailyRoomList.update(
-      { assigned_staff_id: worker },
-      {
-        where: {
-          hotel_id,
-          work_date: date,
-          id: room_ids
-        }
-      }
-    );
-
+    await t.commit();
     return res.json({ success: true });
+
   } catch (err) {
-    console.error("assignBulk ERROR:", err);
+    await t.rollback();
+    console.error("assignBulkMulti ERROR:", err);
     return res.json({
       success: false,
-      error: "assignBulk failed",
+      error: "assignBulkMulti failed",
       details: err.message
     });
   }
+
+} catch (err) {
+  console.error("assignBulkMulti FATAL:", err);
+  return res.json({ success: false, error: "fatal error" });
+}
 };
 
 exports.updateDailyRoomList = async (req, res) => {
