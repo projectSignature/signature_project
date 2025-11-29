@@ -863,19 +863,32 @@ exports.closeDailyList = async (req, res) => {
       work_date,
 
       room_number: r.room_number,
+      floor: r.floor,
 
       // 🟢 ステータスは clean_flag を保存（従来通り）
       status: r.clean_flag,
 
+      // 🆕 サブステータス
+      sub_status: r.status ?? null,
+
       // 🆕 ゲスト数
       guest_count: r.guest_count ?? 0,
 
-      // 🆕 追加した FIT / 団体
+      // 🆕 アメニティのみ（旧スペル対応）
+      amenity_only: r.status === "stay_amenytyOnliy" ? 1 : 0,
+
+      // 🆕 FIT / 団体
       stay_type: r.stay_type ?? "individual",
 
-      // 🆕 コメント（notes）
+      // 🆕 コメント
       notes: r.notes ?? null,
 
+      // 初期フラグ（全部 false = 0）
+      open_flag: 0,
+      checked_flag: 0,
+      amenity_complete_flag: 0,
+
+      // 割り当て系
       assigned_staff_id: null,
       cleaned_by: null,
       cleaning_done_at: null,
@@ -884,7 +897,6 @@ exports.closeDailyList = async (req, res) => {
       created_at: new Date(),
       updated_at: new Date(),
 
-      // 🆕 新規追加カラムなので初期値
       is_edited: 0,
       edit_history: null,
     }));
@@ -908,11 +920,9 @@ exports.closeDailyList = async (req, res) => {
 };
 
 
-
 exports.getDailyRoomList = async (req, res) => {
   try {
     const { date, hotel_id } = req.query;
-
 
     if (!date || !hotel_id) {
       console.log()
@@ -931,6 +941,8 @@ exports.getDailyRoomList = async (req, res) => {
       order: [["room_number", "ASC"]]
     });
 
+    console.log(`rows`,rows)
+
     return res.json({
       success: true,
       rows
@@ -947,49 +959,57 @@ exports.getDailyRoomList = async (req, res) => {
 
 exports.assignBulk = async (req, res) => {
   try {
-  const { hotel_id, date, updates } = req.body;
+    const { hotel_id, date, updates } = req.body;
 
-  if (!hotel_id || !date || !updates || updates.length === 0) {
-    return res.json({ success: false, error: "Missing parameters" });
-  }
-
-  // 🔥 トランザクション開始
-  const t = await DailyRoomList.sequelize.transaction();
-
-  try {
-    // まとめて UPDATE
-    for (const u of updates) {
-      await DailyRoomList.update(
-        { assigned_staff_id: u.worker },
-        {
-          where: {
-            hotel_id,
-            work_date: date,
-            id: u.room_id
-          },
-          transaction: t
-        }
-      );
+    if (!hotel_id || !date || !updates || updates.length === 0) {
+      return res.json({ success: false, error: "Missing parameters" });
     }
 
-    await t.commit();
-    return res.json({ success: true });
+    // 🎯 トランザクション開始
+    const t = await DailyRoomList.sequelize.transaction();
+
+    try {
+
+      // ID 一覧
+      const ids = updates.map(u => u.room_id);
+
+      // CASE WHEN を作成
+      const caseAssigned = updates
+        .map(u => `WHEN ${u.room_id} THEN ${u.worker}`)
+        .join(" ");
+
+      // SQL 一発更新
+      const sql = `
+        UPDATE daily_room_list
+        SET assigned_staff_id = CASE id
+          ${caseAssigned}
+        END
+        WHERE hotel_id = ${hotel_id}
+          AND work_date = '${date}'
+          AND id IN (${ids.join(",")});
+      `;
+
+      await DailyRoomList.sequelize.query(sql, { transaction: t });
+
+      await t.commit();
+      return res.json({ success: true });
+
+    } catch (err) {
+      await t.rollback();
+      console.error("assignBulk ERROR:", err);
+      return res.json({
+        success: false,
+        error: "assignBulk failed",
+        details: err.message,
+      });
+    }
 
   } catch (err) {
-    await t.rollback();
-    console.error("assignBulkMulti ERROR:", err);
-    return res.json({
-      success: false,
-      error: "assignBulkMulti failed",
-      details: err.message
-    });
+    console.error("assignBulk FATAL:", err);
+    return res.json({ success: false, error: "fatal error" });
   }
-
-} catch (err) {
-  console.error("assignBulkMulti FATAL:", err);
-  return res.json({ success: false, error: "fatal error" });
-}
 };
+
 
 exports.updateDailyRoomList = async (req, res) => {
   try {
