@@ -3614,6 +3614,7 @@ router.post('/pos/updateSettings', async (req, res) => {
 //room sync system
 
 const RoomsOperation = require('../controllers/rooms/roomsOperation');
+const RoomAuth = require("../controllers/rooms/roomAuthController");
 
 // 🔐 すべての /api/room/xxx を JWT 認証必須に
 // router.use("/api/room", auth);
@@ -3651,6 +3652,7 @@ router.post("/api/room/daily-list/close",  RoomsOperation.closeDailyList);
 router.get("/api/room/daily_room_list", RoomsOperation.getDailyRoomList);
 router.post("/api/room/assign_bulk", RoomsOperation.assignBulk);
 router.put("/api/room/daily-list/update", RoomsOperation.updateDailyRoomList);
+router.post("/api/room/login", RoomAuth.login);
 
 const UserController = require("../controllers/rooms/userController");
 
@@ -5689,6 +5691,7 @@ router.get('/gyminfoall', async (req, res) => {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+
 
 
 
