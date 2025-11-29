@@ -703,12 +703,38 @@ exports.bulkUpdateCheckoutStatus = async (req, res) => {
   try {
     const ids = Object.keys(updates);
 
+    // 今日の日付 YYYY-MM-DD
+    const today = new Date().toISOString().split("T")[0];
+
     for (const id of ids) {
+
+      const newStatus = updates[id];
+
+      // Room のデータを取得（room_number が必要）
+      const roomRow = await Room.findOne({ where: { id, hotel_id } });
+      if (!roomRow) continue;
+
+      // ① room テーブル更新
       await Room.update(
-        { checkout_status: updates[id] },
+        { checkout_status: newStatus },
         { where: { id, hotel_id } }
       );
+
+      // ② daily_room_list 更新（room_number を使用）
+      await DailyRoomList.update(
+        {
+          checkout_time: newStatus === "after" ? new Date() : null,
+        },
+        {
+          where: {
+            room_number: roomRow.room_number,  // ★ 修正ポイント！！
+            hotel_id,
+            work_date: today,
+          }
+        }
+      );
     }
+
 
     res.json({ success: true, updated: ids.length });
 
@@ -718,24 +744,39 @@ exports.bulkUpdateCheckoutStatus = async (req, res) => {
   }
 };
 
+
 exports.startCleaning = async (req, res) => {
   try {
-    const { room_id } = req.body;
+    const { room_id, operator_id,room_number } = req.body;
+    console.log(req.body)
 
     if (!room_id) {
       return res.status(400).json({ error: "room_id is required" });
     }
 
-    const room = await Room.findByPk(room_id);
-    if (!room) return res.status(404).json({ error: "Room not found" });
+    if (!operator_id) {
+      return res.status(400).json({ error: "operator_id is required" });
+    }
 
-    await room.update({
-      cleaning_status: "in_progress",
-      cleaning_start_time: new Date(),
-      cleaning_done_time: null
-    });
 
-    return res.json({ success: true, room });
+
+    const now = new Date();
+
+
+      await DailyRoomList.update(
+        {
+          open_flag: 1,           // 掃除中 → まだ開いてる
+          // cleaned_by: operator_id, // 操作した人
+          // cleaning_done_at:now
+        },
+        {
+          where: { id: room_id }
+        }
+      );
+    // }
+
+    return res.json({ success: true });
+
   } catch (err) {
     console.error("startCleaning error:", err);
     return res.status(500).json({ error: "Internal server error" });
@@ -744,26 +785,65 @@ exports.startCleaning = async (req, res) => {
 
 exports.finishCleaning = async (req, res) => {
   try {
-    const { room_id } = req.body;
+    const { room_id, operator_id,room_number } = req.body;
+    console.log(req.body)
 
     if (!room_id) {
       return res.status(400).json({ error: "room_id is required" });
     }
 
-    const room = await Room.findByPk(room_id);
-    if (!room) return res.status(404).json({ error: "Room not found" });
+    if (!operator_id) {
+      return res.status(400).json({ error: "operator_id is required" });
+    }
 
-    await room.update({
-      cleaning_status: "done",
-      cleaning_done_time: new Date()
-    });
 
-    return res.json({ success: true, room });
+
+    const now = new Date();
+
+
+      await DailyRoomList.update(
+        {
+          cleaning_done_at: now,           // 掃除中 → まだ開いてる
+          cleaned_by: operator_id, // 操作した人
+
+        },
+        {
+          where: { id: room_id }
+        }
+      );
+    // }
+
+    return res.json({ success: true });
+
   } catch (err) {
-    console.error("finishCleaning error:", err);
+    console.error("startCleaning error:", err);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
+
+
+// exports.finishCleaning = async (req, res) => {
+//   try {
+//     const { room_id } = req.body;
+//
+//     if (!room_id) {
+//       return res.status(400).json({ error: "room_id is required" });
+//     }
+//
+//     const room = await Room.findByPk(room_id);
+//     if (!room) return res.status(404).json({ error: "Room not found" });
+//
+//     await room.update({
+//       cleaning_status: "done",
+//       cleaning_done_time: new Date()
+//     });
+//
+//     return res.json({ success: true, room });
+//   } catch (err) {
+//     console.error("finishCleaning error:", err);
+//     return res.status(500).json({ error: "Internal server error" });
+//   }
+// };
 
 exports.undoCleaning = async (req, res) => {
   try {
