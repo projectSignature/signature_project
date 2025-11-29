@@ -874,29 +874,35 @@ exports.undoCleaning = async (req, res) => {
 // =========================
 exports.inspectorChecked = async (req, res) => {
   try {
-    const { room_id } = req.body;
+    const { room_id, operator_id,room_number } = req.body;
 
     if (!room_id) {
       return res.status(400).json({ message: "room_id is required" });
     }
 
-    // 部屋取得
-    const room = await Room.findByPk(room_id);
-    if (!room) {
-      return res.status(404).json({ message: "Room not found" });
-    }
+    const now = new Date();
+      await DailyRoomList.update(
+        {
+          checked_done_at: now,           // 掃除中 → まだ開いてる
 
-    // 更新
-    await room.update({
-      cleaning_status: "checked",
-      status:"checked",
-      inspector_checked_at: new Date() // ← 必要なら
-    });
+        },
+        {
+          where: { id: room_id }
+        }
+      );
 
-    return res.json({
-      message: "Room marked as checked",
-      room
-    });
+      await Room.update(
+        {
+          status: `checked`,           // 掃除中 → まだ開いてる
+
+        },
+        {
+          where: { room_number: room_number }
+        }
+      );
+    // }
+
+    return res.json({ success: true });
 
   } catch (err) {
     console.error("❌ inspectorChecked error:", err);
