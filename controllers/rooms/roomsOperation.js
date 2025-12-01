@@ -1189,3 +1189,27 @@ exports.updateDailyRoomList = async (req, res) => {
     });
   }
 };
+
+exports.updateDailyCheckoutBulk = async (req, res) => {
+  try {
+    const { updates } = req.body;
+    // updates = [ { id:805, checkout_status:'before' }, {...} ]
+
+    for (const row of updates) {
+      await DailyRoomList.update(
+        {
+          checkout_status: row.checkout_status,
+          checkout_time: new Date(),
+        },
+        { where: { id: row.id } }
+      );
+    }
+
+    res.json({ success: true, updated: updates.length });
+
+  } catch (err) {
+    console.error("❌ dailyCheckout bulk error:", err);
+    res.status(500).json({ success: false });
+  }
+};
+
