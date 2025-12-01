@@ -75,6 +75,13 @@ const DailyRoomList = database.define(
       defaultValue: 0,
     },
 
+    checkout_status:{
+      type: DataTypes.STRING(20),
+      allowNull: true,
+      defaultValue: 'before', // 'before' or 'after'
+      comment: 'チェックアウト状態（before=チェックアウト前, after=チェックアウト後）'
+    },
+
     assigned_staff_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
