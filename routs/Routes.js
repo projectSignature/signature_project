@@ -3653,6 +3653,7 @@ router.get("/api/room/daily_room_list", RoomsOperation.getDailyRoomList);
 router.post("/api/room/assign_bulk", RoomsOperation.assignBulk);
 router.put("/api/room/daily-list/update", RoomsOperation.updateDailyRoomList);
 router.post("/api/room/login", RoomAuth.login);
+router.put("/api/room/daily_checkout/bulk", RoomsOperation.updateDailyCheckoutBulk);
 
 const UserController = require("../controllers/rooms/userController");
 
@@ -5691,6 +5692,7 @@ router.get('/gyminfoall', async (req, res) => {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+
 
 
 
