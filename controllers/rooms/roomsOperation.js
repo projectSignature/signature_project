@@ -703,38 +703,12 @@ exports.bulkUpdateCheckoutStatus = async (req, res) => {
   try {
     const ids = Object.keys(updates);
 
-    // 今日の日付 YYYY-MM-DD
-    const today = new Date().toISOString().split("T")[0];
-
     for (const id of ids) {
-
-      const newStatus = updates[id];
-
-      // Room のデータを取得（room_number が必要）
-      const roomRow = await Room.findOne({ where: { id, hotel_id } });
-      if (!roomRow) continue;
-
-      // ① room テーブル更新
       await Room.update(
-        { checkout_status: newStatus },
+        { checkout_status: updates[id] },
         { where: { id, hotel_id } }
       );
-
-      // ② daily_room_list 更新（room_number を使用）
-      await DailyRoomList.update(
-        {
-          checkout_time: newStatus === "after" ? new Date() : null,
-        },
-        {
-          where: {
-            room_number: roomRow.room_number,  // ★ 修正ポイント！！
-            hotel_id,
-            work_date: today,
-          }
-        }
-      );
     }
-
 
     res.json({ success: true, updated: ids.length });
 
@@ -744,39 +718,24 @@ exports.bulkUpdateCheckoutStatus = async (req, res) => {
   }
 };
 
-
 exports.startCleaning = async (req, res) => {
   try {
-    const { room_id, operator_id,room_number } = req.body;
-    console.log(req.body)
+    const { room_id } = req.body;
 
     if (!room_id) {
       return res.status(400).json({ error: "room_id is required" });
     }
 
-    if (!operator_id) {
-      return res.status(400).json({ error: "operator_id is required" });
-    }
+    const room = await Room.findByPk(room_id);
+    if (!room) return res.status(404).json({ error: "Room not found" });
 
+    await room.update({
+      cleaning_status: "in_progress",
+      cleaning_start_time: new Date(),
+      cleaning_done_time: null
+    });
 
-
-    const now = new Date();
-
-
-      await DailyRoomList.update(
-        {
-          open_flag: 1,           // 掃除中 → まだ開いてる
-          // cleaned_by: operator_id, // 操作した人
-          // cleaning_done_at:now
-        },
-        {
-          where: { id: room_id }
-        }
-      );
-    // }
-
-    return res.json({ success: true });
-
+    return res.json({ success: true, room });
   } catch (err) {
     console.error("startCleaning error:", err);
     return res.status(500).json({ error: "Internal server error" });
@@ -785,65 +744,26 @@ exports.startCleaning = async (req, res) => {
 
 exports.finishCleaning = async (req, res) => {
   try {
-    const { room_id, operator_id,room_number } = req.body;
-    console.log(req.body)
+    const { room_id } = req.body;
 
     if (!room_id) {
       return res.status(400).json({ error: "room_id is required" });
     }
 
-    if (!operator_id) {
-      return res.status(400).json({ error: "operator_id is required" });
-    }
+    const room = await Room.findByPk(room_id);
+    if (!room) return res.status(404).json({ error: "Room not found" });
 
+    await room.update({
+      cleaning_status: "done",
+      cleaning_done_time: new Date()
+    });
 
-
-    const now = new Date();
-
-
-      await DailyRoomList.update(
-        {
-          cleaning_done_at: now,           // 掃除中 → まだ開いてる
-          cleaned_by: operator_id, // 操作した人
-
-        },
-        {
-          where: { id: room_id }
-        }
-      );
-    // }
-
-    return res.json({ success: true });
-
+    return res.json({ success: true, room });
   } catch (err) {
-    console.error("startCleaning error:", err);
+    console.error("finishCleaning error:", err);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
-
-
-// exports.finishCleaning = async (req, res) => {
-//   try {
-//     const { room_id } = req.body;
-//
-//     if (!room_id) {
-//       return res.status(400).json({ error: "room_id is required" });
-//     }
-//
-//     const room = await Room.findByPk(room_id);
-//     if (!room) return res.status(404).json({ error: "Room not found" });
-//
-//     await room.update({
-//       cleaning_status: "done",
-//       cleaning_done_time: new Date()
-//     });
-//
-//     return res.json({ success: true, room });
-//   } catch (err) {
-//     console.error("finishCleaning error:", err);
-//     return res.status(500).json({ error: "Internal server error" });
-//   }
-// };
 
 exports.undoCleaning = async (req, res) => {
   try {
@@ -874,35 +794,29 @@ exports.undoCleaning = async (req, res) => {
 // =========================
 exports.inspectorChecked = async (req, res) => {
   try {
-    const { room_id, operator_id,room_number } = req.body;
+    const { room_id } = req.body;
 
     if (!room_id) {
       return res.status(400).json({ message: "room_id is required" });
     }
 
-    const now = new Date();
-      await DailyRoomList.update(
-        {
-          checked_done_at: now,           // 掃除中 → まだ開いてる
+    // 部屋取得
+    const room = await Room.findByPk(room_id);
+    if (!room) {
+      return res.status(404).json({ message: "Room not found" });
+    }
 
-        },
-        {
-          where: { id: room_id }
-        }
-      );
+    // 更新
+    await room.update({
+      cleaning_status: "checked",
+      status:"checked",
+      inspector_checked_at: new Date() // ← 必要なら
+    });
 
-      await Room.update(
-        {
-          status: `checked`,           // 掃除中 → まだ開いてる
-
-        },
-        {
-          where: { room_number: room_number }
-        }
-      );
-    // }
-
-    return res.json({ success: true });
+    return res.json({
+      message: "Room marked as checked",
+      room
+    });
 
   } catch (err) {
     console.error("❌ inspectorChecked error:", err);
@@ -1045,57 +959,49 @@ exports.getDailyRoomList = async (req, res) => {
 
 exports.assignBulk = async (req, res) => {
   try {
-    const { hotel_id, date, updates } = req.body;
+  const { hotel_id, date, updates } = req.body;
 
-    if (!hotel_id || !date || !updates || updates.length === 0) {
-      return res.json({ success: false, error: "Missing parameters" });
+  if (!hotel_id || !date || !updates || updates.length === 0) {
+    return res.json({ success: false, error: "Missing parameters" });
+  }
+
+  // 🔥 トランザクション開始
+  const t = await DailyRoomList.sequelize.transaction();
+
+  try {
+    // まとめて UPDATE
+    for (const u of updates) {
+      await DailyRoomList.update(
+        { assigned_staff_id: u.worker },
+        {
+          where: {
+            hotel_id,
+            work_date: date,
+            id: u.room_id
+          },
+          transaction: t
+        }
+      );
     }
 
-    // 🎯 トランザクション開始
-    const t = await DailyRoomList.sequelize.transaction();
-
-    try {
-
-      // ID 一覧
-      const ids = updates.map(u => u.room_id);
-
-      // CASE WHEN を作成
-      const caseAssigned = updates
-        .map(u => `WHEN ${u.room_id} THEN ${u.worker}`)
-        .join(" ");
-
-      // SQL 一発更新
-      const sql = `
-        UPDATE daily_room_list
-        SET assigned_staff_id = CASE id
-          ${caseAssigned}
-        END
-        WHERE hotel_id = ${hotel_id}
-          AND work_date = '${date}'
-          AND id IN (${ids.join(",")});
-      `;
-
-      await DailyRoomList.sequelize.query(sql, { transaction: t });
-
-      await t.commit();
-      return res.json({ success: true });
-
-    } catch (err) {
-      await t.rollback();
-      console.error("assignBulk ERROR:", err);
-      return res.json({
-        success: false,
-        error: "assignBulk failed",
-        details: err.message,
-      });
-    }
+    await t.commit();
+    return res.json({ success: true });
 
   } catch (err) {
-    console.error("assignBulk FATAL:", err);
-    return res.json({ success: false, error: "fatal error" });
+    await t.rollback();
+    console.error("assignBulkMulti ERROR:", err);
+    return res.json({
+      success: false,
+      error: "assignBulkMulti failed",
+      details: err.message
+    });
   }
-};
 
+} catch (err) {
+  console.error("assignBulkMulti FATAL:", err);
+  return res.json({ success: false, error: "fatal error" });
+}
+};
 
 exports.updateDailyRoomList = async (req, res) => {
   try {
@@ -1192,10 +1098,58 @@ exports.updateDailyRoomList = async (req, res) => {
 
 exports.updateDailyCheckoutBulk = async (req, res) => {
   try {
+    const { updates, shimeData } = req.body;
+    // updates = { "811": "before", "1001": "after" }
+    // shimeData = globalShimeData（DailyRoomList の全件）
+
+    if (!updates || !shimeData) {
+      return res.status(400).json({ success: false, error: "updates と shimeData が必要です" });
+    }
+
+    const roomNumbers = Object.keys(updates);
+    let updatedIds = [];
+
+    for (const room of roomNumbers) {
+      const checkout_status = updates[room];
+
+      // 🔥 globalShimeData の中から id を探す
+      const target = shimeData.find(d => String(d.room_number) === String(room));
+
+      if (!target) {
+        console.warn("⚠ データが見つからない:", room);
+        continue;
+      }
+
+      const id = target.id;  // ← これが本命！！！
+
+      // 🔥 id で更新（hotel_id / work_date は不要）
+      await DailyRoomList.update(
+        {
+          checkout_status,
+          updated_at: new Date()
+        },
+        {
+          where: { id }  // ← ★ これ！！！
+        }
+      );
+
+      updatedIds.push(id);
+    }
+
+    res.json({ success: true, updated_ids: updatedIds });
+
+  } catch (err) {
+    console.error("❌ updateDailyCheckoutBulk error:", err);
+    res.status(500).json({ success: false, error: "server error" });
+  }
+};
+exports.updateDailyCheckoutBulk = async (req, res) => {
+  try {
     const { updates } = req.body;
     // updates = [ { id:805, checkout_status:'before' }, {...} ]
 
     for (const row of updates) {
+      console.log(row)
       await DailyRoomList.update(
         {
           checkout_status: row.checkout_status,
@@ -1212,4 +1166,65 @@ exports.updateDailyCheckoutBulk = async (req, res) => {
     res.status(500).json({ success: false });
   }
 };
+exports.updateDailyRoomStatus = async (req, res) => {
+  try {
+    const { id, status, user_id } = req.body;
 
+    if (!id || !status) {
+      return res.status(400).json({ error: "id and status are required" });
+    }
+
+    let updateData = {};
+
+    const now = new Date();
+
+    switch (status) {
+
+      case "aberto":
+        updateData = {
+          open_flag: 1,
+          cleaned_by: null,
+          cleaning_done_at: null,
+          checked_flag: 0,
+          checked_done_at: null,
+          updated_at: now
+        };
+        break;
+
+      case "limpo":
+        updateData = {
+          cleaned_by: user_id || null,
+          cleaning_done_at: now,
+          updated_at: now
+        };
+        break;
+
+      case "verificado":
+        updateData = {
+          checked_flag: 1,
+          checked_done_at: now,
+          updated_at: now
+        };
+        break;
+
+      case "nao_aberto":
+        updateData = {
+          open_flag: 0,
+          cleaned_by: null,
+          cleaning_done_at: null,
+          checked_flag: 0,
+          checked_done_at: null,
+          updated_at: now
+        };
+        break;
+    }
+
+    await DailyRoomList.update(updateData, { where: { id } });
+
+    return res.json({ success: true });
+
+  } catch (err) {
+    console.error("updateDailyRoomStatus error:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
