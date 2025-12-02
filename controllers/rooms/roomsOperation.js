@@ -1168,7 +1168,7 @@ exports.updateDailyCheckoutBulk = async (req, res) => {
 };
 exports.updateDailyRoomStatus = async (req, res) => {
   try {
-    const { id, status, user_id } = req.body;
+    const { id, status, user_id,roomNumber,hotelId } = req.body;
 
     if (!id || !status) {
       return res.status(400).json({ error: "id and status are required" });
@@ -1176,6 +1176,8 @@ exports.updateDailyRoomStatus = async (req, res) => {
 
     let updateData = {};
     const now = new Date();
+
+    console.log(req.body)
 
     switch (status) {
 
@@ -1207,6 +1209,8 @@ exports.updateDailyRoomStatus = async (req, res) => {
           checked_done_at: now,
           updated_at: now
         };
+
+          await updateCheckRoom(roomNumber, hotelId, 'checked');
         break;
 
       case "nao_aberto":
@@ -1219,6 +1223,8 @@ exports.updateDailyRoomStatus = async (req, res) => {
           amenity_complete_flag: 0, // ← リセット必要
           updated_at: now
         };
+
+        await updateCheckRoom(roomNumber, hotelId, 'noChecked');
         break;
 
       // ============================
@@ -1245,6 +1251,60 @@ exports.updateDailyRoomStatus = async (req, res) => {
 
   } catch (err) {
     console.error("updateDailyRoomStatus error:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+async function updateCheckRoom(roomNumber, hotelId, status) {
+  try {
+    const [affected] = await Room.update(
+      { status },
+      {
+        where: {
+          room_number: roomNumber,
+          hotel_id: hotelId
+        }
+      }
+    );
+
+    if (affected === 0) {
+      console.warn(`⚠ Room not found for updateCheckRoom: ${roomNumber} (hotel: ${hotelId})`);
+    } else {
+      console.log(`✅ Room updated (${roomNumber}) to status=${status}`);
+    }
+
+  } catch (err) {
+    console.error("❌ updateCheckRoom error:", err);
+  }
+}
+
+
+exports.undoRestore = async (req, res) => {
+  try {
+    const { rooms } = req.body;
+
+
+
+    if (!rooms || rooms.length === 0) {
+      return res.status(400).json({ error: "rooms is required" });
+    }
+
+    for (const r of rooms) {
+
+      const updateData = {
+        open_flag: 0,
+        cleaned_by: null,
+        cleaning_done_at: null,
+        amenity_complete_flag: 0,
+      };
+
+      await DailyRoomList.update(updateData, { where: { id: r.id } });
+    }
+
+    return res.json({ success: true });
+
+  } catch (err) {
+    console.error("undoRestore error:", err);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
