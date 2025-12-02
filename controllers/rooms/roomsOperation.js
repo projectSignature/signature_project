@@ -1191,6 +1191,7 @@ exports.updateDailyRoomStatus = async (req, res) => {
           cleaning_done_at: null,
           checked_flag: 0,
           checked_done_at: null,
+          amenity_complete_flag: 0, // ← リセット必要
           updated_at: now
         };
         break;
@@ -1199,6 +1200,9 @@ exports.updateDailyRoomStatus = async (req, res) => {
         updateData = {
           cleaned_by: user_id || null,
           cleaning_done_at: now,
+          checked_flag: 0,
+          checked_done_at: null,
+          amenity_complete_flag: 0, // ← リセット必要
           updated_at: now
         };
         break;
@@ -1257,6 +1261,9 @@ exports.updateDailyRoomStatus = async (req, res) => {
 
 async function updateCheckRoom(roomNumber, hotelId, status) {
   try {
+    console.log(`roomNumber`,roomNumber)
+    console.log(`hotelId`,hotelId)
+    console.log(`status`,status)
     const [affected] = await Room.update(
       { status },
       {
