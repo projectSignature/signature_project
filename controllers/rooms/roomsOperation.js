@@ -1175,11 +1175,13 @@ exports.updateDailyRoomStatus = async (req, res) => {
     }
 
     let updateData = {};
-
     const now = new Date();
 
     switch (status) {
 
+      // ============================
+      // 🔵 通常ステータス
+      // ============================
       case "aberto":
         updateData = {
           open_flag: 1,
@@ -1214,6 +1216,24 @@ exports.updateDailyRoomStatus = async (req, res) => {
           cleaning_done_at: null,
           checked_flag: 0,
           checked_done_at: null,
+          amenity_complete_flag: 0, // ← リセット必要
+          updated_at: now
+        };
+        break;
+
+      // ============================
+      // 🔵 アメニティステータス
+      // ============================
+      case "done": // Feito
+        updateData = {
+          amenity_complete_flag: 1,
+          updated_at: now
+        };
+        break;
+
+      case "before": // Não Feito
+        updateData = {
+          amenity_complete_flag: 0,
           updated_at: now
         };
         break;
