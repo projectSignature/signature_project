@@ -853,6 +853,8 @@ exports.closeDailyList = async (req, res) => {
       ],
     });
 
+    console.log(rooms)
+
     if (!rooms.length) {
       return res.status(404).json({ success: false, error: "部屋がありません。" });
     }
@@ -888,6 +890,9 @@ exports.closeDailyList = async (req, res) => {
       checked_flag: 0,
       amenity_complete_flag: 0,
 
+      checkout_status:r.checkout_status,
+      checkout_time:r.checkout_time,
+
       // 割り当て系
       assigned_staff_id: null,
       cleaned_by: null,
@@ -902,7 +907,7 @@ exports.closeDailyList = async (req, res) => {
     }));
 
     // 🔥 一括登録
-    await DailyRoomList.bulkCreate(insertList);
+    // await DailyRoomList.bulkCreate(insertList);
 
     return res.json({
       success: true,
