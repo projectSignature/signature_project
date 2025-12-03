@@ -907,7 +907,7 @@ exports.closeDailyList = async (req, res) => {
     }));
 
     // 🔥 一括登録
-    // await DailyRoomList.bulkCreate(insertList);
+    await DailyRoomList.bulkCreate(insertList);
 
     return res.json({
       success: true,
@@ -1320,3 +1320,4 @@ exports.undoRestore = async (req, res) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 };
+
