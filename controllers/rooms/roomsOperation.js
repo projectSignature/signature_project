@@ -1,5 +1,6 @@
 
 // controller/rooms/roomsOperation.js
+const { Op } = require("sequelize");
 const Room = require('../../schema/roomSync/Rooms');
 const AmenityRequest = require('../../schema/roomSync/AmenityRequests');
 const DailyRoomList = require("../../schema/roomSync/DailyRoomList");
@@ -1072,6 +1073,16 @@ exports.updateDailyRoomList = async (req, res) => {
         });
       }
 
+      if (row.checkout_status !== record.checkout_status) {
+        hasDiff = true;
+        history.push({
+          time: logTime,
+          field: "checkout_status",
+          before: record.checkout_status,
+          after: row.checkout_status
+        });
+      }
+
       if (!hasDiff) continue;
 
       // 🔥 更新内容をバッファに詰める
@@ -1080,6 +1091,7 @@ exports.updateDailyRoomList = async (req, res) => {
           sub_status: row.status,
           stay_type: row.stay_type,
           notes: row.notes,
+          checkout_status:row.checkout_status,
           is_edited: 1,
           edit_history: JSON.stringify(history),
           updated_at: new Date()
@@ -1321,3 +1333,164 @@ exports.undoRestore = async (req, res) => {
   }
 };
 
+
+exports.getHistorySummary = async (req, res) => {
+  try {
+    const { hotel_id, start_date, end_date } = req.query;
+
+    if (!hotel_id || !start_date || !end_date) {
+      return res.status(400).json({
+        success: false,
+        message: "hotel_id, start_date, end_date が必要です。",
+      });
+    }
+
+    // ===============================
+    // ① DailyRoomList 全部取得
+    // ===============================
+    const dailyList = await DailyRoomList.findAll({
+      where: {
+        hotel_id,
+        work_date: { [Op.between]: [start_date, end_date] }
+      }
+    });
+
+    // ===============================
+    // ② Rooms 全部取得 → マップ化
+    // ===============================
+    const rooms = await Room.findAll({
+      where: { hotel_id }
+    });
+
+    const roomMap = new Map(); // room_number → room_type
+    rooms.forEach(r => {
+      roomMap.set(r.room_number, r.room_type || "UNKNOWN");
+    });
+    // console.log(`roomMap`,roomMap)
+
+    // ===============================
+    // ③ AmenityRequest 取得
+    // ===============================
+    const amenityList = await AmenityRequest.findAll({
+      where: {
+        created_at: {
+          [Op.between]: [
+            `${start_date} 00:00:00`,
+            `${end_date} 23:59:59`
+          ]
+        }
+      }
+    });
+
+    // ===============================
+    // ④ 日付リスト作成
+    // ===============================
+    const summary = {};
+    let d = new Date(start_date);
+    const end = new Date(end_date);
+
+    while (d <= end) {
+      const day = d.toISOString().slice(0, 10);
+      summary[day] = { date: day, room_types: {} };
+      d.setDate(d.getDate() + 1);
+    }
+
+    console.log(summary)
+
+    // ===============================
+    // ⑤ DailyRoomList 集計
+    // ===============================
+    dailyList.forEach(r => {
+      const day = r.work_date;
+      const type = roomMap.get(r.room_number) || "UNKNOWN";
+
+      if (!summary[day].room_types[type]) {
+        summary[day].room_types[type] = {
+          target_clean: 0,
+          done_clean: 0,
+          amenity_request: 0,
+          amenity_done: 0,
+        };
+      }
+
+      // if (["seisou", "renpakuseisou"].includes(r.status)) {
+      //   summary[day].room_types[type].target_clean++;
+      // }
+
+      if (r.assigned_staff_id !== null) {
+  summary[day].room_types[type].target_clean++;
+}
+
+
+      if (r.checked_flag === 1) {
+        summary[day].room_types[type].done_clean++;
+      }
+
+    });
+
+    // ===============================
+    // ⑥ AmenityRequest 集計（Room 参照手動化）
+    // ===============================
+    amenityList.forEach(a => {
+      const day = a.created_at.toISOString().slice(0, 10);
+
+      // Room をマップから参照
+      const type = roomMap.get(a.room_id) || "UNKNOWN";
+      // ※ room_id ではなく room_number なら教えて
+
+      if (!summary[day].room_types[type]) {
+        summary[day].room_types[type] = {
+          target_clean: 0,
+          done_clean: 0,
+          amenity_request: 0,
+          amenity_done: 0,
+        };
+      }
+
+      summary[day].room_types[type].amenity_request++;
+
+      if (a.status === "done") {
+        summary[day].room_types[type].amenity_done++;
+      }
+    });
+
+    return res.json({ success: true, summary: Object.values(summary) });
+
+  } catch (err) {
+    console.error("getHistorySummary error:", err);
+    res.status(500).json({ success: false, message: "server error" });
+  }
+};
+
+exports.getDayDetail = async (req, res) => {
+  try {
+    const { hotel_id, date } = req.query;
+
+    const daily = await DailyRoomList.findAll({
+      where: {
+        hotel_id,
+        work_date: date
+      }
+    });
+
+    const amenity = await AmenityRequest.findAll({
+      where: {
+        created_at: {
+          [Op.between]: [`${date} 00:00:00`, `${date} 23:59:59`]
+        }
+      }
+    });
+
+    return res.json({
+      success: true,
+      data: {
+        daily,
+        amenity
+      }
+    });
+
+  } catch (err) {
+    console.error("getDayDetail error:", err);
+    res.json({ success: false });
+  }
+};
