@@ -1011,7 +1011,7 @@ exports.assignBulk = async (req, res) => {
 
 exports.updateDailyRoomList = async (req, res) => {
   try {
-    const { rows, hotel_id } = req.body;
+    const { rows, hotel_id,room_number } = req.body;
 
     if (!rows || !Array.isArray(rows) || !hotel_id) {
       return res.status(400).json({
@@ -1051,6 +1051,8 @@ exports.updateDailyRoomList = async (req, res) => {
           before: record.sub_status,
           after: row.status
         });
+
+        await Room.update({status:row.status} { where: { room_number, hotel_id } });
       }
 
       if (row.stay_type !== record.stay_type) {
@@ -1061,6 +1063,7 @@ exports.updateDailyRoomList = async (req, res) => {
           before: record.stay_type,
           after: row.stay_type
         });
+        await Room.update({stay_type:row.status} { where: { room_number, hotel_id } });
       }
 
       if (row.notes !== record.notes) {
@@ -1071,6 +1074,7 @@ exports.updateDailyRoomList = async (req, res) => {
           before: record.notes,
           after: row.notes
         });
+        await Room.update({notes:row.status} { where: { room_number, hotel_id } });
       }
 
       if (row.checkout_status !== record.checkout_status) {
@@ -1081,6 +1085,7 @@ exports.updateDailyRoomList = async (req, res) => {
           before: record.checkout_status,
           after: row.checkout_status
         });
+        await Room.update({checkout_status:row.checkout_status} { where: { room_number, hotel_id } });
       }
 
       if (!hasDiff) continue;
@@ -1097,6 +1102,9 @@ exports.updateDailyRoomList = async (req, res) => {
           updated_at: new Date()
         })
       );
+
+
+
     }
 
     // 🔥 並列で一気に更新（超高速）
