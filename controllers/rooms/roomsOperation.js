@@ -1035,8 +1035,11 @@ exports.updateDailyRoomList = async (req, res) => {
 
     // ====== 2) 行ごとに差分チェック ======
     for (const row of rows) {
+
       const record = recordMap[row.id];
       if (!record) continue;
+
+      console.log(row)
 
       const history = record.edit_history ? JSON.parse(record.edit_history) : [];
       const logTime = new Date();
