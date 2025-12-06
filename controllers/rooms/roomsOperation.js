@@ -1052,7 +1052,7 @@ exports.updateDailyRoomList = async (req, res) => {
           after: row.status
         });
 
-        await Room.update({status:row.status} { where: { room_number, hotel_id } });
+        await Room.update({status:row.status} ,{ where: { room_number, hotel_id } });
       }
 
       if (row.stay_type !== record.stay_type) {
@@ -1063,7 +1063,7 @@ exports.updateDailyRoomList = async (req, res) => {
           before: record.stay_type,
           after: row.stay_type
         });
-        await Room.update({stay_type:row.status} { where: { room_number, hotel_id } });
+        await Room.update({stay_type:row.status}, { where: { room_number, hotel_id } });
       }
 
       if (row.notes !== record.notes) {
@@ -1074,7 +1074,7 @@ exports.updateDailyRoomList = async (req, res) => {
           before: record.notes,
           after: row.notes
         });
-        await Room.update({notes:row.status} { where: { room_number, hotel_id } });
+        await Room.update({notes:row.status} ,{ where: { room_number, hotel_id } });
       }
 
       if (row.checkout_status !== record.checkout_status) {
@@ -1085,7 +1085,7 @@ exports.updateDailyRoomList = async (req, res) => {
           before: record.checkout_status,
           after: row.checkout_status
         });
-        await Room.update({checkout_status:row.checkout_status} { where: { room_number, hotel_id } });
+        await Room.update({checkout_status:row.checkout_status}, { where: { room_number, hotel_id } });
       }
 
       if (!hasDiff) continue;
