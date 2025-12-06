@@ -1011,7 +1011,7 @@ exports.assignBulk = async (req, res) => {
 
 exports.updateDailyRoomList = async (req, res) => {
   try {
-    const { rows, hotel_id,room_number } = req.body;
+    const { rows, hotel_id } = req.body;
 
     if (!rows || !Array.isArray(rows) || !hotel_id) {
       return res.status(400).json({
@@ -1020,29 +1020,31 @@ exports.updateDailyRoomList = async (req, res) => {
       });
     }
 
+    // ====== 1) DailyRoomList の対象を一括取得 ======
     const ids = rows.map(r => r.id);
-
-    // 🔥 1回だけ DB から必要な全レコード取得
     const records = await DailyRoomList.findAll({
       where: { id: ids, hotel_id }
     });
 
-    // 🔥 id → record の高速参照マップ化
+    // 高速参照用マップ
     const recordMap = {};
-    records.forEach(r => recordMap[r.id] = r);
+    records.forEach(r => (recordMap[r.id] = r));
 
-    const updates = [];
+    const dailyUpdates = [];  // DailyRoomList の更新
+    const roomUpdates = [];   // Room テーブルの更新
 
+    // ====== 2) 行ごとに差分チェック ======
     for (const row of rows) {
       const record = recordMap[row.id];
       if (!record) continue;
 
       const history = record.edit_history ? JSON.parse(record.edit_history) : [];
       const logTime = new Date();
-
-      // 差分チェック
       let hasDiff = false;
 
+      // =============================
+      //  status（sub_status）の変更
+      // =============================
       if (row.status !== record.sub_status) {
         hasDiff = true;
         history.push({
@@ -1052,9 +1054,17 @@ exports.updateDailyRoomList = async (req, res) => {
           after: row.status
         });
 
-        await Room.update({status:row.status} ,{ where: { room_number, hotel_id } });
+        roomUpdates.push(
+          Room.update(
+            { status: row.status },
+            { where: { room_number: row.room_number, hotel_id } }
+          )
+        );
       }
 
+      // =============================
+      // stay_type の変更
+      // =============================
       if (row.stay_type !== record.stay_type) {
         hasDiff = true;
         history.push({
@@ -1063,9 +1073,18 @@ exports.updateDailyRoomList = async (req, res) => {
           before: record.stay_type,
           after: row.stay_type
         });
-        await Room.update({stay_type:row.status}, { where: { room_number, hotel_id } });
+
+        roomUpdates.push(
+          Room.update(
+            { stay_type: row.stay_type },
+            { where: { room_number: row.room_number, hotel_id } }
+          )
+        );
       }
 
+      // =============================
+      // notes の変更
+      // =============================
       if (row.notes !== record.notes) {
         hasDiff = true;
         history.push({
@@ -1074,9 +1093,18 @@ exports.updateDailyRoomList = async (req, res) => {
           before: record.notes,
           after: row.notes
         });
-        await Room.update({notes:row.status} ,{ where: { room_number, hotel_id } });
+
+        roomUpdates.push(
+          Room.update(
+            { notes: row.notes },
+            { where: { room_number: row.room_number, hotel_id } }
+          )
+        );
       }
 
+      // =============================
+      // checkout_status の変更
+      // =============================
       if (row.checkout_status !== record.checkout_status) {
         hasDiff = true;
         history.push({
@@ -1085,30 +1113,33 @@ exports.updateDailyRoomList = async (req, res) => {
           before: record.checkout_status,
           after: row.checkout_status
         });
-        await Room.update({checkout_status:row.checkout_status}, { where: { room_number, hotel_id } });
+
+        roomUpdates.push(
+          Room.update(
+            { checkout_status: row.checkout_status },
+            { where: { room_number: row.room_number, hotel_id } }
+          )
+        );
       }
 
-      if (!hasDiff) continue;
-
-      // 🔥 更新内容をバッファに詰める
-      updates.push(
-        record.update({
-          sub_status: row.status,
-          stay_type: row.stay_type,
-          notes: row.notes,
-          checkout_status:row.checkout_status,
-          is_edited: 1,
-          edit_history: JSON.stringify(history),
-          updated_at: new Date()
-        })
-      );
-
-
-
+      // DailyRoomList 側の更新
+      if (hasDiff) {
+        dailyUpdates.push(
+          record.update({
+            sub_status: row.status,
+            stay_type: row.stay_type,
+            notes: row.notes,
+            checkout_status: row.checkout_status,
+            is_edited: 1,
+            edit_history: JSON.stringify(history),
+            updated_at: new Date()
+          })
+        );
+      }
     }
 
-    // 🔥 並列で一気に更新（超高速）
-    await Promise.all(updates);
+    // ====== 3) すべて並列実行（超高速化） ======
+    await Promise.all([...dailyUpdates, ...roomUpdates]);
 
     return res.json({ success: true });
 
@@ -1120,6 +1151,7 @@ exports.updateDailyRoomList = async (req, res) => {
     });
   }
 };
+
 
 exports.updateDailyCheckoutBulk = async (req, res) => {
   try {
