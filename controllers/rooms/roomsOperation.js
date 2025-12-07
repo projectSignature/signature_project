@@ -1438,10 +1438,15 @@ exports.getHistorySummary = async (req, res) => {
       if (!summary[day].room_types[type]) {
         summary[day].room_types[type] = {
           target_clean: 0,
-          done_clean: 0
-          // amenity_request 削除
-          // amenity_done 削除
+          done_clean: 0,
+          amenity_only: 0   // ★追加
         };
+      }
+
+      // ★ アメニティのみ（stay_amenytyOnliy）の場合は清掃カウントしない
+      if (r.sub_status === "stay_amenytyOnliy") {
+        summary[day].room_types[type].amenity_only++;
+        return; // ★ ここで終了（清掃対象から除外）
       }
 
       // 清掃対象
@@ -1454,6 +1459,7 @@ exports.getHistorySummary = async (req, res) => {
         summary[day].room_types[type].done_clean++;
       }
     });
+
 
     // ===============================
     // ⑥ Amenity 集計なし（完全削除）
