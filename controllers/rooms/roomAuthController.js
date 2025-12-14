@@ -29,7 +29,8 @@ exports.login = async (req, res) => {
         id: user.id,
         name: user.name,
         username: user.username,
-        role: user.role
+        role: user.role,
+        hotelId :user.hotel_id
       },
       SECRET,
       { expiresIn: '24h' }
@@ -43,7 +44,7 @@ exports.login = async (req, res) => {
       token,
       name: user.name,
       login_count: loginCount,
-      hotelId :user.hotel_id
+
     });
 
   } catch (err) {
