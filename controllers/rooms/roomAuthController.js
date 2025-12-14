@@ -42,7 +42,8 @@ exports.login = async (req, res) => {
       success: true,
       token,
       name: user.name,
-      login_count: loginCount
+      login_count: loginCount,
+      hotelId :user.hotel_id
     });
 
   } catch (err) {
