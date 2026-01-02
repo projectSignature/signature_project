@@ -1506,3 +1506,82 @@ exports.getDayDetail = async (req, res) => {
     res.json({ success: false });
   }
 };
+
+exports.getRoomDetailByDateRange = async (req, res) => {
+  try {
+    const {
+      hotel_id,
+      start_date,
+      end_date,
+      operator_id,
+      room_type
+    } = req.query;
+
+    if (!hotel_id || !start_date || !end_date) {
+      return res.json({
+        success: false,
+        message: 'hotel_id, start_date, end_date are required'
+      });
+    }
+
+    // -----------------------------
+    // DailyRoomList 条件構築
+    // -----------------------------
+    const whereDaily = {
+      hotel_id,
+      work_date: {
+        [Op.between]: [start_date, end_date]
+      }
+    };
+
+    // オペレーター指定（任意）
+    if (operator_id) {
+      whereDaily.cleaned_by = operator_id;
+      // もし cleaned_by_id などならここを合わせる
+    }
+
+    // 部屋タイプ指定（任意）
+    if (room_type) {
+      whereDaily.room_type = room_type;
+    }
+
+    // -----------------------------
+    // DailyRoomList 取得
+    // -----------------------------
+    const daily = await DailyRoomList.findAll({
+      where: whereDaily,
+      order: [
+        ['work_date', 'ASC'],
+        ['room_number', 'ASC']
+      ]
+    });
+
+    // -----------------------------
+    // AmenityRequest 取得（同期間）
+    // -----------------------------
+    const amenity = await AmenityRequest.findAll({
+      where: {
+        hotel_id,
+        created_at: {
+          [Op.between]: [
+            `${start_date} 00:00:00`,
+            `${end_date} 23:59:59`
+          ]
+        }
+      }
+    });
+
+    return res.json({
+      success: true,
+      data: {
+        daily,
+        amenity
+      }
+    });
+
+  } catch (err) {
+    console.error('getRoomDetailByDateRange error:', err);
+    res.json({ success: false });
+  }
+};
+
