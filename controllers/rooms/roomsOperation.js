@@ -1559,17 +1559,7 @@ exports.getRoomDetailByDateRange = async (req, res) => {
     // -----------------------------
     // AmenityRequest 取得（同期間）
     // -----------------------------
-    const amenity = await AmenityRequest.findAll({
-      where: {
-        hotel_id,
-        created_at: {
-          [Op.between]: [
-            `${start_date} 00:00:00`,
-            `${end_date} 23:59:59`
-          ]
-        }
-      }
-    });
+    const amenity = ''//将来用
 
     return res.json({
       success: true,
@@ -1584,4 +1574,5 @@ exports.getRoomDetailByDateRange = async (req, res) => {
     res.json({ success: false });
   }
 };
+
 
