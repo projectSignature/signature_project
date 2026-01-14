@@ -3927,6 +3927,52 @@ router.get('/orders/getBasedata', async (req, res) => {
   }
 });
 
+//原価のポスト
+router.post('/orderskun/menu-cost-history', async (req, res) => {
+  try {
+    const {
+      rest_id,
+      menu_id,
+      cost_price_ex_tax,
+      cost_breakdown_json
+    } = req.body;
+
+    if (!rest_id || !menu_id || !cost_price_ex_tax) {
+      return res.status(400).json({ error: 'required fields missing' });
+    }
+
+    // ① 既存の有効レコードを終了させる
+    await MenuCostHistory.update(
+      { end_date: new Date() },
+      {
+        where: {
+          rest_id,
+          menu_id,
+          end_date: null
+        }
+      }
+    );
+
+    // ② 新しい原価履歴を作成
+    const newHistory = await MenuCostHistory.create({
+      rest_id,
+      menu_id,
+      cost_price_ex_tax,
+      cost_breakdown_json,
+      start_date: new Date(),
+      end_date: null
+    });
+
+    res.json({
+      success: true,
+      data: newHistory
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 
 
@@ -5705,6 +5751,7 @@ router.get('/gyminfoall', async (req, res) => {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+
 
 
 
