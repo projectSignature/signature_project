@@ -3937,6 +3937,8 @@ router.post('/orderskun/menu-cost-history', async (req, res) => {
       cost_breakdown_json
     } = req.body;
 
+    console.log(req.body)
+
     if (!rest_id || !menu_id || !cost_price_ex_tax) {
       return res.status(400).json({ error: 'required fields missing' });
     }
@@ -5751,6 +5753,7 @@ router.get('/gyminfoall', async (req, res) => {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+
 
 
 
