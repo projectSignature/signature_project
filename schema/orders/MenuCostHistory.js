@@ -23,7 +23,13 @@ const MenuCostHistory = database.define('MenuCostHistory', {
   cost_price_ex_tax: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
-    comment: '税抜原価（1皿あたり）'
+    comment: '税抜原価（1皿あたり・確定値）'
+  },
+
+  cost_breakdown_json: {
+    type: DataTypes.JSON,
+    allowNull: true,
+    comment: '原価内訳・メモ用JSON（任意）'
   },
 
   start_date: {
@@ -35,6 +41,7 @@ const MenuCostHistory = database.define('MenuCostHistory', {
     type: DataTypes.DATEONLY,
     allowNull: true
   }
+
 }, {
   tableName: 'menu_cost_history',
   timestamps: true,
