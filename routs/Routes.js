@@ -3689,6 +3689,7 @@ const CategoryHours = require('../schema/orders/CategoryHours')
 const OrdersCategory = require('../schema/orders/category')
 const OrdersOption = require('../schema/orders/option')
 const Orders = require('../schema/orders/orders');
+const MenuCostHistory = require('../schema/orders/MenuCostHistory');
 const OrderItems = require('../schema/orders/order_items');
 const ReservationController = require('../controllers/reservation.controller');
 const orderController = require('../controllers/orderskun.order.controller');
@@ -3904,12 +3905,19 @@ router.get('/orders/getBasedata', async (req, res) => {
       logging: console.log  // クエリをコンソールに出力
     });
 
+        const menuCostHistories = await MenuCostHistory.findAll({
+  where: {
+    rest_id: userId
+  }
+});
+
     // 取得したデータをまとめてJSONで返す
     const getData = {
       categories: categories,
       menus: menusWithBase64Images,
       options: options,
-      oparatingHOurs:oparatingHours
+      oparatingHOurs:oparatingHours,
+      menuCostHistories: menuCostHistories
     };
 
     res.json(getData); // 結果をJSONとして返す
@@ -5697,6 +5705,7 @@ router.get('/gyminfoall', async (req, res) => {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+
 
 
 
