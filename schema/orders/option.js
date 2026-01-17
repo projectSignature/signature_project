@@ -41,7 +41,12 @@ const Option = database.define('Option', {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: true,
         defaultValue: 0.00
-    }
+    },
+    is_required: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
+}
 }, {
     tableName: 'option',
     timestamps: false
