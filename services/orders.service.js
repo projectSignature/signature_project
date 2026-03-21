@@ -329,7 +329,7 @@ const orderService = {
           const totalAmount = allOrderItems.reduce((acc, item) => acc + parseFloat(item.total_price), 0);
 
           // Update total_amount in Orders table
-          await Orders.update({ total_amount: totalAmount }, { where: { id: newOrder.id } });
+          await Orders.update({ total_amount: totalAmount,order_status: 'pending' }, { where: { id: newOrder.id } });
           console.log(`Order total_amount updated to ${totalAmount}`);
 
           // 最新のOrderとその関連するOrderItemsを取得して返す
