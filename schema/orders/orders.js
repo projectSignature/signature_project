@@ -43,22 +43,6 @@ const Orders = database.define('Orders', {
         type: DataTypes.BOOLEAN,
         defaultValue: false
     },
-    is_web: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false
-    },
-    web_tel: {
-        type: DataTypes.STRING(45),
-        allowNull: true
-    },
-    pickup_time: {
-    type: DataTypes.DATE,
-    allowNull: true
-},
-order_type: {
-    type: DataTypes.STRING(45),
-    allowNull: true
-},
     created_at: {
         type: DataTypes.DATE,
         defaultValue: Sequelize.NOW
