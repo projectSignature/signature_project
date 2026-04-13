@@ -51,36 +51,55 @@ const orderService = {
     },
 
     // 新規注文を作成する
-    createNewOrder: async (user_id, table_no, order_name, items,pickup_time,order_type) => {
-      console.log('order is :' +order_type)
-        const newOrder = await Orders.create({
-            user_id: user_id,
-            table_no: table_no,
-            order_name: order_name,
-            total_amount: items.reduce((acc, item) => acc + (item.amount ), 0),//* item.quantity
-            order_status: 'pending',
-            coupon_printed: false,
-            created_at: new Date(),
-            updated_at: new Date(),
-            pickup_time:pickup_time,
-            order_type:order_type
-        });
+createNewOrder: async (
+  user_id,
+  table_no,
+  order_name,
+  items,
+  pickup_time,
+  order_type,
+  options = {}
+) => {
+  const {
+    is_web = false,
+    customer_phone = null,
+  } = options;
 
-        const orderItems = items.map(item => ({
-            order_id: newOrder.id,
-            menu_id: item.id,
-            quantity: item.quantity,
-            options: JSON.stringify(item.options),
-            item_price: item.amount,
-            total_price: item.amount ,//* item.quantity
-            created_at: new Date(),
-            updated_at: new Date()
-        }));
+  const newOrder = await Orders.create({
+    user_id,
+    table_no,
+    order_name,
+    total_amount: items.reduce((acc, item) => acc + item.amount, 0),
+    order_status: 'pending',
+    coupon_printed: false,
+    created_at: new Date(),
+    updated_at: new Date(),
+    pickup_time,
+    order_type,
+    is_web,
+    web_tel: customer_phone
+  });
 
-        await OrderItems.bulkCreate(orderItems);
+  const orderItems = items.map(item => ({
+    order_id: newOrder.id,
+    menu_id: item.id,
+    quantity: item.quantity,
+    options: JSON.stringify(item.options),
+    item_price: item.amount,
+    total_price: item.amount,
+    created_at: new Date(),
+    updated_at: new Date()
+  }));
 
-         return { message: 'Order confirmed successfully', success: true, order: newOrder, orderItems: orderItems };
-    },
+  await OrderItems.bulkCreate(orderItems);
+
+  return {
+    message: 'Order confirmed successfully',
+    success: true,
+    order: newOrder,
+    orderItems
+  };
+},
     getPendingOrders: async (client_id, table_no) => {
       console.log(client_id, table_no)
       try {
