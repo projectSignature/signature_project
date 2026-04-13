@@ -2,24 +2,59 @@
 const orderService = require('../services/orders.service');
 
 const orderController = {
-    confirmOrder: async (req, res) => {
-        const { order_name, user_id, table_no, items, orderId,pickup_time,order_type } = req.body;
-        try {
-            // 既存の注文を確認
-            let result = await orderService.updateExistingOrder(user_id, table_no, order_name, items, orderId);
-            if (!result.success) {
-                // 新規注文を作成
-                console.log(order_type)
-                result = await orderService.createNewOrder(user_id, table_no, order_name, items,pickup_time,order_type);
-                  res.status(200).json({ message: result.message,newflug: true, order: result.order, orderItems:result.orderItems});
-            }else{
-              res.status(200).json({ message: result.message,newflug: false});
-            }
-        } catch (error) {
-            console.error('Error confirming order:', error);
-            res.status(500).json({ error: 'Failed to confirm order' });
-        }
-    },
+  confirmOrder: async (req, res) => {
+    const {
+      order_name,
+      user_id,
+      table_no,
+      items,
+      orderId,
+      pickup_time,
+      order_type,
+      is_web = false,
+      customer_phone = null,
+      customer_name = null,
+    } = req.body;
+
+    try {
+      let result = await orderService.updateExistingOrder(
+        user_id,
+        table_no,
+        order_name,
+        items,
+        orderId
+      );
+
+
+      if (!result.success) {
+        result = await orderService.createNewOrder(
+          user_id,
+          table_no,
+          order_name,
+          items,
+          pickup_time,
+          order_type,
+          { is_web, customer_phone, customer_name }
+        );
+
+        return res.status(200).json({
+          message: result.message,
+          newflug: true,
+          order: result.order,
+          orderItems: result.orderItems
+        });
+      }
+
+      return res.status(200).json({
+        message: result.message,
+        newflug: false
+      });
+    } catch (error) {
+      console.error('Error confirming order:', error);
+      res.status(500).json({ error: 'Failed to confirm order' });
+    }
+  },
+
     getPendingOrders: async (req, res) => {
         const { client_id, table_no } = req.body; // table_no を追加で取得
         try {
@@ -154,10 +189,6 @@ historyPedidosBydate: async (req,res)=>{
      if(!startDate||!endDate||!user_id){
        return res.status(400).json({ message: 'Check startDate, endDate, clients id' });
      }
-     console.log(startDate)
-     console.log(endDate)
-     console.log(user_id)
-
      const historyOrders = await orderService.getOrdersByPickupRange(startDate, endDate, user_id)
      // console.log(newOrder)
      return res.status(200).json(historyOrders)
@@ -168,7 +199,6 @@ historyPedidosBydate: async (req,res)=>{
 updateOrder : async (req, res) => {
     const { orderId } = req.params;
     const { order_status, payment_method, order_type } = req.body;
-
     try {
         const updatedOrder = await orderService.updateOrder(orderId, {
             order_status,
@@ -186,6 +216,7 @@ updateOrder : async (req, res) => {
         res.status(500).json({ success: false, message: '注文の更新に失敗しました' });
     }
 },
+
 updateStockStatus : async (req, res) => {
   try {
     const { id, stock_status } = req.body;
