@@ -63,7 +63,15 @@ const Orders = database.define('Orders', {
     order_type: {  // 新しい order_type カラムを追加
         type: DataTypes.ENUM('local', 'takeout', 'uber', 'demaekan', 'other'),
         defaultValue: 'local'
-    }
+    },
+    is_web: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    },
+    web_tel: {
+        type: DataTypes.STRING(45),
+        allowNull: true
+    },
 }, {
     tableName: 'orders_ver2',
     timestamps: false
