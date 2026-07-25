@@ -3,6 +3,11 @@ const OrderItems = require('../schema/orders/order_items_ver2');
 const Menu = require('../schema/orders/menu');
 const { Op } = require('sequelize');
 
+function getServerJapanTimeIso() {
+    const offsetMs = 9 * 60 * 60 * 1000;
+    return new Date(Date.now() + offsetMs).toISOString();
+}
+
 const orderService = {
     updateExistingOrder: async (user_id, table_no, order_name, items, orderID) => {
         let existingOrder = await Orders.findOne({
@@ -74,7 +79,7 @@ createNewOrder: async (
     coupon_printed: false,
     created_at: new Date(),
     updated_at: new Date(),
-    pickup_time,
+    pickup_time: getServerJapanTimeIso(),
     order_type,
     is_web,
     web_tel: customer_phone
