@@ -79,6 +79,9 @@ app.use(cors());
  app.use(bodyParser.urlencoded({ extended: true })); 
  // Express modules / packages 
 
+const orderskunAdminRouter = require('./routs/orderskun.admin.router');
+app.use('/orderskun/admin', orderskunAdminRouter);
+
  app.use('/', rout);
 app.use('/ejs', rout);
  app.use('/member', rout);
