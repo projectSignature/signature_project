@@ -68,7 +68,17 @@ createNewOrder: async (
   const {
     is_web = false,
     customer_phone = null,
+    order_source = null,
   } = options;
+
+  const requestedPickupTimeIsValid =
+    order_source === 'pedido_admin'
+    && typeof pickup_time === 'string'
+    && pickup_time.trim() !== ''
+    && !Number.isNaN(Date.parse(pickup_time));
+  const pickupTimeForSave = requestedPickupTimeIsValid
+    ? pickup_time
+    : getServerJapanTimeIso();
 
   const newOrder = await Orders.create({
     user_id,
@@ -79,7 +89,7 @@ createNewOrder: async (
     coupon_printed: false,
     created_at: new Date(),
     updated_at: new Date(),
-    pickup_time: getServerJapanTimeIso(),
+    pickup_time: pickupTimeForSave,
     order_type,
     is_web,
     web_tel: customer_phone
