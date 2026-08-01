@@ -14,6 +14,7 @@ const orderController = {
       is_web = false,
       customer_phone = null,
       customer_name = null,
+      order_source = null,
     } = req.body;
 
     try {
@@ -34,7 +35,7 @@ const orderController = {
           items,
           pickup_time,
           order_type,
-          { is_web, customer_phone, customer_name }
+          { is_web, customer_phone, customer_name, order_source }
         );
 
         return res.status(200).json({
